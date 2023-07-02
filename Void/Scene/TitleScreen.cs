@@ -33,9 +33,10 @@ namespace Void.Scene
             Dictionary<string, GameEvent> menuOptions = new();
             menuOptions.Add("Start", new(EventType.NEW_GAME, new("newgame")));
             menuOptions.Add("Options", new(EventType.LOAD_GAME, new("loadgame")));
+            menuOptions.Add("Debug", new(EventType.DEBUG, new("debug_scene")));
             menuOptions.Add("Quit", new(EventType.DEBUG, new()));
 
-            mainMenu = new(11, 3, menuOptions, "Main Menu");
+            mainMenu = new(11, 4, menuOptions, "Main Menu");
             mainMenu.Position = new(5, 7);
             mainMenu.Render();
 

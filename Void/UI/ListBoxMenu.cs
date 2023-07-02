@@ -12,9 +12,11 @@ namespace Void.UI
     public class ListBoxMenu : Menu
     {
         private int height;
+        private int width;
         public ListBoxMenu(int width, int height, Dictionary<string, GameEvent> keyValuePairs, string title = "") : base(width, height, keyValuePairs, title)
         {
             this.height = keyValuePairs.Count;
+            this.width = width;
             Render();
         }
 
@@ -35,7 +37,7 @@ namespace Void.UI
             lb.SelectedItemChanged += (s, a) =>
             {
                 //gmInstance.Raise(menuOptions[lb.SelectedItem.ToString()]);
-                OnCallback(new(EventType.DEBUG, new("ListBoxMenu within main menu event!")));
+                OnCallback(menuOptions[lb.SelectedItem.ToString()]);
             };
 
             Controls.Add(lb);

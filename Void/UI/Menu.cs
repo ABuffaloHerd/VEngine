@@ -29,7 +29,6 @@ namespace Void.UI
             Point pos = new(0, 0);
             foreach(var kvp in menuOptions)
             {
-                System.Console.WriteLine(kvp.Key);
                 Button b = new(len + 4)
                 {
                     Text = kvp.Key,

@@ -9,12 +9,20 @@ namespace Void.Event
 {
     public enum EventType
     {
+        // Game events
         DEBUG,
         NEW_GAME,
         LOAD_GAME,
         QUIT,
         CHANGE_MENU,
-        CHANGE_SCENE
+        CHANGE_SCENE,
+
+        // UI events
+        UI_BUTTON_CLICK,
+        UI_LISTBOX_SELECTION_CHANGED,
+
+        // "This event type doesn't matter"
+        IDC
     }
 
     public class GameEvent
@@ -26,6 +34,11 @@ namespace Void.Event
         {
             EventType = eventType;
             EventData = eventData;
+        }
+
+        public override string ToString()
+        {
+            return EventType.ToString() + EventData.ToString();
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Void
         }
         public void Process(GameEvent e)
         {
+            System.Console.WriteLine("=== GAMEMANAGER HAS RECEIVED GAME EVENT ===");
             System.Console.WriteLine($"Event Type: {e.EventType}, Event Data: {e.EventData}");
 
             switch(e.EventType)
@@ -39,6 +40,18 @@ namespace Void
                         System.Console.WriteLine("Title return");
                         state = GameState.MAINMENU;
                         SwitchScene(new TitleScreen());
+                    }
+                    else if(e.EventData.Contains("arena"))
+                    {
+                        System.Console.WriteLine("Arena testing!");
+                        state = GameState.BATTLE;
+                    }
+                    break;
+                case EventType.DEBUG:
+                    if(e.EventData.Contains("debug_scene"))
+                    {
+                        state = GameState.MAP;
+                        SwitchScene(new DebugScene());
                     }
                     break;
             }
