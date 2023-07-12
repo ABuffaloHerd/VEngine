@@ -35,4 +35,12 @@ namespace Void.Battle
 
         }
     }
+
+    public class TestObject : GameObject
+    {
+        public TestObject(ColoredGlyph coloredGlyph) : base(coloredGlyph)
+        {
+
+        }
+    }
 }

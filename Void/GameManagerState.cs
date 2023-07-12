@@ -41,17 +41,21 @@ namespace Void
                         state = GameState.MAINMENU;
                         SwitchScene(new TitleScreen());
                     }
-                    else if(e.EventData.Contains("arena"))
-                    {
-                        System.Console.WriteLine("Arena testing!");
-                        state = GameState.BATTLE;
-                    }
                     break;
                 case EventType.DEBUG:
                     if(e.EventData.Contains("debug_scene"))
                     {
                         state = GameState.MAP;
                         SwitchScene(new DebugScene());
+                    }
+                    break;
+
+                case EventType.CHANGE_SCENE:
+                    if (e.EventData.Contains("arena"))
+                    {
+                        System.Console.WriteLine("Arena testing!");
+                        state = GameState.BATTLE;
+                        SwitchScene(new BattleScene());
                     }
                     break;
             }

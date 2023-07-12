@@ -61,7 +61,7 @@ public partial class MainMenu
     private class ParadoxSimulationDisplay : ControlsConsole
     {
         private DrawString instructions;
-        private ListBoxMenu characterSelection;
+        private CharacterMenu characterSelection;
         private Console? c; // inner display
 
         public ParadoxSimulationDisplay(Action<GameEvent> callback) : base(DEFAULT_WIDTH, DEFAULT_HEIGHT)
@@ -88,20 +88,7 @@ public partial class MainMenu
 
             SadComponents.Add(instructions);
 
-            Dictionary<string, GameEvent> options = new()
-            {
-                { "Mariah", new(EventType.IDC, new("mariah")) },
-                { "Saki",   new(EventType.IDC, new("saki")) },
-                { "Hirina", new(EventType.IDC, new("hirina")) },
-                { "Luna",   new(EventType.IDC, new("luna")) },
-                { "Minako", new(EventType.IDC, new("minako")) },
-                { "Lianna", new(EventType.IDC, new("lianna")) }
-            };
-
-            characterSelection = new(14, 10, options)
-            {
-                Position = new(0, 7)
-            };
+            characterSelection = new();
 
             Border.BorderParameters borderParameters = Border.BorderParameters.GetDefault().AddTitle("Paradox Simulation");
             new Border(this, borderParameters);
@@ -225,6 +212,48 @@ public partial class MainMenu
             c.SadComponents.Add(instructions);
 
             Render();
+        }
+
+        private class CharacterMenu : BaseMenu
+        {
+            private Dictionary<string, GameEvent> options;
+            private const int wide = 15;
+            public CharacterMenu() : base(wide, 20, "Characters")
+            {
+                options = new()
+                {
+                    { "Mariah", new(EventType.IDC, new("mariah")) },
+                    { "Saki",   new(EventType.IDC, new("saki")) },
+                    { "Hirina", new(EventType.IDC, new("hirina")) },
+                    { "Luna",   new(EventType.IDC, new("luna")) },
+                    { "Minako", new(EventType.IDC, new("minako")) },
+                    { "Lianna", new(EventType.IDC, new("lianna")) }
+                };
+
+                Position = new(0, 7);
+                Render();
+            }
+            public override void Render()
+            {
+                ListBox lb = new(wide, options.Count + 2)
+                {
+                    DrawBorder = true,
+                    BorderLineStyle = (int[])ICellSurface.ConnectedLineThick.Clone(),
+                    Position = new(0, 0)
+                };
+
+                foreach(string option in options.Keys)
+                {
+                    lb.Items.Add(option);
+                }
+
+                lb.SelectedItemChanged += (e, a) =>
+                {
+                    OnCallback(options[lb.SelectedItem.ToString()]);
+                };
+
+                Controls.Add(lb);
+            }
         }
     }
 

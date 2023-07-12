@@ -73,7 +73,7 @@ public partial class MainMenu : BaseScene
             }
         }
 
-        if(e.EventData.Contains("story"))
+        if (e.EventData.Contains("story"))
         {
             display = new StoryDisplay();
         }

@@ -14,7 +14,7 @@ namespace SadConsoleSetup
             /* SadConsole V10 kickoff code */
             /////////////////////////////////
 
-            Settings.WindowTitle = "SadConsole";
+            Settings.WindowTitle = "VEngine";
 
             Game.Configuration gameStartup = new Game.Configuration()
                 .SetScreenSize(190, 50)
