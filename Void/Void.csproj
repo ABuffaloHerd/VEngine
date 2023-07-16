@@ -25,4 +25,8 @@
     <Folder Include="Effect\" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y /S &quot;$(ProjectDir)Resources\*.*&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;" />
+  </Target>
+
 </Project>

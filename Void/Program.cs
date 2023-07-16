@@ -17,11 +17,11 @@ namespace SadConsoleSetup
             Settings.WindowTitle = "VEngine";
 
             Game.Configuration gameStartup = new Game.Configuration()
-                .SetScreenSize(190, 50)
+                .SetScreenSize(140, 80)
                 .SetStartingScreen<GameManager>()
                 .OnStart(OnStart)
                 .IsStartingScreenFocused(false)
-                .ConfigureFonts((f) => f.UseBuiltinFontExtended());
+                .ConfigureFonts((f) => f.UseCustomFont("Font/Cheepicus12.font"));
 
             Game.Create(gameStartup);
             Game.Instance.Run();

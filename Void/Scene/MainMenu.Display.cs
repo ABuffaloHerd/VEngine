@@ -15,7 +15,7 @@ namespace Void.Scene;
 public partial class MainMenu
 {
     private static Point DEFAULT_POSITION = new(35, 4);
-    private const int DEFAULT_WIDTH = 150;
+    private const int DEFAULT_WIDTH = 90;
     private const int DEFAULT_HEIGHT = 30;
     private abstract class BaseMenuDisplay : Console
     {
@@ -33,7 +33,7 @@ public partial class MainMenu
         {
             UseMouse = false;
             Cursor.IsVisible = true;
-            Position = new(35, 4);
+            Position = DEFAULT_POSITION;
 
             string[] text = new string[]
             {
@@ -145,9 +145,9 @@ public partial class MainMenu
         private void PrintScenarioDetails(string character)
         {
             string[] scenarioText;
-            c = new(110, 20)
+            c = new(70, 20)
             {
-                Position = new(41, 8),
+                Position = new(16, 8),
             };
 
             switch (character)

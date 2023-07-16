@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Void.DataStructures;
 using Void.UI;
 
 namespace Void.Battle
@@ -16,7 +17,25 @@ namespace Void.Battle
             objects = new();
 
             _ = Surface.Fill(background: background);
-            System.Console.WriteLine("Area constructor works");
+        }
+
+        public void Mark(Pattern p)
+        {
+            foreach(Point point in p.Points)
+            {
+                Surface.SetGlyph(point.X, point.Y, 88, Color.Yellow);
+            }
+        }
+
+        public void Mark(Pattern p, Point position)
+        {
+            foreach(Point point in p.Points)
+            {
+                int x = point.X + position.X;
+                int y = point.Y + position.Y;
+
+                Surface.SetGlyph(x, y, 88, Color.Yellow);
+            }
         }
 
         public void Render()
@@ -28,11 +47,6 @@ namespace Void.Battle
             {
                 
             }
-        }
-
-        private void CopyAppearance(GameObject obj) 
-        {
-            Surface.SetGlyph(obj.Position.X, obj.Position.Y, obj.AppearanceSingle);
         }
     }
 }
