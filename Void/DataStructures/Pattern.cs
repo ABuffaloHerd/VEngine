@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 namespace Void.DataStructures
 {
     // struct that has a list of marked tiles
-    public class Pattern
+    public sealed class Pattern : IEnumerable<Point>
     {
-        public List<Point> Points { get; private set; }
+        public List<Point> Points { get; init; }
 
         public Pattern(List<Point> points)
         {
@@ -84,6 +85,16 @@ namespace Void.DataStructures
             }
 
             return new(maxX, maxY);
+        }
+
+        public IEnumerator<Point> GetEnumerator()
+        {
+            return Points.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Points.GetEnumerator();
         }
     }
 }

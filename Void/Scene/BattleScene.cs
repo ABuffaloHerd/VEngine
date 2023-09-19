@@ -29,7 +29,11 @@ namespace Void.Scene
             Children.Add(controls);
             
             arena = new Arena(90, 50, Color.Black);
+            arena.Add(new TestObject('T'));
+
             Children.Add(arena);
+
+            arena.Update();
         }
         public override void Render()
         {
@@ -38,16 +42,21 @@ namespace Void.Scene
 
         private void Process(GameEvent e)
         {
-            Pattern p = new();
-            p.Mark(0, 0);
-            p.Mark(1, 0);
-            p.Mark(2, 0);
-            p.Mark(3, 0);
+            arena.Clear();
+            if (e.EventType == EventType.ARENA_MOVE)
+            {
+                arena.Move(arena.Selected.ID, (Point)e.EventData.Get("move"));
+                //System.Console.WriteLine("Arena move");
+                System.Console.WriteLine(e.EventData.Get("move"));
+            }
 
-            p.Mark(1, -1);
-            p.Mark(1, 1);
-
-            arena.Mark(p, new(5, 5));
+            if (e.EventType == EventType.IDC)
+            {
+                if (e.EventData.Contains("range"))
+                {
+                    arena.Mark();
+                }
+            }
         }
 
         private class BattleControls : BaseMenu
@@ -56,22 +65,38 @@ namespace Void.Scene
             {
                 Button b = new(20)
                 {
-                    Text = "Button",
+                    Text = "Range",
                     Position = new(0, 0),
                 };
 
                 b.Click += (s, a) =>
                 {
-                    OnCallback(new(EventType.IDC, new("button")));
+                    OnCallback(new(EventType.IDC, new("range")));
+                };
+
+                Button moveButton = new(20)
+                {
+                    Text = "Move",
+                    Position = new(0, 2)
+                };
+
+                moveButton.Click += (s, a) =>
+                {
+                    OnCallback(
+                        new(EventType.ARENA_MOVE, 
+                        new("move", new Point(1, 1))
+                        )
+                    );
                 };
 
                 Controls.Add(b);
+                Controls.Add(moveButton);
             }
 
             public override void Render()
             {
                 throw new NotImplementedException();
             }
-     }
+        }
     }
 }

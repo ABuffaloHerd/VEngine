@@ -21,6 +21,9 @@ namespace Void.Event
         UI_BUTTON_CLICK,
         UI_LISTBOX_SELECTION_CHANGED,
 
+        // Arena events
+        ARENA_MOVE,
+
         // "This event type doesn't matter"
         IDC
     }
