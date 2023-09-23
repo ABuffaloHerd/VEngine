@@ -30,6 +30,7 @@ namespace Void.Scene
             
             arena = new Arena(90, 50, Color.Black);
             arena.Add(new TestObject('T'));
+            arena.Add(new TestObject('E').SetPosition(3, 4));
 
             Children.Add(arena);
 
@@ -46,7 +47,6 @@ namespace Void.Scene
             if (e.EventType == EventType.ARENA_MOVE)
             {
                 arena.Move(arena.Selected.ID, (Point)e.EventData.Get("move"));
-                //System.Console.WriteLine("Arena move");
                 System.Console.WriteLine(e.EventData.Get("move"));
             }
 
@@ -55,6 +55,17 @@ namespace Void.Scene
                 if (e.EventData.Contains("range"))
                 {
                     arena.Mark();
+                }
+
+                if(e.EventData.Contains("rangecheck"))
+                {
+                    var a = arena.InRange();
+
+                    foreach(GameObject gameobj in a)
+                    {
+                        System.Console.WriteLine(a.ToString());
+                        System.Console.WriteLine("haha jonathan the tostring is broken");
+                    }
                 }
             }
         }
@@ -84,13 +95,29 @@ namespace Void.Scene
                 {
                     OnCallback(
                         new(EventType.ARENA_MOVE, 
-                        new("move", new Point(1, 1))
+                        new("move", new Point(0, 1))
                         )
                     );
                 };
 
+                Button rangecheck = new(20)
+                {
+                    Text = "Range",
+                    Position = new(0, 3)
+                };
+                rangecheck.Click += (s, a) =>
+                {
+                    OnCallback(
+                        new(EventType.IDC,
+                        new("rangecheck"))
+                        );
+
+                    System.Console.WriteLine("Battle scene rangecheck fired");
+                };
+
                 Controls.Add(b);
                 Controls.Add(moveButton);
+                Controls.Add(rangecheck);
             }
 
             public override void Render()

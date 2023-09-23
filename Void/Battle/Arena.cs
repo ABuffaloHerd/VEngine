@@ -56,6 +56,15 @@ namespace Void.Battle
             {
                 Surface.SetGlyph(p.X + Selected.Position.X, p.Y + Selected.Position.Y, 'X', Color.Yellow);
                 Surface.SetEffect(p.X + Selected.Position.X, p.Y + Selected.Position.Y, blinkingEffect);
+
+                // If there's an entity at this point, set it to blink
+                foreach (var obj in objects)
+                {
+                    if (obj.Position == p + Selected.Position)
+                    {
+                        obj.SetVisualEffect(blinkingEffect);
+                    }
+                }
             }
         }
 
@@ -95,6 +104,38 @@ namespace Void.Battle
 
             System.Console.WriteLine("Arena move");
             Update();
+        }
+
+        // Returns a list of all entites in the currently selected object's range
+        public List<GameObject> InRange()
+        {
+            System.Console.WriteLine("arena range check");
+            List<GameObject> returnme = new();
+            Pattern p = Selected.GetRange();
+
+            foreach(Point point in p.Points)
+            {
+                // Adjust point so that it is relative to selected object's position
+                Point cp = point + Selected.Position;
+
+                System.Console.WriteLine("Checking " + cp);
+
+                // Search all objects list
+                foreach(var gameobj in objects)
+                {
+                    if (gameobj.Position == cp)
+                    {
+                        // Make sure this isn't the current selected object
+                        if (gameobj.ID != Selected.ID)
+                        {
+                            System.Console.WriteLine("Rangecheck got a hit");
+                            returnme.Add(gameobj);
+                        }
+                    }
+                }
+            }
+
+            return returnme;
         }
 
         public void Update()

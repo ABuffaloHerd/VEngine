@@ -18,7 +18,7 @@ namespace Void.Battle
         ENEMY,
         NEUTRAL
     }
-    public abstract class GameObject : Entity
+    public abstract partial class GameObject : Entity
     {
         public Alignment Alignment { get; set; }
         public Guid ID { get; protected set; }
@@ -31,6 +31,24 @@ namespace Void.Battle
             ID = Guid.NewGuid();
             AnimatedAppearanceComponent animatedAppearanceComponent = null;
             Alignment = Alignment.NEUTRAL;
+        }
+
+        public GameObject SetPosition(int x, int y)
+        {
+            Position = new(x, y);
+
+            return this;
+        }
+
+        public GameObject SetVisualEffect(SadConsole.Effects.ICellEffect effect)
+        {
+            System.Console.WriteLine("This object should be blinking");
+            return this;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         public abstract Pattern GetRange();
@@ -49,10 +67,13 @@ namespace Void.Battle
         public PlayerWeapon Weapon { get; protected set; }
         public TestObject(char c) : base(Color.White, Color.Black, c)
         {
+            Name = "test object";
             Alignment = Alignment.PLAYER;
             Pattern p = new Pattern();
             p.Mark(0, 0);
             p.Mark(1, 0);
+            p.Mark(2, 0);
+            p.Mark(3, 0);
             Weapon = new MeleeWeapon(
                 "test sword",
                 10,
