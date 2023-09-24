@@ -16,27 +16,23 @@ namespace Void.Battle
     // The parent scene handles the rendering of entities and controls.
     public class Arena : ScreenSurface
     {
-        public List<GameObject> neutralObjects; // Neutral objects.
-        public List<GameObject> playerObjects; // player allied objects.
-        public List<GameObject> enemyObjects; // enemy objects.
-        public List<GameObject> objects; // All objects
+        private HashSet<GameObject> objects; // All objects
+        private Stack<GameObject> turnStack; // whose turn is it?
 
         public GameObject Selected { get; protected set; }
 
-        private Renderer renderer;
+        private EntityManager entityManager;
 
         public Arena(int width, int height, Color background) : base(width, height)
         {
             objects = new();
-            playerObjects = new();
-            enemyObjects = new();
 
             _ = Surface.Fill(background: background);
 
             Selected = null;
 
-            renderer = new();
-            SadComponents.Add(renderer);
+            entityManager = new();
+            SadComponents.Add(entityManager);
         }
 
         public void Mark()
@@ -71,23 +67,15 @@ namespace Void.Battle
 
         public void Add(GameObject obj)
         {
-            renderer.Add(obj);
+            entityManager.Add(obj);
             objects.Add(obj);
 
-            // Figure out which bucket to put this in
-            switch(obj.Alignment)
-            {
-                case Alignment.PLAYER:
-                    playerObjects.Add(obj);
-                    break;
-                case Alignment.ENEMY:
-                    enemyObjects.Add(obj);
-                    break;
-                default:
-                    neutralObjects.Add(obj);
-                    break;
-                
-            }
+            // when objects are added build the turn stack. TODO: This is another feature entirely.
+            List<GameObject> temp = new(objects);
+            temp.Sort(new GameObject.SpeedComparer());
+
+            turnStack = new(temp);
+            Selected = turnStack.Pop();
         }
 
         public void Move(Guid objID, Point position)
@@ -103,7 +91,12 @@ namespace Void.Battle
             }
 
             System.Console.WriteLine("Arena move");
-            Update();
+        }
+
+        public void Move(Point position)
+        {
+            // Move selected to position
+            Selected.Position += position;
         }
 
         // Returns a list of all entites in the currently selected object's range
@@ -136,12 +129,6 @@ namespace Void.Battle
             }
 
             return returnme;
-        }
-
-        public void Update()
-        {
-            // TODO: Cycle player objects when the turn is ticked
-            Selected = playerObjects[0];
         }
     }
 }

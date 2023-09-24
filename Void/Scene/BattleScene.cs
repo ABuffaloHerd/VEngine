@@ -29,19 +29,17 @@ namespace Void.Scene
             Children.Add(controls);
             
             arena = new Arena(90, 50, Color.Black);
-            arena.Add(new TestObject('T'));
+            arena.Add(new TestObject('T').SetPosition(6, 6));
             arena.Add(new TestObject('E').SetPosition(3, 4));
 
             Children.Add(arena);
-
-            arena.Update();
         }
         public override void Render()
         {
             throw new NotImplementedException();
         }
 
-        private void Process(GameEvent e)
+        protected override void Process(GameEvent e)
         {
             arena.Clear();
             if (e.EventType == EventType.ARENA_MOVE)
@@ -63,8 +61,8 @@ namespace Void.Scene
 
                     foreach(GameObject gameobj in a)
                     {
-                        System.Console.WriteLine(a.ToString());
-                        System.Console.WriteLine("haha jonathan the tostring is broken");
+                        System.Console.WriteLine(gameobj.ToString());
+                        System.Console.WriteLine("haha jonathan the tostring is fixed");
                     }
                 }
             }

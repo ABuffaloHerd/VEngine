@@ -9,6 +9,8 @@ using SadConsole;
 using SadConsole.Entities;
 using Void.Item.Weapon;
 using Void.DataStructures;
+using System.ComponentModel.DataAnnotations;
+using SadConsole.Effects;
 
 namespace Void.Battle
 {
@@ -25,12 +27,26 @@ namespace Void.Battle
         new public string Name { get; protected set; }
         public int Health { get; protected set; }
         public int MaxHealth { get; protected set; }
-        public GameObject(Color foreground, Color background, int glyph) : base(foreground: foreground, background: background, glyph: glyph, zIndex: 0)
+        public int Speed { get; set; }
+
+        private static AnimatedScreenObject PreProcess(Color foreground, Color background, int glyph, int sizeX, int sizeY)
+        {
+            var returnme = new AnimatedScreenObject("entity", sizeX, sizeY);
+
+            var frame = returnme.CreateFrame();
+            frame[0].Foreground = foreground; 
+            frame[0].Background = background;
+            frame[0].Glyph = glyph;
+            returnme.Repeat = true;
+
+            return returnme;
+        }
+        public GameObject(Color foreground, Color background, int glyph) : base(PreProcess(foreground, background, glyph, 1, 1), zIndex: 0)
         {
             Position = new(0, 0);
             ID = Guid.NewGuid();
-            AnimatedAppearanceComponent animatedAppearanceComponent = null;
             Alignment = Alignment.NEUTRAL;
+            Speed = 100;
         }
 
         public GameObject SetPosition(int x, int y)
@@ -51,7 +67,24 @@ namespace Void.Battle
             return Name;
         }
 
+        public void SetBlinker(bool state)
+        {
+            // if true, change this cell's appearance to an animated blinking one
+            if (state)
+            {
+
+            }
+        }
+
         public abstract Pattern GetRange();
+
+        public class SpeedComparer : IComparer<GameObject>
+        {
+            public int Compare(GameObject x, GameObject y)
+            {
+                return x!.Speed - y!.Speed;
+            }
+        }
     }
 
     //public class MeleeCharacter : GameObject

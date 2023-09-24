@@ -15,10 +15,10 @@ namespace Void.DataStructures
     public class Grid
     {
         // this contains references to all objects for easy tracking
-        public HashSet<GameObject> AllObjects;
+        private HashSet<GameObject> allObjects;
         private GameObject?[,] objects;
 
-        private int x, y;
+        private readonly int x, y;
 
         public GameObject? this[int i, int j]
         {
@@ -31,8 +31,7 @@ namespace Void.DataStructures
             {
                 objects[i, j] = value;
 
-                if (value != null) AllObjects.Add(value);
-                else AllObjects.Remove(value);
+                if (value != null) allObjects.Add(value);
             }
         }
 
@@ -42,12 +41,12 @@ namespace Void.DataStructures
             {
                 return objects[p.X, p.Y];
             }
+
             set
             {
                 objects[p.X, p.Y] = value;
 
-                if (value != null) AllObjects.Add(value);
-                else AllObjects.Remove(value);
+                if (value != null) allObjects.Add(value);
             }
         }
 
@@ -57,7 +56,7 @@ namespace Void.DataStructures
             this.y = y;
             objects = new GameObject[x, y];
 
-            AllObjects = new();
+            allObjects = new();
         }
 
         public Grid(List<GameObject> input, int x, int y) : this(x, y) 
@@ -89,6 +88,16 @@ namespace Void.DataStructures
         public void Clear()
         {
             objects = new GameObject[x, y];
+            allObjects = new();
+        }
+
+        public bool Add(GameObject obj)
+        {
+            if (this[obj.Position] != null) return false;
+            if (allObjects.Contains(obj)) return false;
+
+            this[obj.Position] = obj;
+            return allObjects.Add(obj);
         }
     }
 }
