@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Void.DataStructures;
 using Void.UI;
 
+// TODO: fix funny fart variable names
 namespace Void.Battle
 {
     // The arena object keeps track of all entities and their states. 
@@ -18,6 +19,7 @@ namespace Void.Battle
     {
         private HashSet<GameObject> objects; // All objects
         private Stack<GameObject> turnStack; // whose turn is it?
+        private Grid tracker; // The position tracker
 
         public GameObject Selected { get; protected set; }
 
@@ -26,6 +28,7 @@ namespace Void.Battle
         public Arena(int width, int height, Color background) : base(width, height)
         {
             objects = new();
+            tracker = new(width, height);
 
             _ = Surface.Fill(background: background);
 
@@ -45,22 +48,22 @@ namespace Void.Battle
                 BlinkOutForegroundColor = Color.Black,
                 // Every half a second
                 BlinkSpeed = TimeSpan.FromMilliseconds(500),
-                RunEffectOnApply = true
+                RunEffectOnApply = true 
             };
 
             foreach (Point p in Selected.GetRange())
             {
+
                 Surface.SetGlyph(p.X + Selected.Position.X, p.Y + Selected.Position.Y, 'X', Color.Yellow);
                 Surface.SetEffect(p.X + Selected.Position.X, p.Y + Selected.Position.Y, blinkingEffect);
 
                 // If there's an entity at this point, set it to blink
-                foreach (var obj in objects)
-                {
-                    if (obj.Position == p + Selected.Position)
-                    {
-                        obj.SetVisualEffect(blinkingEffect);
-                    }
-                }
+                Point posfinal = p + Selected.Position;
+
+                if (tracker[posfinal] != null) continue;
+                if (tracker[posfinal].ID == Selected.ID) continue;
+
+                tracker[posfinal].SetBlinker(true);
             }
         }
 
@@ -73,6 +76,9 @@ namespace Void.Battle
             // when objects are added build the turn stack. TODO: This is another feature entirely.
             List<GameObject> temp = new(objects);
             temp.Sort(new GameObject.SpeedComparer());
+
+            // Sort out the tracker
+            tracker.Index(objects);
 
             turnStack = new(temp);
             Selected = turnStack.Pop();
@@ -97,6 +103,9 @@ namespace Void.Battle
         {
             // Move selected to position
             Selected.Position += position;
+
+            // Update the grid
+            tracker.Index(objects);
         }
 
         // Returns a list of all entites in the currently selected object's range
@@ -113,22 +122,26 @@ namespace Void.Battle
 
                 System.Console.WriteLine("Checking " + cp);
 
-                // Search all objects list
-                foreach(var gameobj in objects)
+                // Search the grid
+                if (tracker[cp.X, cp.Y] != null)
                 {
-                    if (gameobj.Position == cp)
-                    {
-                        // Make sure this isn't the current selected object
-                        if (gameobj.ID != Selected.ID)
-                        {
-                            System.Console.WriteLine("Rangecheck got a hit");
-                            returnme.Add(gameobj);
-                        }
-                    }
+                    System.Console.WriteLine("Found " + tracker[cp.X, cp.Y]);
+                    returnme.Add(tracker[cp.X, cp.Y]);
                 }
             }
 
             return returnme;
+        }
+
+        /// <summary>
+        /// HOW OVERRIDE EXTENSION METHOD
+        /// </summary>
+        public void ResetObjects()
+        {
+            foreach(GameObject obj in objects)
+            {
+                obj.SetBlinker(false);
+            }
         }
     }
 }

@@ -24,23 +24,46 @@ namespace Void.Battle
     {
         public Alignment Alignment { get; set; }
         public Guid ID { get; protected set; }
-        new public string Name { get; protected set; }
+        new public string Name { get; set; }
         public int Health { get; protected set; }
         public int MaxHealth { get; protected set; }
         public int Speed { get; set; }
 
+        /// <summary>
+        /// This function creates the blinking animation for the object
+        /// </summary>
+        /// <param name="foreground">Copied from constructor</param>
+        /// <param name="background">Copied from constructor</param>
+        /// <param name="glyph">Copied from constructor</param>
+        /// <param name="sizeX">Copied from constructor</param>
+        /// <param name="sizeY">Copied from constructor</param>
+        /// <returns></returns>
         private static AnimatedScreenObject PreProcess(Color foreground, Color background, int glyph, int sizeX, int sizeY)
         {
             var returnme = new AnimatedScreenObject("entity", sizeX, sizeY);
+            returnme.AnimationDuration = new TimeSpan(0, 0, 1);
 
             var frame = returnme.CreateFrame();
             frame[0].Foreground = foreground; 
             frame[0].Background = background;
             frame[0].Glyph = glyph;
+
+            frame = returnme.CreateFrame();
+            frame[0].Glyph = glyph;
+            frame[0].Foreground = Color.White;
+            frame[0].Background = Color.White;
+
             returnme.Repeat = true;
 
             return returnme;
         }
+
+        /// <summary>
+        /// Single Cell constructor
+        /// </summary>
+        /// <param name="foreground">Colour</param>
+        /// <param name="background">Colour</param>
+        /// <param name="glyph">Symbol</param>
         public GameObject(Color foreground, Color background, int glyph) : base(PreProcess(foreground, background, glyph, 1, 1), zIndex: 0)
         {
             Position = new(0, 0);
@@ -72,7 +95,15 @@ namespace Void.Battle
             // if true, change this cell's appearance to an animated blinking one
             if (state)
             {
-
+                System.Console.WriteLine("Blinker enabled");
+                AppearanceSurface.Animation.CurrentFrameIndex = 1; // Offset the current frame so that it works in sync with the blinker
+                AppearanceSurface.Animation.Start();
+            }
+            else 
+            {
+                System.Console.WriteLine("Blinker disabled");
+                AppearanceSurface.Animation.Stop();
+                AppearanceSurface.Animation.CurrentFrameIndex = 0; // Reset appearance to default state
             }
         }
 
@@ -107,6 +138,10 @@ namespace Void.Battle
             p.Mark(1, 0);
             p.Mark(2, 0);
             p.Mark(3, 0);
+            p.Mark(0, 1);
+            p.Mark(0, -1);
+            p.Mark(1, 1);
+            p.Mark(1, -1);
             Weapon = new MeleeWeapon(
                 "test sword",
                 10,

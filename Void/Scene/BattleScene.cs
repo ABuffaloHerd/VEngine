@@ -29,7 +29,9 @@ namespace Void.Scene
             Children.Add(controls);
             
             arena = new Arena(90, 50, Color.Black);
-            arena.Add(new TestObject('T').SetPosition(6, 6));
+            GameObject t = new TestObject('T').SetPosition(6, 6);
+            t.Name = "Steven";
+            arena.Add(t);
             arena.Add(new TestObject('E').SetPosition(3, 4));
 
             Children.Add(arena);
@@ -41,10 +43,13 @@ namespace Void.Scene
 
         protected override void Process(GameEvent e)
         {
+            // When a new event is fired, tell the arena to remove all non-entity renders
             arena.Clear();
+            arena.ResetObjects();
+
             if (e.EventType == EventType.ARENA_MOVE)
             {
-                arena.Move(arena.Selected.ID, (Point)e.EventData.Get("move"));
+                arena.Move((Point)e.EventData.Get("move"));
                 System.Console.WriteLine(e.EventData.Get("move"));
             }
 

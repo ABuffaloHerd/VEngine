@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,6 +99,24 @@ namespace Void.DataStructures
 
             this[obj.Position] = obj;
             return allObjects.Add(obj);
+        }
+
+        /// <summary>
+        /// This method indexes all objects in a collection to this grid.
+        /// </summary>
+        /// <param name="input">Input collection</param>
+        /// <returns>Number of objects indexed</returns>
+        public int Index(IEnumerable<GameObject> input)
+        {
+            int count = 0;
+            foreach(GameObject obj in input)
+            {
+                // look at the object's position and put it down on the grid
+                this[obj.Position] = obj;
+                count++;
+            }
+
+            return count;
         }
     }
 }
