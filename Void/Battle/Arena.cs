@@ -60,7 +60,7 @@ namespace Void.Battle
                 // If there's an entity at this point, set it to blink
                 Point posfinal = p + Selected.Position;
 
-                if (tracker[posfinal] != null) continue;
+                if (tracker[posfinal] == null) continue;
                 if (tracker[posfinal].ID == Selected.ID) continue;
 
                 tracker[posfinal].SetBlinker(true);
@@ -82,6 +82,16 @@ namespace Void.Battle
 
             turnStack = new(temp);
             Selected = turnStack.Pop();
+
+            if (Selected is ControllableGameObject)
+            {
+                // Get controls
+                System.Console.WriteLine("Controllable game object selected. Get controls here!");
+            }
+            else
+            {
+                System.Console.WriteLine("NPC selected");
+            }
         }
 
         public void Move(Guid objID, Point position)
@@ -95,8 +105,6 @@ namespace Void.Battle
                     obj.Position += position;
                 }
             }
-
-            System.Console.WriteLine("Arena move");
         }
 
         public void Move(Point position)
@@ -108,10 +116,13 @@ namespace Void.Battle
             tracker.Index(objects);
         }
 
-        // Returns a list of all entites in the currently selected object's range
-        public List<GameObject> InRange()
+        /// <summary>
+        /// Returns a list of all entites in the currently selected object's range
+        /// </summary>
+        /// <param name="controlledobject">Includes the currently selected object if true</param>
+        /// <returns>List of entities in object's range.</returns>
+        public List<GameObject> InRange(bool controlledobject = false)
         {
-            System.Console.WriteLine("arena range check");
             List<GameObject> returnme = new();
             Pattern p = Selected.GetRange();
 
@@ -120,8 +131,6 @@ namespace Void.Battle
                 // Adjust point so that it is relative to selected object's position
                 Point cp = point + Selected.Position;
 
-                System.Console.WriteLine("Checking " + cp);
-
                 // Search the grid
                 if (tracker[cp.X, cp.Y] != null)
                 {
@@ -129,6 +138,8 @@ namespace Void.Battle
                     returnme.Add(tracker[cp.X, cp.Y]);
                 }
             }
+
+            if (!controlledobject) returnme.Remove(Selected);
 
             return returnme;
         }

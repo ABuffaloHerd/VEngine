@@ -72,16 +72,18 @@ namespace Void.Battle
             Speed = 100;
         }
 
+        public GameObject(Animated appearance) : base(appearance, 10)
+        {
+            Position = new(0, 0);
+            ID = Guid.NewGuid();
+            Alignment = Alignment.NEUTRAL;
+            Speed = 100;
+        }
+
         public GameObject SetPosition(int x, int y)
         {
             Position = new(x, y);
 
-            return this;
-        }
-
-        public GameObject SetVisualEffect(SadConsole.Effects.ICellEffect effect)
-        {
-            System.Console.WriteLine("This object should be blinking");
             return this;
         }
 

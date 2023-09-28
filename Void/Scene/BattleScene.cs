@@ -32,6 +32,11 @@ namespace Void.Scene
             GameObject t = new TestObject('T').SetPosition(6, 6);
             t.Name = "Steven";
             arena.Add(t);
+
+            GameObject S = new TestObject('S').SetPosition(5, 6);
+            S.Name = "Frank";
+            arena.Add(S);
+
             arena.Add(new TestObject('E').SetPosition(3, 4));
 
             Children.Add(arena);
@@ -50,7 +55,6 @@ namespace Void.Scene
             if (e.EventType == EventType.ARENA_MOVE)
             {
                 arena.Move((Point)e.EventData.Get("move"));
-                System.Console.WriteLine(e.EventData.Get("move"));
             }
 
             if (e.EventType == EventType.IDC)
@@ -67,7 +71,6 @@ namespace Void.Scene
                     foreach(GameObject gameobj in a)
                     {
                         System.Console.WriteLine(gameobj.ToString());
-                        System.Console.WriteLine("haha jonathan the tostring is fixed");
                     }
                 }
             }
@@ -77,6 +80,8 @@ namespace Void.Scene
         {
             public BattleControls(int width, int height) : base(width, height)
             {
+                this.Surface.DefaultBackground = Color.White;
+
                 Button b = new(20)
                 {
                     Text = "Range",
@@ -114,8 +119,6 @@ namespace Void.Scene
                         new(EventType.IDC,
                         new("rangecheck"))
                         );
-
-                    System.Console.WriteLine("Battle scene rangecheck fired");
                 };
 
                 Controls.Add(b);
