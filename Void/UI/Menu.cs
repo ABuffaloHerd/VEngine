@@ -13,7 +13,7 @@ namespace Void.UI
     // This is a simple menu class that prints out events.
     public class Menu : BaseMenu
     {
-        public Menu(int width, int height, Dictionary<string, GameEvent> keyValuePairs, string title = "") : base(width, height, title)
+        public Menu(int width, int height, Dictionary<string, IGameEvent> keyValuePairs, string title = "") : base(width, height, title)
         {
             foreach(var kvp in keyValuePairs)
             {

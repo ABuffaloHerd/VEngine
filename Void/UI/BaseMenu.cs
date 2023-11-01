@@ -8,9 +8,9 @@ namespace Void.UI
 {
     public abstract class BaseMenu : ControlsConsole, IRenderable
     {
-        public event Action<GameEvent> Callback;
+        public event Action<IGameEvent> Callback;
 
-        protected Dictionary<string, GameEvent> menuOptions;
+        protected Dictionary<string, IGameEvent> menuOptions;
         protected GameManager gmInstance;
 
         public BaseMenu(int width, int height, string title = "") : base(width, height)
@@ -19,7 +19,7 @@ namespace Void.UI
             gmInstance = GameManager.Instance;
         }
 
-        public void Insert(string key, GameEvent value)
+        public void Insert(string key, IGameEvent value)
         {
             menuOptions.Add(key, value);
         }
@@ -32,7 +32,7 @@ namespace Void.UI
             base.Update(delta);
         }
 
-        protected virtual void OnCallback(GameEvent e)
+        protected virtual void OnCallback(IGameEvent e)
         {
             Callback?.Invoke(e);
         }

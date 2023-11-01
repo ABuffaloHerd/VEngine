@@ -14,7 +14,7 @@ namespace Void.Scene
 {
     // generic battle scene
     // contains the map object
-    public class BattleScene : BaseScene
+    public class BattleScene : Scene
     {
         private BattleControls controls;
         private Arena arena;
@@ -46,7 +46,7 @@ namespace Void.Scene
             throw new NotImplementedException();
         }
 
-        protected override void Process(GameEvent e)
+        protected override void Process(IGameEvent e)
         {
             // When a new event is fired, tell the arena to remove all non-entity renders
             arena.Clear();
@@ -54,17 +54,17 @@ namespace Void.Scene
 
             if (e.EventType == EventType.ARENA_MOVE)
             {
-                arena.Move((Point)e.EventData.Get("move"));
+                arena.Move(e.GetData<Point>("move"));
             }
 
             if (e.EventType == EventType.IDC)
             {
-                if (e.EventData.Contains("range"))
+                if (e.ContainsValue("range"))
                 {
                     arena.Mark();
                 }
 
-                if(e.EventData.Contains("rangecheck"))
+                if(e.EventData.ContainsValue("rangecheck"))
                 {
                     var a = arena.InRange();
 

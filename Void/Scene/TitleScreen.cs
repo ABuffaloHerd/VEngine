@@ -9,7 +9,7 @@ using Void.UI;
 
 namespace Void.Scene
 {
-    public class TitleScreen : BaseScene
+    public class TitleScreen : Scene
     {
         private Menu mainMenu;
         public TitleScreen()
@@ -30,7 +30,7 @@ namespace Void.Scene
 
             Children.Add(title);
 
-            Dictionary<string, GameEvent> menuOptions = new();
+            Dictionary<string, IGameEvent> menuOptions = new();
             menuOptions.Add("Start", new(EventType.NEW_GAME, new("newgame")));
             menuOptions.Add("Options", new(EventType.LOAD_GAME, new("loadgame")));
             menuOptions.Add("Debug", new(EventType.DEBUG, new("debug_scene")));

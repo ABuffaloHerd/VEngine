@@ -10,6 +10,11 @@ namespace Void.Battle
     public interface IControllable
     {
         ControlsConsole GetControls();
+    }
 
+    public interface IMovable
+    {
+        void Move(Point delta);
+        void Backdash(Point delta);
     }
 }

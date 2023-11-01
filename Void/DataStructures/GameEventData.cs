@@ -26,19 +26,23 @@ namespace Void.DataStructures
             Add(key, value);
         }
 
-        public void Add(string key, object value)
+        public GameEventData Add(string key, object value)
         {
             data.Add(key, value);
+
+            return this;
         }
 
-        public void Set(string key, object value)
+        public GameEventData Set(string key, object value)
         {
             data[key] = value;
+
+            return this;
         }
 
-        public object Get(string key)
+        public T Get<T>(string key)
         {
-            return data[key];
+            return (T)data[key];
         }
 
         public bool ContainsKey(string key)
@@ -46,7 +50,7 @@ namespace Void.DataStructures
             return data.ContainsKey(key);
         }
 
-        public bool Contains(object thing)
+        public bool ContainsValue(object thing)
         {
             foreach(var kvp in data)
             {

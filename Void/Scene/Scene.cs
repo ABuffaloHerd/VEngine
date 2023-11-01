@@ -10,14 +10,14 @@ using Void.Event;
 namespace Void.Scene
 {
     // represents a collection of IScreenObjects and menus
-    public abstract class BaseScene : ScreenSurface, IRenderable
+    public abstract class Scene : ScreenSurface, IRenderable
     {
         public SceneType SceneType { get; protected set; }
 
         // processes child events
-        protected Action<GameEvent> callback;
+        protected Action<IGameEvent> callback;
         protected GameManager gmInstance;
-        public BaseScene() : base(GameManager.Instance.Width, GameManager.Instance.Height)
+        public Scene() : base(GameManager.Instance.Width, GameManager.Instance.Height)
         {
             Position = new(0, 0);
             gmInstance = GameManager.Instance;
@@ -26,12 +26,12 @@ namespace Void.Scene
         }
 
         public abstract void Render();
-        public virtual void Raise(GameEvent e)
+        public virtual void Raise(IGameEvent e)
         {
             callback?.Invoke(e);
         }
 
-        protected virtual void Process(GameEvent e)
+        protected virtual void Process(IGameEvent e)
         {
             return;
         }

@@ -9,7 +9,7 @@ using Void.Item.Weapon;
 
 namespace Void.Battle
 {
-    public abstract class ControllableGameObject : GameObject, IControllable
+    public abstract class ControllableGameObject : GameObject, IControllable, IMovable
     {
         protected CharacterControls Controls;
 
@@ -27,6 +27,16 @@ namespace Void.Battle
         {
             return Controls;
         }
+
+        public virtual void Backdash(Point delta)
+        {
+            this.Position.Add(delta);
+        }
+        public virtual void Move(Point delta)
+        {
+            this.Position.Add(delta);
+        }
+
     }
 
     public class TestControllableGameObject : ControllableGameObject

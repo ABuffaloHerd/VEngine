@@ -11,7 +11,7 @@ namespace Void.Battle
 {
     public class CharacterControls : ControlsConsole
     {
-        public Action<GameEvent> Callback;
+        public Action<IGameEvent> Callback;
 
         public CharacterControls(int width, int height, string name) : base(width, height)
         {

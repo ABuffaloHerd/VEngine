@@ -43,7 +43,7 @@ namespace Void
             Children.Add(new TitleScreen());
         }
 
-        private void SwitchScene(BaseScene newScene)
+        private void SwitchScene(Scene.Scene newScene)
         {
             Children.Clear();
             Children.Add(newScene);

@@ -10,21 +10,21 @@ namespace Void
 {
     public partial class GameManager
     {
-        public event Action<GameEvent> Event;
+        public event Action<IGameEvent> Event;
         private GameState state;
         public override void Update(TimeSpan delta)
         {
             base.Update(delta);
         }
 
-        public void Raise(GameEvent e)
+        public void Raise(IGameEvent e)
         {
             Event.Invoke(e);
         }
-        public void Process(GameEvent e)
+        public void Process(IGameEvent e)
         {
             System.Console.WriteLine("=== GAMEMANAGER HAS RECEIVED GAME EVENT ===");
-            System.Console.WriteLine($"Event Type: {e.EventType}, Event Data: {e.EventData}");
+            System.Console.WriteLine(e.ToString());
 
             switch(e.EventType)
             {
@@ -35,7 +35,7 @@ namespace Void
                     break;
 
                 case EventType.CHANGE_MENU:
-                    if(e.EventData.Get("data").Equals("title"))
+                    if(e.Contains("data").Equals("title"))
                     {
                         System.Console.WriteLine("Title return");
                         state = GameState.MAINMENU;
@@ -43,7 +43,7 @@ namespace Void
                     }
                     break;
                 case EventType.DEBUG:
-                    if(e.EventData.Contains("debug_scene"))
+                    if(e.Contains("debug_scene"))
                     {
                         state = GameState.MAP;
                         SwitchScene(new DebugScene());
@@ -51,7 +51,7 @@ namespace Void
                     break;
 
                 case EventType.CHANGE_SCENE:
-                    if (e.EventData.Contains("arena"))
+                    if (e.Contains("arena"))
                     {
                         System.Console.WriteLine("Arena testing!");
                         state = GameState.BATTLE;

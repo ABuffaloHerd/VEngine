@@ -8,7 +8,7 @@ using Void.DataStructures;
 
 namespace Void.Scene
 {
-    public class DebugScene : BaseScene
+    public class DebugScene : Scene
     {
         // put code in the constructor to use as console output for testing
         public DebugScene()

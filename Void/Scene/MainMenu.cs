@@ -11,7 +11,7 @@ using Void.UI;
 
 namespace Void.Scene;
 
-public partial class MainMenu : BaseScene
+public partial class MainMenu : Scene
 {
     private ListBoxMenu menu;
     private Console title;
@@ -20,14 +20,15 @@ public partial class MainMenu : BaseScene
     {
         SceneType = SceneType.MENU;
 
-        Dictionary<string, GameEvent> options = new()
+        Dictionary<string, IGameEvent> options = new()
         {
-            { "Story",              new(EventType.IDC, new("story")) },
-            { "Paradox Simulation", new(EventType.IDC, new("paradox")) },
-            { "Arena",              new(EventType.IDC, new("arena")) },
-            { "Battle test",        new(EventType.IDC, new("test_battle")) },
-            { "Back",               new(EventType.CHANGE_MENU,  new("title")) }
+            { "Story",              new SceneEvent("story") },
+            { "Paradox Simulation", new SceneEvent("paradox") },
+            { "Arena",              new SceneEvent("arena") },
+            { "Battle test",        new SceneEvent("test_battle") },
+            { "Back",               new SceneEvent("title") }
         };
+
         menu = new(40, 40, options)
         {
             Position = new(0, 3)
@@ -59,7 +60,7 @@ public partial class MainMenu : BaseScene
         Children.Add(display);
     }
 
-    protected override void Process(GameEvent e)
+    protected override void Process(IGameEvent e)
     {
         System.Console.WriteLine("Main menu scene has received a game event");
         System.Console.WriteLine(e.ToString());
@@ -67,21 +68,22 @@ public partial class MainMenu : BaseScene
         // Handle switching back to the title by offloading it to the game manager.
         if (e.EventType == EventType.CHANGE_MENU)
         {
-            if (e.EventData.Contains("title"))
+            if (e.Contains("title"))
             {
-                gmInstance.Raise(new(EventType.CHANGE_MENU, new("title")));
+                GameEvent @event = new GameEvent(EventType.CHANGE_MENU);
+                gmInstance.Raise(@event);
             }
         }
 
-        if (e.EventData.Contains("story"))
+        if (e.Contains("story"))
         {
             display = new StoryDisplay();
         }
-        else if (e.EventData.Contains("paradox"))
+        else if (e.Contains("paradox"))
         {
             display = new ParadoxSimulationDisplay(Process);
         }
-        else if (e.EventData.Contains("arena"))
+        else if (e.Contains("arena"))
         {
             if (e.EventType == EventType.IDC)
                 display = new ArenaDisplay(Process);

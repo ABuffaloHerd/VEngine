@@ -64,7 +64,7 @@ public partial class MainMenu
         private CharacterMenu characterSelection;
         private Console? c; // inner display
 
-        public ParadoxSimulationDisplay(Action<GameEvent> callback) : base(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        public ParadoxSimulationDisplay(Action<IGameEvent> callback) : base(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         {
             UseMouse = false;
             Cursor.IsVisible = true;
@@ -114,29 +114,29 @@ public partial class MainMenu
             new Border(this, borderParameters);
         }
 
-        private void Process(GameEvent e)
+        private void Process(IGameEvent e)
         {
-            if(e.EventData.Contains("saki"))
+            if(e.EventData.ContainsValue("saki"))
             {
                 PrintScenarioDetails("saki");
             }
-            else if (e.EventData.Contains("hirina"))
+            else if (e.EventData.ContainsValue("hirina"))
             {
                 PrintScenarioDetails("hirina");
             }
-            else if (e.EventData.Contains("mariah"))
+            else if (e.EventData.ContainsValue("mariah"))
             {
                 PrintScenarioDetails("mariah");
             }
-            else if(e.EventData.Contains("luna"))
+            else if(e.EventData.ContainsValue("luna"))
             {
                 PrintScenarioDetails("luna");
             }
-            else if (e.EventData.Contains("minako"))
+            else if (e.EventData.ContainsValue("minako"))
             {
                 PrintScenarioDetails("minako");
             }
-            else if (e.EventData.Contains("lianna"))
+            else if (e.EventData.ContainsValue("lianna"))
             {
                 PrintScenarioDetails("lianna");
             }
@@ -216,7 +216,7 @@ public partial class MainMenu
 
         private class CharacterMenu : BaseMenu
         {
-            private Dictionary<string, GameEvent> options;
+            private Dictionary<string, IGameEvent> options;
             private const int wide = 15;
             public CharacterMenu() : base(wide, 20, "Characters")
             {
@@ -259,7 +259,7 @@ public partial class MainMenu
 
     private class ArenaDisplay : ControlsConsole
     {
-        public ArenaDisplay(Action<GameEvent> callback) : base(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        public ArenaDisplay(Action<IGameEvent> callback) : base(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         {
             Position = DEFAULT_POSITION;
 
@@ -267,7 +267,7 @@ public partial class MainMenu
             b.Text = "Start";
             b.Click += (e, a) =>
             {
-                GameEvent @event = new(EventType.CHANGE_SCENE, new("arena"));
+                IGameEvent @event = new(EventType.CHANGE_SCENE, new("arena"));
                 callback.Invoke(@event);
             };
 

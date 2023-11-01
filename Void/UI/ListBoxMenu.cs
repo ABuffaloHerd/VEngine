@@ -13,7 +13,7 @@ namespace Void.UI
     {
         private int height;
         private int width;
-        public ListBoxMenu(int width, int height, Dictionary<string, GameEvent> keyValuePairs, string title = "") : base(width, height, keyValuePairs, title)
+        public ListBoxMenu(int width, int height, Dictionary<string, IGameEvent> keyValuePairs, string title = "") : base(width, height, keyValuePairs, title)
         {
             this.height = keyValuePairs.Count;
             this.width = width;
@@ -22,6 +22,7 @@ namespace Void.UI
 
         public override void Render()
         {
+            // rendering
             ListBox lb = new(30, this.height + 2)
             {
                 DrawBorder = true,
@@ -36,7 +37,6 @@ namespace Void.UI
 
             lb.SelectedItemChanged += (s, a) =>
             {
-                //gmInstance.Raise(menuOptions[lb.SelectedItem.ToString()]);
                 OnCallback(menuOptions[lb.SelectedItem.ToString()]);
             };
 
