@@ -39,6 +39,9 @@ namespace Void.Event
         T GetData<T>(string key);
     }
 
+    /// <summary>
+    /// Generic game event
+    /// </summary>
     public class GameEvent : IGameEvent
     {
         public EventType EventType { get; private set; }
@@ -73,7 +76,10 @@ namespace Void.Event
         }
     }
 
-    public class SceneEvent : IGameEvent
+    /// <summary>
+    /// Stores a set of keys.
+    /// </summary>
+    public sealed class SceneEvent : IGameEvent
     {
         public EventType EventType { get; private set; }
         private HashSet<object> values;
@@ -104,18 +110,59 @@ namespace Void.Event
         }
     }
 
-    // This class contains only one value
-    public class SingleEvent : IGameEvent
+    /// <summary>
+    /// This event class is a wrapper for a single key value.
+    /// </summary>
+    public sealed class SingleEvent : IGameEvent
     {
         public EventType EventType { get; private set; }
-        private HashSet<object> values;
+        private object value;
 
-        public SingleEvent(EventType type, string data) 
+        public SingleEvent(EventType type, object data) 
         {
             EventType = type;
-            values = new();
+            value = data;
+        }
 
-            values.Add(data);
+        /// <summary>
+        /// This version of the function overwrites the stored data. Be careful!
+        /// </summary>
+        /// <param name="key">Unused</param>
+        /// <param name="value">The value to store in this wrapper class</param>
+        /// <returns></returns>
+        public IGameEvent AddData(string key, object value)
+        {
+            this.value = value;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Tries its best to compare the string key to whatever lies inside this object.
+        /// </summary>
+        /// <param name="key">key to compare</param>
+        /// <returns>Does this object contain what you're looking for?</returns>
+        public bool Contains(string key)
+        {
+            try
+            {
+                return ((string)value).Equals(key);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// It doesn't matter what the key is because it only returns one value
+        /// </summary>
+        /// <typeparam name="T">Type to retrieve</typeparam>
+        /// <param name="key">gibberish</param>
+        /// <returns>Value stored in this object</returns>
+        public T GetData<T>(string key)
+        {
+            return (T)value;
         }
     }
 }
