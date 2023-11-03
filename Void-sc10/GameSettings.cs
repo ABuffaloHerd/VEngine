@@ -1,5 +1,6 @@
-﻿internal static class GameSettings
+﻿public static class GameSettings
 {
-    public const int GAME_WIDTH = 90;
-    public const int GAME_HEIGHT = 30;
+    // Dollar store 1280 x 720
+    public const int GAME_WIDTH = 128;
+    public const int GAME_HEIGHT = 72;
 }

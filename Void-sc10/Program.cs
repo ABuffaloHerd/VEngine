@@ -1,8 +1,10 @@
-﻿Settings.WindowTitle = "My SadConsole Game";
+﻿using VEngine;
+
+Settings.WindowTitle = "VEngine-sc10";
 
 Game.Configuration gameStartup = new Game.Configuration()
     .SetScreenSize(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT)
-    .SetStartingScreen<Void_sc10.Scenes.RootScene>()
+    .SetStartingScreen<VEngine.Scenes.TitleScene>()
     .ConfigureFonts((f) => f.UseCustomFont("Resources/Font/Cheepicus12.font"))
     ;
 
