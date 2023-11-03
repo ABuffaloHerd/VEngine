@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VEngine.Events
 {
+    /// <summary>
+    /// Encapsulates a dictionary under the IGameEvent interface to emulate json
+    /// </summary>
     public class GameEvent : IGameEvent
     {
         private Dictionary<string, object> data;
@@ -54,6 +58,33 @@ namespace VEngine.Events
             }
 
             return sb.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Encapsulates a single string object pair
+    /// </summary>
+    public class SinglePairEvent : IGameEvent
+    {
+        private string key;
+        private object val;
+
+        public IGameEvent AddData(string key, object value)
+        {
+            this.key = key;
+            this.val = value;
+
+            return this;
+        }
+
+        public bool Contains(string key)
+        {
+            return this.key.Equals(key) || this.val.Equals(key);
+        }
+
+        public T GetData<T>(string key)
+        {
+            return (T)val;
         }
     }
 }

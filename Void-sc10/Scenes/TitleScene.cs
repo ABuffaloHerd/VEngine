@@ -25,19 +25,22 @@ namespace VEngine.Scenes
                 RaiseGameEvent(@event);
             };
 
-            ControlsConsole title = new(8, 2)
+            Console title = new(8, 2)
             {
-                FontSize = new(15, 20),
+                FontSize = new(20, 30),
                 Position = new(2, 2)
             };
             title.Print(0, 0, "The Void");
-            title.Controls.Add(b);
+
+            Console menu = new(20, 9)
+            {
+                Position = new(5, 12)
+            };
+            menu.Print(0, 0, "Sample text");
 
             // Add the title console to this object's list of screenobjects
             Children.Add(title);
-
-            // Tell the game manager that this is its current scene
-            gmInstance.ChangeScene(this);
+            Children.Add(menu);
         }
     }
 }

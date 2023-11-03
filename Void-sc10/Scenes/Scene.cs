@@ -23,6 +23,9 @@ namespace VEngine.Scenes
         {
             Position = new(0, 0);
 
+            // Tell the game manager that this is its current scene
+            gmInstance.ChangeScene(this);
+
             // Subscribe to the GameManager's event dispatch to receive events from it.
             gmInstance.Event += ProcessGameEvent;
         }

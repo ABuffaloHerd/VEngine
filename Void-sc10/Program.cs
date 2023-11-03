@@ -1,13 +1,16 @@
 ﻿using VEngine;
+using SadConsole.Configuration;
+using VEngine.Scenes;
 
 Settings.WindowTitle = "VEngine-sc10";
 
-Game.Configuration gameStartup = new Game.Configuration()
-    .SetScreenSize(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT)
-    .SetStartingScreen<VEngine.Scenes.TitleScene>()
-    .ConfigureFonts((f) => f.UseCustomFont("Resources/Font/Cheepicus12.font"))
+Builder startup = new Builder()
+    .SetScreenSize(128, 72)
+    .SetStartingScreen<TitleScene>()
+    .IsStartingScreenFocused(true)
+    .ConfigureFonts((config, game) => config.UseCustomFont("Resources/Font/Cheepicus12.font"))
     ;
 
-Game.Create(gameStartup);
+Game.Create(startup);
 Game.Instance.Run();
 Game.Instance.Dispose();

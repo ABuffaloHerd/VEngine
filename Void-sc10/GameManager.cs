@@ -25,7 +25,7 @@ namespace VEngine
         public event EventHandler<IGameEvent> Event;
 
         private Scene currentScene;
-        public GameManager()
+        private GameManager()
         {
             // Singleton pattern
             if (Instance != null)
