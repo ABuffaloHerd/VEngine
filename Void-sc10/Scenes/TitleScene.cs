@@ -20,7 +20,6 @@ namespace VEngine.Scenes
             };
             b.Click += (s, e) =>
             {
-                System.Console.WriteLine("click");
                 GameEvent @event = new();
                 @event.AddData("test", "Event testing to send event from scene to gamemanager");
                 RaiseGameEvent(@event);

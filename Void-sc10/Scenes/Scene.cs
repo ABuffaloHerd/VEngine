@@ -22,6 +22,9 @@ namespace VEngine.Scenes
         public Scene() : base(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT)
         {
             Position = new(0, 0);
+
+            // Subscribe to the GameManager's event dispatch to receive events from it.
+            gmInstance.Event += ProcessGameEvent;
         }
 
         /// <summary>
@@ -30,8 +33,17 @@ namespace VEngine.Scenes
         /// <param name="e">Event to send</param>
         protected void RaiseGameEvent(IGameEvent e)
         {
-            System.Console.WriteLine("RaiseGameEvent called!");
             RaiseEvent?.Invoke(this, e);
+        }
+        
+        /// <summary>
+        /// Processes a game event sent from the game manager
+        /// </summary>
+        /// <param name="e">Event to process</param>
+        protected void ProcessGameEvent(object sender, IGameEvent e)
+        {
+            System.Console.WriteLine("Scene has received an event!");
+            System.Console.WriteLine(e.ToString());
         }
     }
 }

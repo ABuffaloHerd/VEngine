@@ -19,7 +19,8 @@ namespace VEngine
         public static GameManager Instance { get; } = new();
 
         /// <summary>
-        /// Global event manager. Triggered when a class calls RaiseEvent()
+        /// Global event dispatcher.
+        /// Classes subscribe to this event to receive events from the game manager.
         /// </summary>
         public event EventHandler<IGameEvent> Event;
 
@@ -72,6 +73,11 @@ namespace VEngine
             if(e is GameEvent)
             {
                 System.Console.WriteLine(e.ToString());
+
+                // Send a sanity check event
+                GameEvent ev = new();
+                ev.AddData("test 2", "gamemanager to scene");
+                Event.Invoke(this, ev);
             }
         }
     }
