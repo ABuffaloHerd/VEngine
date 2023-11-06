@@ -13,7 +13,7 @@ namespace VEngine.Scenes
     {
         public TitleScene()
         {
-            Button b = new(6)
+            Button b = new(20)
             {
                 Text = "qwerty",
                 Position = new(0, 1)
@@ -25,18 +25,46 @@ namespace VEngine.Scenes
                 RaiseGameEvent(@event);
             };
 
+            Button b2 = new(20)
+            {
+                Text = "Change Scene",
+                Position = new(0, 2)
+            };
+            b2.Click += (s, e) =>
+            {
+                SceneChangeEvent @event = new();
+                @event.AddData("change_scene", "test_scene");
+                RaiseGameEvent(@event);
+            };
+
+            Button b3 = new(20)
+            {
+                Text = "Scenario",
+                Position = new(0, 3)
+            };
+            b3.Click += (s, e) =>
+            {
+                SceneChangeEvent @event = new();
+                @event.AddData("change_scene", "scenario_select");
+                RaiseGameEvent(@event);
+            };
+
             Console title = new(8, 2)
             {
                 FontSize = new(20, 30),
                 Position = new(2, 2)
             };
             title.Print(0, 0, "The Void");
+            
 
-            Console menu = new(20, 9)
+            ControlsConsole menu = new(20, 9)
             {
                 Position = new(5, 12)
             };
-            menu.Print(0, 0, "Sample text");
+            menu.Controls.Add(b);
+            menu.Controls.Add(b2);
+            menu.Controls.Add(b3);
+            Border.CreateForSurface(menu, "Main Menu");
 
             // Add the title console to this object's list of screenobjects
             Children.Add(title);

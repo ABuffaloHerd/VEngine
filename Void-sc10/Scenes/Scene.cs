@@ -9,6 +9,9 @@ using VEngine.Events;
 
 namespace VEngine.Scenes
 {
+    /// <summary>
+    /// Usage: Make consoles as needed and call Children.Add(console) in derived classes.
+    /// </summary>
     public abstract class Scene : ScreenSurface
     {
         // Local copy of reference to game manager. 
@@ -24,7 +27,7 @@ namespace VEngine.Scenes
             Position = new(0, 0);
 
             // Tell the game manager that this is its current scene
-            gmInstance.ChangeScene(this);
+            gmInstance.HandleSceneChange(this);
 
             // Subscribe to the GameManager's event dispatch to receive events from it.
             gmInstance.Event += ProcessGameEvent;
@@ -38,15 +41,16 @@ namespace VEngine.Scenes
         {
             RaiseEvent?.Invoke(this, e);
         }
-        
+
         /// <summary>
-        /// Processes a game event sent from the game manager
+        /// Processes a game event sent from the game manager.
+        /// Intended for battle interactions
         /// </summary>
         /// <param name="e">Event to process</param>
-        protected void ProcessGameEvent(object sender, IGameEvent e)
+        protected virtual void ProcessGameEvent(object sender, IGameEvent e)
         {
-            System.Console.WriteLine("Scene has received an event!");
-            System.Console.WriteLine(e.ToString());
+            System.Console.WriteLine("Warning: Scene.ProcessGameEvent should only be used in a battle scenario and should be overridden.");
         }
+
     }
 }

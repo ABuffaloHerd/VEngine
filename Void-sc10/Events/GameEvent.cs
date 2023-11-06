@@ -14,6 +14,8 @@ namespace VEngine.Events
     {
         private Dictionary<string, object> data;
 
+        public virtual EventTarget Target => EventTarget.GAME_MANAGER;
+
         public GameEvent(Dictionary<string, object> data)
         {
             this.data = data;
@@ -69,6 +71,8 @@ namespace VEngine.Events
         private string key;
         private object val;
 
+        public virtual EventTarget Target => EventTarget.GAME_MANAGER;
+
         public IGameEvent AddData(string key, object value)
         {
             this.key = key;
@@ -86,5 +90,11 @@ namespace VEngine.Events
         {
             return (T)val;
         }
+    }
+
+    public class SceneChangeEvent : GameEvent
+    {
+        public string TargetScene;
+        public override EventTarget Target => EventTarget.SCENE_MANAGER;
     }
 }

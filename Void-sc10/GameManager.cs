@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Events;
+using VEngine.Logging;
 using VEngine.Scenes;
 
 namespace VEngine
@@ -24,12 +25,14 @@ namespace VEngine
         /// </summary>
         public event EventHandler<IGameEvent> Event;
 
-        private Scene currentScene;
         private GameManager()
         {
             // Singleton pattern
             if (Instance != null)
                 throw new Exception("Only one GameManager instance allowed");
+
+            // Subscribe to the scene manager's scene change event
+            SceneManager.Instance.OnSceneChanged += HandleSceneChange;
 
             System.Console.WriteLine("GameManager initialized!");
         }
@@ -38,7 +41,7 @@ namespace VEngine
         /// Changes scene and properly subscribes and unsubscribes to the correct objects.
         /// </summary>
         /// <param name="newScene">new scene</param>
-        public void ChangeScene(Scene newScene)
+        public void HandleSceneChange(Scene newScene)
         {
             // Unsubscribe from the old scene's event
             Scene currentScene = Game.Instance.Screen as Scene;
@@ -47,37 +50,39 @@ namespace VEngine
                 currentScene.RaiseEvent -= ProcessEvent;
             }
 
-            // Change the scene
-            Game.Instance.Screen = newScene;
-
             // Subscribe to the new scene's event
             newScene.RaiseEvent += ProcessEvent;
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new();
-
-            sb.Append($"GameState : {State}");
-
-            return sb.ToString();
+            return "GameManager";
         }
 
         /// <summary>
         /// Processes an incoming game event, sent by a scene via the RaiseEvent event property.
+        /// Game events should be dispatched to the correct manager.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event args</param>
         private void ProcessEvent(object sender, IGameEvent e)
         {
-            if(e is GameEvent)
+            // Choose which manager to forward events to
+            switch(e.Target)
             {
-                System.Console.WriteLine(e.ToString());
+                case EventTarget.SCENE_MANAGER:
+                    // send to scene manager
+                    Logger.Report(this, "Forwarded event to Scene Manager!");
+                    SceneManager.Instance.HandleEvent(e);
+                    break;
 
-                // Send a sanity check event
-                GameEvent ev = new();
-                ev.AddData("test 2", "gamemanager to scene");
-                Event.Invoke(this, ev);
+                case EventTarget.CHARA_MANAGER:
+                    // send to character manager
+                    break;
+
+                default:
+                    // it belongs here. do nothing.
+                    break;
             }
         }
     }
