@@ -365,3 +365,23 @@ FodyWeavers.xsd
 /Void/Void.csproj
 
 /Void
+/Examples/Examples.csproj
+/Examples/RootScene.cs
+/Examples/Program.cs
+/Examples/ListDemosScreen.cs
+/Examples/IDemo.cs
+/Examples/GameSettings.cs
+/Examples/DemoSurfaceOpacity.cs
+/Examples/DemoStringParsing.cs
+/Examples/DemoShapes.cs
+/Examples/DemoScrollableConsole.cs
+/Examples/DemoRotated.SFML.cs
+/Examples/DemoRotated.MonoGame.cs
+/Examples/DemoMultipleCursors.cs
+/Examples/DemoLayeredScreenSurface.cs
+/Examples/DemoKeyboardHandlers.cs
+/Examples/DemoEntity.cs
+/Examples/DemoControls2.cs
+/Examples/DemoControls.cs
+/Examples/DemoAutoTyping.cs
+/Examples/app.manifest
