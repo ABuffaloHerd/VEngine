@@ -49,6 +49,18 @@ namespace VEngine.Scenes
                 RaiseGameEvent(@event);
             };
 
+            Button b4 = new(20)
+            {
+                Text = "Arena Layout",
+                Position = new(0, 4)
+            };
+            b4.Click += (s, e) =>
+            {
+                SceneChangeEvent @event = new();
+                @event.AddData("change_scene", "arena_layout");
+                RaiseGameEvent(@event);
+            };
+
             Console title = new(8, 2)
             {
                 FontSize = new(20, 30),
@@ -64,6 +76,7 @@ namespace VEngine.Scenes
             menu.Controls.Add(b);
             menu.Controls.Add(b2);
             menu.Controls.Add(b3);
+            menu.Controls.Add(b4);
             Border.CreateForSurface(menu, "Main Menu");
 
             // Add the title console to this object's list of screenobjects

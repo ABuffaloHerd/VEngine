@@ -42,6 +42,8 @@ namespace VEngine
                     ChangeScene(new TestScene());
                 else if (data.Equals("title"))
                     ChangeScene(new TitleScene());
+                else if (data.Equals("arena_layout"))
+                    ChangeScene(new CombatLayoutScene());
             }
         }
 
