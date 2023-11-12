@@ -5,10 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VEngine.Battle
+namespace VEngine.Objects
 {
     public class GameObject : Entity
     {
+
+
+
+        private List<Effect> effects;
+
+
         /// <summary>
         /// Creates a game object to be used in combat scenarios
         /// </summary>
@@ -19,7 +25,15 @@ namespace VEngine.Battle
         /// <param name="zIndex"></param>
         public GameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
         {
+            effects = new();
+        }
 
+        public virtual void Update()
+        {
+            foreach(Effect ef in effects)
+            {
+                ef.Apply(this);
+            }
         }
     }
 }

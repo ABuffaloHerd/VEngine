@@ -22,10 +22,6 @@
     <PackageReference Include="SadConsole.Host.MonoGame" Version="10.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entity\" />
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)Resources&quot; &quot;$(TargetDir)Resources&quot; /E /I /Y&#xD;&#xA;" />
   </Target>
