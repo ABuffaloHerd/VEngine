@@ -22,6 +22,12 @@ namespace VEngine.Scenes
             title.Surface.DefaultBackground = Color.HotPink;
             title.Print(0, 0, "TOP TEXT");
 
+            Console bgm = new(32, 1)
+            {
+                Position = new Point(32, 69)
+            };
+            bgm.Print(0, 0, "BGM");
+
             Console arena = new(64, 64)
             {
                 Position = new(32, 4)
@@ -56,12 +62,14 @@ namespace VEngine.Scenes
             new Border(party, b);
 
 
-            Console focus = new(20, 20)
+            Console focus = new(13, 30)
             {
-                Position = new(108, 0)
+                Position = new(114, 1)
             };
             focus.Surface.DefaultBackground = Color.AnsiBlue;
-            focus.Print(7, 10, "Focus");
+            focus.Print(0, 0, "Focus");
+            b = Border.BorderParameters.GetDefault().AddTitle("FOCUS");
+            new Border(focus, b);
 
             ControlsConsole fightFeed = new(29, 38)
             {
@@ -69,13 +77,23 @@ namespace VEngine.Scenes
             };
             SetupFightFeed(fightFeed);
 
+            Console turnOrder = new(14, 30)
+            {
+                Position = new(98, 1)
+            };
+            b = Border.BorderParameters.GetDefault().AddTitle("TURN");
+            new Border(turnOrder, b);
+            turnOrder.Print(0, 0, "Turn stack");
+
             Children.Add(arena);
             Children.Add(title);
             Children.Add(hud);
             Children.Add(controls);
             Children.Add(party);
             Children.Add(fightFeed);
-            //Children.Add(focus);
+            Children.Add(bgm);
+            Children.Add(turnOrder);
+            Children.Add(focus);
         }
 
         private void SetupSampleHud(ControlsConsole target)
