@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Events;
 using VEngine.Scenes;
+using VEngine.Scenes.Combat;
 
 namespace VEngine
 {
@@ -49,10 +50,14 @@ namespace VEngine
 
         private void ChangeScene(Scene newScene)
         {
+            Scene oldscene = Game.Instance.Screen as Scene;
             Game.Instance.Screen = newScene;
 
             // Trigger the scene change event
             OnSceneChanged?.Invoke(newScene);
+
+            // Dispose of the old scene to stop memory leaks
+            oldscene.Dispose();
         }
     }
 }

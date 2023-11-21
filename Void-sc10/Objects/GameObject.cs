@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using VEngine.Data;
+
 namespace VEngine.Objects
 {
     public class GameObject : Entity
     {
-
-
+        public Stat Speed { get; set; }
 
         private List<Effect> effects;
 

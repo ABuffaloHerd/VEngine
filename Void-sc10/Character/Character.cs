@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Objects;
 
 namespace VEngine.Character
 {
+    // Represents the maximum stats the character can have
     public struct CharacterStats
     {
         int ATK { get; set; } // attack stat added to weapon stats
@@ -19,9 +21,22 @@ namespace VEngine.Character
     }
     public class Character
     {
-        public Character(string name, char glyph) 
-        { 
+        public CharacterStats Stats { get; set; }
+        public string Name { get; set; }
+        public Color Colour { get; set; }
+        public char Glyph { get; set; }
+        public Character(string name, char glyph, Color colour, CharacterStats stats) 
+        {
+            Stats = stats;
 
+            Name = name;
+            Colour = colour;
+            Glyph = glyph;
+        }
+
+        public GameObject ToGameObject()
+        {
+            return null;
         }
     }
 }

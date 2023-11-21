@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadConsole.UI.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,14 @@ namespace VEngine.Objects
 {
     public class PlayerGameObject : GameObject, IControllable
     {
+        public PlayerGameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
+        {
+
+        }
+
+        public List<ControlBase> GetControls()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

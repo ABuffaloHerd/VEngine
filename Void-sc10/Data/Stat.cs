@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace VEngine.Data
 {
-    public struct Stat
+    /// <summary>
+    /// Used for variable stats like HP, MP, SP
+    /// </summary>
+    public struct Stat : IComparer<Stat>
     {
         private int _current;
         private int _max;
@@ -36,6 +39,35 @@ namespace VEngine.Data
         {
             _max = max;
             _current = max;
+        }
+
+        public static bool operator <(Stat lhs, Stat rhs) 
+            => lhs.Current < rhs.Current;        
+
+        public static bool operator >(Stat lhs, Stat rhs)
+            => lhs.Current > rhs.Current;
+
+        public static bool operator >=(Stat lhs, Stat rhs)
+            => lhs.Current >= rhs.Current;
+
+        public static bool operator <=(Stat lhs, Stat rhs)
+            => lhs.Current <= rhs.Current;
+        
+        public static Stat operator ++(Stat stat)
+        {
+            stat.Current++;
+            return stat;
+        }
+
+        public static Stat operator --(Stat stat)
+        {
+            stat.Current--;
+            return stat;
+        }
+
+        public int Compare(Stat x, Stat y)
+        {
+            return x.Current - y.Current;
         }
     }
 }

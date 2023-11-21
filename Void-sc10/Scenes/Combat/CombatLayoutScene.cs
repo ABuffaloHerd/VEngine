@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Events;
 
-namespace VEngine.Scenes
+namespace VEngine.Scenes.Combat
 {
     /// <summary>
     /// Demo scene for combat UI layout
@@ -160,6 +161,21 @@ namespace VEngine.Scenes
             target.Controls.ThemeColors = Colors.CreateSadConsoleBlue();
             var b = Border.BorderParameters.GetDefault().AddTitle("CONTROLS");
             new Border(target, b);
+        }
+
+        protected override void ProcessGameEvent(object sender, IGameEvent e)
+        {
+            if (e is KeyPressedEvent)
+            {
+                KeyPressedEvent kp = e as KeyPressedEvent;
+
+                if(kp.Key == 'q')
+                {
+                    SceneChangeEvent sc = new("title");
+
+                    RaiseGameEvent(sc);
+                }
+            }
         }
     }
 }

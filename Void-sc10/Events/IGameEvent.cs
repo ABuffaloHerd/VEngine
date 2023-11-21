@@ -13,7 +13,9 @@ namespace VEngine.Events
     {
         GAME_MANAGER,
         SCENE_MANAGER,
-        CHARA_MANAGER
+        CHARA_MANAGER,
+        CURRENT_SCENE,
+        GLOBAL // send to everyone
     }
 
     public interface IGameEvent

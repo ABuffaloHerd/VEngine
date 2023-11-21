@@ -25,6 +25,8 @@ namespace VEngine
         /// </summary>
         public event EventHandler<IGameEvent> Event;
 
+        private Scene currentScene;
+
         private GameManager()
         {
             // Singleton pattern
@@ -52,6 +54,19 @@ namespace VEngine
 
             // Subscribe to the new scene's event
             newScene.RaiseEvent += ProcessEvent;
+
+            // Set currentscene to this current scene
+            this.currentScene = newScene;
+        }
+
+        /// <summary>
+        /// Public method to send game manager an event without subscribing to anything.
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">event</param>
+        public void SendGameEvent(object? sender, IGameEvent e)
+        {
+            ProcessEvent(sender, e);
         }
 
         public override string ToString()
@@ -67,6 +82,9 @@ namespace VEngine
         /// <param name="e">Event args</param>
         private void ProcessEvent(object sender, IGameEvent e)
         {
+            if (e is KeyPressedEvent)
+                Logger.Report(this, $"Received keyboard press {((KeyPressedEvent)e).Key}");
+
             // Choose which manager to forward events to
             switch(e.Target)
             {
@@ -74,6 +92,11 @@ namespace VEngine
                     // send to scene manager
                     Logger.Report(this, "Forwarded event to Scene Manager!");
                     SceneManager.Instance.HandleEvent(e);
+                    break;
+
+                case EventTarget.CURRENT_SCENE:
+                    Logger.Report(this, "Forwarded event to current scene!");
+                    Event.Invoke(this, e);
                     break;
 
                 case EventTarget.CHARA_MANAGER:

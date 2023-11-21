@@ -39,5 +39,21 @@ namespace VEngine.Scenes
 
             Children.Add(con);
         }
+
+        protected override void ProcessGameEvent(object sender, IGameEvent e)
+        {
+            if(e is KeyPressedEvent)
+            {
+                KeyPressedEvent kp = e as KeyPressedEvent;
+
+                switch(kp.Key)
+                {
+                    case 'q':
+                        SceneChangeEvent ev = new("title");
+                        RaiseGameEvent(ev);
+                        break;
+                }
+            }
+        }
     }
 }

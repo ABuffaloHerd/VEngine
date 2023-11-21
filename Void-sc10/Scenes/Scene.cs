@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using SadConsole;
 using VEngine.Events;
+using VEngine.Logging;
 
 namespace VEngine.Scenes
 {
@@ -22,6 +23,8 @@ namespace VEngine.Scenes
         // Event to be sent to the game manager. The game manager will subscribe to this event for processing.
         public event EventHandler<IGameEvent> RaiseEvent;
 
+        protected bool disposed = false;
+
         public Scene() : base(GameSettings.GAME_WIDTH, GameSettings.GAME_HEIGHT)
         {
             Position = new(0, 0);
@@ -31,6 +34,11 @@ namespace VEngine.Scenes
 
             // Subscribe to the GameManager's event dispatch to receive events from it.
             gmInstance.Event += ProcessGameEvent;
+        }
+
+        public override string ToString()
+        {
+            return "Scene";
         }
 
         /// <summary>
@@ -52,5 +60,35 @@ namespace VEngine.Scenes
             System.Console.WriteLine("Warning: Scene.ProcessGameEvent should only be used in a battle scenario and should be overridden.");
         }
 
+        new public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            // I don't know what sadconsole does in its disposal so run it.
+            base.Dispose(true);
+
+            if(!disposed)
+            {
+                if(disposing)
+                {
+                    // Tell game manager to unsubscribe from this scene's event
+                    // The garbage collector doesn't like running the finalizer.
+                    gmInstance.Event -= ProcessGameEvent;
+                    Logger.Report(this, "Unsubscribed from GM event");
+                }
+
+                disposed = true;
+            }
+
+        }
+
+        ~Scene()
+        {
+            Dispose(false);
+        }
     }
 }
