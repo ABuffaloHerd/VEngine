@@ -9,7 +9,7 @@ namespace VEngine.Objects
 {
     public class PlayerGameObject : GameObject, IControllable
     {
-        public PlayerGameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
+        public PlayerGameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
 
         }

@@ -41,6 +41,9 @@ namespace VEngine.Data
             _current = max;
         }
 
+        public static explicit operator Stat(int val)
+            => new Stat(val);
+
         public static bool operator <(Stat lhs, Stat rhs) 
             => lhs.Current < rhs.Current;        
 

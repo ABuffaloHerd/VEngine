@@ -11,7 +11,6 @@ namespace VEngine.Scenes
 {
     public class TitleScene : Scene
     {
-        // TODO: REFACTOR EVENTS
         public TitleScene()
         {
             Button b = new(20)
@@ -33,8 +32,7 @@ namespace VEngine.Scenes
             };
             b2.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new();
-                @event.AddData("change_scene", "test_scene");
+                SceneChangeEvent @event = new("test_scene");
                 RaiseGameEvent(@event);
             };
 
@@ -45,8 +43,7 @@ namespace VEngine.Scenes
             };
             b3.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new();
-                @event.AddData("change_scene", "scenario_select");
+                SceneChangeEvent @event = new("scenario_select");
                 RaiseGameEvent(@event);
             };
 
@@ -57,8 +54,7 @@ namespace VEngine.Scenes
             };
             b4.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new();
-                @event.AddData("change_scene", "arena_layout");
+                SceneChangeEvent @event = new("arena_layout");
                 RaiseGameEvent(@event);
             };
 

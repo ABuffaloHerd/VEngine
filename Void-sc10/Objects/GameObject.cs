@@ -12,6 +12,7 @@ namespace VEngine.Objects
     public class GameObject : Entity
     {
         public Stat Speed { get; set; }
+        public Direction Looking { get; set; }
 
         private List<Effect> effects;
 
@@ -24,9 +25,10 @@ namespace VEngine.Objects
         /// of the character class.
         /// </param>
         /// <param name="zIndex"></param>
-        public GameObject(Animated appearance, int zIndex) : base(appearance, zIndex)
+        public GameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
             effects = new();
+            Speed = (Stat)100;
         }
 
         public virtual void Update()

@@ -1,6 +1,7 @@
 ﻿using SadRogue.Primitives.GridViews;
 using System;
 using System.Collections;
+using VEngine.Logging;
 using VEngine.Objects;
 
 namespace VEngine.Scenes.Combat
@@ -37,26 +38,28 @@ namespace VEngine.Scenes.Combat
             Node newNode = new Node(obj);
             Size++;  // Increment size for every new node
 
-            // If the list is empty or the new node has a speed greater than the head
-            if (head == null || newNode.obj.Speed > head.obj.Speed)
+            if (Size == 1)
             {
-                newNode.Next = head;
                 head = newNode;
             }
             else
             {
+                // Go to the end, link, sort
                 Node current = head;
 
-                // Find the node after which the new node is to be inserted
-                while (current.Next != null && current.Next.obj.Speed >= newNode.obj.Speed)
-                {
+                while (current.Next != null)
                     current = current.Next;
-                }
 
-                // Insert the new node
-                newNode.Next = current.Next;
                 current.Next = newNode;
             }
+
+            Sort();
+        }
+
+        public void Enqueue(ICollection<GameObject> collection)
+        {
+            foreach (var obj in collection)
+                Enqueue(obj);
         }
 
         /// <summary>
@@ -66,21 +69,22 @@ namespace VEngine.Scenes.Combat
         {
             if (Size < 2) return;
 
-
+            head = MergeSort(head);
         }
 
         private Node MergeSort(Node node)
         {
+
             // Guard case
-            if (head == null || head.Next == null)
-                return head;
+            if (node == null || node.Next == null)
+                return node;
 
             // recursive halve
             Node half = GetMiddle(node);
             Node mid = half.Next;
             half.Next = null;
 
-            Node left = MergeSort(head);
+            Node left = MergeSort(node);
             Node right = MergeSort(mid);
 
             return MergeNodes(left, right);
@@ -147,20 +151,28 @@ namespace VEngine.Scenes.Combat
             return result;
         }
 
-        // Fast pointer tech
-        private Node GetMiddle(Node head)
+        // fast pointer tech
+        private Node GetMiddle(Node node)
         {
-            if (head.Next == null) return head;
+            if (node == null) return node;
 
-            Node slow = head, fast = head;
-
-            while (fast.Next != null && fast.Next.Next != null)
+            Node slow = node, fast = node.Next;
+            while (fast != null)
             {
-                slow = slow.Next;
-                fast = fast.Next.Next;
+                fast = fast.Next;
+                if (fast != null)
+                {
+                    slow = slow.Next;
+                    fast = fast.Next;
+                }
             }
 
             return slow;
+        }
+
+        public override string ToString()
+        {
+            return "Turn Queue";
         }
 
         public IEnumerator<GameObject> GetEnumerator()
@@ -183,8 +195,8 @@ namespace VEngine.Scenes.Combat
 
             public TurnQueueEnumerator(Node head)
             {
-                current = head;
                 this.head = head;
+                current = null;
             }
 
             public void Dispose()
@@ -194,6 +206,13 @@ namespace VEngine.Scenes.Combat
 
             public bool MoveNext()
             {
+                if (current == null)
+                {
+                    // this is the first call, so set current to head
+                    current = head;
+                    return (current != null);
+                }
+
                 if (current.Next == null) return false;
                 current = current.Next;
                 return true;

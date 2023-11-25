@@ -47,6 +47,7 @@ namespace VEngine.Scenes.Combat
                 .AddTitle("TURN");
 
             new Border(turnOrder, b);
+            turnOrder.Surface.UsePrintProcessor = true;  
         }
 
         private void SetupControls()

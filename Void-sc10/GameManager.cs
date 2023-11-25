@@ -50,10 +50,12 @@ namespace VEngine
             if (currentScene != null)
             {
                 currentScene.RaiseEvent -= ProcessEvent;
+                Logger.Report(this, "Unsubscribed from scene event");
             }
 
             // Subscribe to the new scene's event
             newScene.RaiseEvent += ProcessEvent;
+            Logger.Report(this, "Subscribed to new scene's event");
 
             // Set currentscene to this current scene
             this.currentScene = newScene;
@@ -107,6 +109,11 @@ namespace VEngine
                     // it belongs here. do nothing.
                     break;
             }
+
+            // Case for test events
+            // TODO: remove when finished
+            if(e.Contains("test"))
+                Logger.Report(this, e.ToString());
         }
     }
 

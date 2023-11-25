@@ -91,19 +91,4 @@ namespace VEngine.Events
             return (T)val;
         }
     }
-
-    public class SceneChangeEvent : GameEvent
-    {
-        public string? TargetScene;
-        public override EventTarget Target => EventTarget.SCENE_MANAGER;
-
-        public SceneChangeEvent(string targetScene) : base()
-        {
-            TargetScene = targetScene;
-
-            AddData("change_scene", targetScene);
-        }
-
-        public SceneChangeEvent() { }
-    }
 }

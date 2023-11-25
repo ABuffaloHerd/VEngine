@@ -30,8 +30,7 @@ namespace VEngine.Scenes
             };
             b.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new();
-                @event.AddData("change_scene", "title");
+                SceneChangeEvent @event = new("title");
                 RaiseGameEvent(@event);
             };
 

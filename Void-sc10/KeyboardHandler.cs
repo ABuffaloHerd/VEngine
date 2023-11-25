@@ -25,6 +25,8 @@ namespace VEngine
             RegisterKey(Keys.D, 'd');
 
             RegisterKey(Keys.Q, 'q');
+
+            RegisterKey(Keys.Space, (char)32);
         }
 
         public static void HandleKeyboard(object? sender, GameHost host)

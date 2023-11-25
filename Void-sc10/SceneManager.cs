@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Events;
+using VEngine.Logging;
 using VEngine.Scenes;
 using VEngine.Scenes.Combat;
 
@@ -19,6 +20,15 @@ namespace VEngine
         public event Action<Scene> OnSceneChanged;
 
         private GameManager gmInstance;
+
+        // Register new scenes here //
+        private readonly Dictionary<string, Func<Scene>> sceneFactory = new()
+        {
+            { "test_scene", () => new TestScene() },
+            { "title", () => new TitleScene() },
+            { "arena_layout", () => new CombatLayoutScene() }
+        };
+
         /// <summary>
         /// Handles the changing of scenes so that responsibility is off the GameManager.
         /// </summary>
@@ -34,17 +44,18 @@ namespace VEngine
 
         public void HandleEvent(IGameEvent e)
         {
-            if(e.Contains("change_scene"))
-            {
-                // Find out which scene to change to
+            SceneChangeEvent ev = null;
 
-                string data = e.GetData<string>("change_scene");
-                if (data.Equals("test_scene"))
-                    ChangeScene(new TestScene());
-                else if (data.Equals("title"))
-                    ChangeScene(new TitleScene());
-                else if (data.Equals("arena_layout"))
-                    ChangeScene(new CombatLayoutScene());
+            if (e is SceneChangeEvent)
+                ev = e as SceneChangeEvent;
+
+            if(sceneFactory.TryGetValue(ev.TargetScene, out var func)) 
+            {
+                ChangeScene(func());
+            }
+            else
+            {
+                Logger.Report(this, $"No scene registered under {ev.TargetScene}");
             }
         }
 
