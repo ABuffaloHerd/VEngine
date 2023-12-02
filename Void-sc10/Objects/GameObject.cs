@@ -12,7 +12,9 @@ namespace VEngine.Objects
     public class GameObject : Entity
     {
         public Stat Speed { get; set; }
-        public Direction Looking { get; set; }
+
+        public Stat MoveDist { get; set; }
+        public Data.Direction Looking { get; set; }
 
         private List<Effect> effects;
 
@@ -29,6 +31,14 @@ namespace VEngine.Objects
         {
             effects = new();
             Speed = (Stat)100;
+            MoveDist = (Stat)10;
+        }
+
+        public void Move(Point dest)
+        {
+            if (MoveDist <= 0) return;
+            Position += dest;
+            MoveDist--;
         }
 
         public virtual void Update()

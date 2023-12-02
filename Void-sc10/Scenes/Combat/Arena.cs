@@ -19,20 +19,19 @@ namespace VEngine.Scenes.Combat
             EntityManager = new();
 
             SadComponents.Add(EntityManager);
-
-            //for (int x = 0; x < 64; x++)
-            //{
-            //    for (int y = 0; y < 64; y++)
-            //    {
-            //        Surface.SetForeground(x, y, Color.Gray);
-            //        Surface.SetGlyph(x, y, '+');
-            //    }
-            //}
         }
 
         public void AddEntity(GameObject gameObject)
         {
             EntityManager.Add(gameObject);
+        }
+
+        public void ClearEffects()
+        {
+            foreach(ICellSurface cell in Surface)
+            {
+                Surface.SetEffect(cell, null);
+            }
         }
     }
 }

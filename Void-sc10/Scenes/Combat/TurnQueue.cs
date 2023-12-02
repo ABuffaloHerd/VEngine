@@ -1,6 +1,7 @@
 ﻿using SadRogue.Primitives.GridViews;
 using System;
 using System.Collections;
+using System.Text;
 using VEngine.Logging;
 using VEngine.Objects;
 
@@ -173,6 +174,23 @@ namespace VEngine.Scenes.Combat
         public override string ToString()
         {
             return "Turn Queue";
+        }
+
+        public string Debug()
+        {
+            if (Size < 1) return "";
+
+            StringBuilder sb = new();
+
+            Node n = head;
+            while (n.Next != null)
+            {
+                sb.Append(n.obj.Name + " : " + n.obj.Speed)
+                    .Append(" -> ");
+                n = n.Next;
+            }
+
+            return sb.ToString();
         }
 
         public IEnumerator<GameObject> GetEnumerator()

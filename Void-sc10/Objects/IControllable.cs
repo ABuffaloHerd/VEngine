@@ -14,6 +14,6 @@ namespace VEngine.Objects
         /// Get this object's controls to be added to the scene's controls
         /// </summary>
         /// <returns></returns>
-        List<ControlBase> GetControls();
+        ICollection<ControlBase> GetControls();
     }
 }

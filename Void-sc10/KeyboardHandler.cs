@@ -24,9 +24,17 @@ namespace VEngine
             RegisterKey(Keys.S, 's');
             RegisterKey(Keys.D, 'd');
 
+            RegisterKey(Keys.J, 'j');
             RegisterKey(Keys.Q, 'q');
 
             RegisterKey(Keys.Space, (char)32);
+
+            // Arrow keys
+            RegisterKey(Keys.Up,    (char)38);
+            RegisterKey(Keys.Down,  (char)40);
+            RegisterKey(Keys.Left,  (char)37);
+            RegisterKey(Keys.Right, (char)39);
+
         }
 
         public static void HandleKeyboard(object? sender, GameHost host)

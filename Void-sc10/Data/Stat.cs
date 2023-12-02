@@ -3,16 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Logging;
 
 namespace VEngine.Data
 {
     /// <summary>
     /// Used for variable stats like HP, MP, SP
     /// </summary>
-    public struct Stat : IComparer<Stat>
+    public class Stat : IComparer<Stat>
     {
         private int _current;
         private int _max;
+
+        public bool ResetCurrent
+        {
+            set
+            {
+                if (value) _current = _max;
+            }
+        }
         public int Current
         {
             get => _current;
@@ -41,11 +50,11 @@ namespace VEngine.Data
             _current = max;
         }
 
-        public static explicit operator Stat(int val)
+        public static implicit operator Stat(int val)
             => new Stat(val);
 
-        public static bool operator <(Stat lhs, Stat rhs) 
-            => lhs.Current < rhs.Current;        
+        public static bool operator <(Stat lhs, Stat rhs)
+            => lhs.Current < rhs.Current;
 
         public static bool operator >(Stat lhs, Stat rhs)
             => lhs.Current > rhs.Current;
@@ -55,7 +64,20 @@ namespace VEngine.Data
 
         public static bool operator <=(Stat lhs, Stat rhs)
             => lhs.Current <= rhs.Current;
+
+        public static bool operator <(Stat lhs, int rhs)
+            => lhs.Current < rhs;
         
+        public static bool operator >(Stat lhs, int rhs)
+            => lhs.Current > rhs;
+        
+        public static bool operator <=(Stat lhs, int rhs)
+            => lhs.Current <= rhs;
+
+        public static bool operator >=(Stat lhs, int rhs)
+            => lhs.Current >= rhs;
+
+
         public static Stat operator ++(Stat stat)
         {
             stat.Current++;
@@ -71,6 +93,11 @@ namespace VEngine.Data
         public int Compare(Stat x, Stat y)
         {
             return x.Current - y.Current;
+        }
+
+        public override string ToString()
+        {
+            return _current.ToString();
         }
     }
 }

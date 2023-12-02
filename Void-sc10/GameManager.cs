@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Events;
 using VEngine.Logging;
+using VEngine.Objects;
 using VEngine.Scenes;
 
 namespace VEngine
@@ -106,7 +107,7 @@ namespace VEngine
                     break;
 
                 default:
-                    // it belongs here. do nothing.
+                    // it belongs here. break for further processing
                     break;
             }
 
@@ -114,6 +115,13 @@ namespace VEngine
             // TODO: remove when finished
             if(e.Contains("test"))
                 Logger.Report(this, e.ToString());
+
+            // ===== Special Conditions ===== //
+            // If the source is a controllable game object, send it to the current scene anyway
+            if(sender is IControllable)
+            {
+                Event.Invoke(sender, e);
+            }
         }
     }
 

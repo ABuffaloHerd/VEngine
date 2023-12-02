@@ -11,11 +11,6 @@ namespace VEngine.Scenes.Combat
     {
         private void SetupArena()
         {
-            // Test
-            for (int x = 0; x < 64; x++)
-            {
-                arena.Surface.Print(x, 0, (x % 10).ToString());
-            }
             // i'm not typing border.borderparameters 20 times
             var b = Border.BorderParameters
                 .GetDefault()
@@ -66,6 +61,11 @@ namespace VEngine.Scenes.Combat
                 .AddTitle("HUD");
 
             new Border(hud, b);
+
+            for(int y = 0; y < 40; y++)
+            {
+                hud.Print(0, y, (y % 10).ToString());
+            }
         }
 
         private void SetupParty()

@@ -11,6 +11,8 @@ using VEngine.Events;
 using VEngine.Objects;
 using VEngine.Data;
 using VEngine.Logging;
+using Microsoft.Xna.Framework.Graphics;
+using SadConsole.UI.Controls;
 
 namespace VEngine.Scenes.Combat
 {
@@ -20,11 +22,11 @@ namespace VEngine.Scenes.Combat
         private Console bgm;
         private Console focus;
         private Console turnOrder;
-
+        
         private ControlsConsole controls;
         private ControlsConsole hud;
         private ControlsConsole party;
-        private ControlsConsole fightFeed;
+        private FightFeed fightFeed;
 
         private Arena arena;
 
@@ -51,6 +53,7 @@ namespace VEngine.Scenes.Combat
             gameObjects = new();
             players = new();
 
+            /* ===== Test code ===== */
             AnimatedScreenObject animated = new("test", 1, 1);
             animated.CreateFrame()[0].Glyph = 'T';
 
@@ -73,13 +76,23 @@ namespace VEngine.Scenes.Combat
             test5.Name = "Test 5";
             test5.Speed = (Stat)20;
 
+            AnimatedScreenObject aso = new("Controllable", 1, 1);
+            aso.CreateFrame()[0].Glyph = 'C';
+            PlayerGameObject pgo = new(aso, 2);
+            pgo.Name = "Controllable";
+            pgo.Speed = 250;
+
             AddGameObject(test);
             AddGameObject(test2);
             AddGameObject(test3);
             AddGameObject(test4);
             AddGameObject(test5);
+            AddGameObject(pgo);
 
-            Update();
+            /* ===== End test code ===== */
+
+            // Start the turn
+            OnNextTurn();
         }
 
         public void AddGameObject(GameObject gameObject)
@@ -92,23 +105,33 @@ namespace VEngine.Scenes.Combat
             turn.Sort();
         }
 
+        /// <summary>
+        /// Performs a full update of all elements in this scene
+        /// </summary>
         private void Update()
         {
             Logger.Report(this, "Update!");
+
             // Sort, Pop, Turn, End
 
             /* The sort phase makes appropriate changes to the turn order based on previous events.
              * This means that if an entity's speed is changed in the previous turn, it will be reflected
              * during this phase.
              */
-            turn.Sort();
 
+        }
+
+        /// <summary>
+        /// Runs when it's a new object's turn
+        /// </summary>
+        private void OnNextTurn()
+        {
+            turn.Sort();
 
             /* The Pop phase selects the fastest game object in the queue.
              * If the queue is empty, it is rebuilt during this phase.
              */
             selectedGameObject = turn.Dequeue();
-            UpdateTurnConsole();
 
             // If the turn order is empty, rebuild it.
             if (turn.Size <= 0)
@@ -116,6 +139,39 @@ namespace VEngine.Scenes.Combat
                 Logger.Report(this, "Turnqueue rebuild triggered");
                 turn.Enqueue(gameObjects);
             }
+
+            // Start by updating the hud
+            UpdateHud();
+
+            // And then the turn console
+            UpdateTurnConsole();
+
+            // Reset the controls console
+            SetupControls();
+
+            // Copy in the new controls
+            if (selectedGameObject is IControllable)
+            {
+                IControllable controllable = selectedGameObject as IControllable;
+
+                foreach (ControlBase conhost in controllable.GetControls())
+                {
+                    controls.Controls.Add(conhost);
+                }
+
+                controls.IsEnabled = true;
+            }
+            else
+            {
+                controls.IsEnabled = false;
+                controls.Controls.Clear();
+            }
+
+            // Reset the current object's move value
+            selectedGameObject.MoveDist.ResetCurrent = true;
+
+            // Alert the fight feed
+            fightFeed.Print($"It is now {selectedGameObject.Name}'s turn.");
         }
 
         /// <summary>
@@ -136,34 +192,61 @@ namespace VEngine.Scenes.Combat
             }
         }
 
+        private void UpdateHud()
+        {
+            hud.Clear();
+            hud.Print(0, 0, selectedGameObject.Name);
+            hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
+        }
+
+        private void ProcessKeyEvent(KeyPressedEvent kpe)
+        {
+            switch (kpe.Key)
+            {
+                case 'w':
+                    selectedGameObject.Move(new Point(0, -1));
+                    break;
+
+                case 'a':
+                    selectedGameObject.Move(new Point(-1, 0));
+                    break;
+
+                case 's':
+                    selectedGameObject.Move(new Point(0, 1));
+                    break;
+
+                case 'd':
+                    selectedGameObject.Move(new Point(1, 0));
+                    break;
+
+                case ' ':
+                    OnNextTurn();
+                    break;
+
+                case 'j':
+                    Logger.Report(this, "j pressed");
+                    Pattern p = new();
+                    p.Mark(0, 0);
+                    p.Mark(1, 0);
+                    RenderPattern(p, selectedGameObject.Position);
+                    break;
+            }
+        }
+
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
             if(e is KeyPressedEvent)
             {
-                KeyPressedEvent kp = e as KeyPressedEvent;
-                switch(kp.Key)
-                {
-                    case 'w':
-                        selectedGameObject.Position += new Point(0, -1);
-                        break;
-
-                    case 'a':
-                        selectedGameObject.Position += new Point(-1, 0);
-                        break;
-
-                    case 's':
-                        selectedGameObject.Position += new Point(0, 1);
-                        break;
-
-                    case 'd':
-                        selectedGameObject.Position += new Point(1, 0);
-                        break;
-
-                    case ' ':
-                        Update();
-                        break;
-                }
+                ProcessKeyEvent(e as KeyPressedEvent);
             }
+
+            if(sender is IControllable)
+            {
+                Logger.Report(this, "Received game event from controllable object");
+                fightFeed.Print("A button was pressed");
+            }
+
+            UpdateHud();
         }
     }
 }
