@@ -21,7 +21,6 @@ namespace VEngine.Objects
         private List<Effect> effects;
 
         public event EventHandler<GameEvent> OnAttack;
-        public event EventHandler<GameEvent> OnDamaged;
 
         /// <summary>
         /// Creates a game object to be used in combat scenarios
@@ -78,6 +77,13 @@ namespace VEngine.Objects
         public virtual void TakeDamage(int damage, DamageType type)
         {
             // Damage calculation (defense, res etc)
+
+            CombatEvent damaged = new();
+            damaged.AddData("amount", damage);
+            damaged.AddData("me", this);
+            damaged.Target = EventTarget.CURRENT_SCENE;
+
+            GameManager.Instance.SendGameEvent(this, damaged);
         }
     }
 }

@@ -126,7 +126,7 @@ namespace VEngine.Scenes.Combat
             // This section handles event subscriptions
 
             /**
-             * The following events must be subscribed and unsubscribed from:
+             * The following events must be subscribed and unsubscribed from each turn:
              * - OnMove
              * - OnAttack
              */
@@ -226,9 +226,9 @@ namespace VEngine.Scenes.Combat
         {
             // Get the first target out of the game event
             IEnumerable<GameObject> targets = args.GetData<IEnumerable<GameObject>>("targets");
-            GameObject target = targets.First();
 
-            Logger.Report(sender, $"Attacked {target}");
+            foreach(GameObject target in targets)
+                Logger.Report(sender, $"Attacked {target}");
         }
 
         private void ProcessKeyEvent(KeyPressedEvent kpe)
@@ -281,11 +281,26 @@ namespace VEngine.Scenes.Combat
             }
         }
 
+        private void ProcessCombatEvent(CombatEvent e)
+        {
+            Logger.Report(this, e.ToString());
+            int damage = e.GetData<int>("amount");
+            string thing = e.GetData<GameObject>("me").Name;
+
+            fightFeed.Print($"{thing} took {damage} damage");
+        }
+
+
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
             if(e is KeyPressedEvent)
             {
                 ProcessKeyEvent(e as KeyPressedEvent);
+            }
+
+            if(e is CombatEvent)
+            {
+                ProcessCombatEvent(e as CombatEvent);
             }
 
             if(sender is IControllable)

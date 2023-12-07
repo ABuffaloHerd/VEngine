@@ -19,12 +19,13 @@ namespace VEngine.Scenes.Combat
         /// <summary>
         /// Sends a request to attack and a list of objects to the attacker
         /// </summary>
-        /// <param name="attacker"></param>
-        /// <param name="range"></param>
+        /// <param name="attacker">Attacker</param>
+        /// <param name="range">Which tiles to check (automatically applies offset)</param>
         public void ExecuteAttack(GameObject attacker, Pattern range)
         {
             // From the given range, give possible targets in a collection to the attacker
-            List<GameObject> targets = arena.GetInPattern(range);
+            List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position);
+            targets.Remove(selectedGameObject);
 
             foreach (GameObject target in targets) 
             {

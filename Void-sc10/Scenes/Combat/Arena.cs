@@ -100,7 +100,13 @@ namespace VEngine.Scenes.Combat
             currentPattern = p; //save current pattern
         }
 
-        public List<GameObject> GetInPattern(Pattern p)
+        /// <summary>
+        /// Returns a list of objects found with the given pattern
+        /// </summary>
+        /// <param name="p">pattern</param>
+        /// <param name="offset">offset to shift tile checking by</param>
+        /// <returns></returns>
+        public List<GameObject> GetInPattern(Pattern p, Point offset)
         {
             List<GameObject> list = new();
 
@@ -108,7 +114,7 @@ namespace VEngine.Scenes.Combat
             {
                 // check each point in the index
                 GameObject item;
-                positions.TryGetValue(point, out item);
+                positions.TryGetValue(point + offset, out item);
 
                 if (item == null) continue;
                 else list.Add(item);

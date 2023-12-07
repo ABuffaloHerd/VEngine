@@ -14,8 +14,12 @@ namespace VEngine.Events
     {
         private Dictionary<string, object> data;
 
-        public virtual EventTarget Target => EventTarget.GAME_MANAGER;
-
+        public virtual EventTarget Target
+        {
+            get => target;
+            set => target = value;
+        }
+        protected EventTarget target = EventTarget.GAME_MANAGER;
         public GameEvent(Dictionary<string, object> data)
         {
             this.data = data;
