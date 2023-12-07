@@ -9,9 +9,9 @@ using VEngine.Logging;
 
 namespace VEngine.Objects
 {
-    public class PlayerGameObject : GameObject, IControllable
+    public class ControllableGameObject : GameObject, IControllable
     {
-        public PlayerGameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
+        public ControllableGameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
 
         }
@@ -31,6 +31,11 @@ namespace VEngine.Objects
             controlBases.Add(b);
 
             return controlBases;
+        }
+
+        public override void Attack(IEnumerable<GameObject> targets)
+        {
+            // instead of doing fuck all like the base class, use the weapon object's attack function
         }
     }
 }

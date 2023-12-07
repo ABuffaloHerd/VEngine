@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using VEngine.Data;
+using VEngine.Events;
+using VEngine.Logging;
 
 namespace VEngine.Objects
 {
@@ -18,6 +20,8 @@ namespace VEngine.Objects
 
         private List<Effect> effects;
 
+        public event EventHandler<GameEvent> OnAttack;
+        public event EventHandler<GameEvent> OnDamaged;
 
         /// <summary>
         /// Creates a game object to be used in combat scenarios
@@ -47,6 +51,33 @@ namespace VEngine.Objects
             {
                 ef.Apply(this);
             }
+        }
+
+        public virtual void Attack(IEnumerable<GameObject> targets)
+        {
+            Logger.Report(this, "Attack function triggered");
+
+            // Damage calculation, on attack effects etc
+            foreach(GameObject target in targets)
+            {
+                target.TakeDamage(0, DamageType.NONE);
+            }
+
+            // Trigger the on attack event for subscribers to react
+
+            // === Sample code === //
+            GameEvent attacked = new();
+            attacked.AddData("targets", targets);
+            attacked.AddData("damage", 0);
+            attacked.AddData("total_damage", 0);
+
+            OnAttack(this, attacked);
+
+        }
+
+        public virtual void TakeDamage(int damage, DamageType type)
+        {
+            // Damage calculation (defense, res etc)
         }
     }
 }

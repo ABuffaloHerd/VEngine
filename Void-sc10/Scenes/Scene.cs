@@ -76,7 +76,7 @@ namespace VEngine.Scenes
                 if(disposing)
                 {
                     // Tell game manager to unsubscribe from this scene's event
-                    // The garbage collector doesn't like running the finalizer.
+                    // This fixes a memory leak
                     gmInstance.Event -= ProcessGameEvent;
                     Logger.Report(this, "Unsubscribed from GM event");
                 }

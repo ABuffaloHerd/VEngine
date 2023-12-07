@@ -13,6 +13,7 @@ using VEngine.Data;
 using VEngine.Logging;
 using Microsoft.Xna.Framework.Graphics;
 using SadConsole.UI.Controls;
+using Newtonsoft.Json.Bson;
 
 namespace VEngine.Scenes.Combat
 {
@@ -33,9 +34,11 @@ namespace VEngine.Scenes.Combat
         private TurnQueue turn;
 
         private HashSet<GameObject> gameObjects;
-        private HashSet<PlayerGameObject> players;
+        private HashSet<ControllableGameObject> players;
 
         private GameObject selectedGameObject;
+
+        private HashSet<Action<GameObject>> OnAttackEffects;
 
         public CombatScene() : base()
         {
@@ -77,8 +80,8 @@ namespace VEngine.Scenes.Combat
             test5.Speed = (Stat)20;
 
             AnimatedScreenObject aso = new("Controllable", 1, 1);
-            aso.CreateFrame()[0].Glyph = 'C';
-            PlayerGameObject pgo = new(aso, 2);
+            aso.CreateFrame()[0].Glyph = (char)1;
+            ControllableGameObject pgo = new(aso, 2);
             pgo.Name = "Controllable";
             pgo.Speed = 250;
 
@@ -98,7 +101,7 @@ namespace VEngine.Scenes.Combat
         public void AddGameObject(GameObject gameObject)
         {
             gameObjects.Add(gameObject);
-            arena.EntityManager.Add(gameObject);
+            arena.AddEntity(gameObject);
 
             turn.Enqueue(gameObject);
 
@@ -106,32 +109,42 @@ namespace VEngine.Scenes.Combat
         }
 
         /// <summary>
-        /// Performs a full update of all elements in this scene
-        /// </summary>
-        private void Update()
-        {
-            Logger.Report(this, "Update!");
-
-            // Sort, Pop, Turn, End
-
-            /* The sort phase makes appropriate changes to the turn order based on previous events.
-             * This means that if an entity's speed is changed in the previous turn, it will be reflected
-             * during this phase.
-             */
-
-        }
-
-        /// <summary>
         /// Runs when it's a new object's turn
         /// </summary>
         private void OnNextTurn()
         {
+            // Reset the arena
+            arena.ClearEffects();
+
             turn.Sort();
 
-            /* The Pop phase selects the fastest game object in the queue.
+            /* 
+             * The Pop phase selects the fastest game object in the queue.
              * If the queue is empty, it is rebuilt during this phase.
              */
-            selectedGameObject = turn.Dequeue();
+
+            // This section handles event subscriptions
+
+            /**
+             * The following events must be subscribed and unsubscribed from:
+             * - OnMove
+             * - OnAttack
+             */
+
+            var gameObject = selectedGameObject;
+            if (gameObject == null) 
+            {
+                selectedGameObject = turn.Dequeue();
+            }
+            else
+            {
+                gameObject.PositionChanged -= OnMove;
+                gameObject.OnAttack -= OnAttack;
+                selectedGameObject = turn.Dequeue();
+            }
+
+            selectedGameObject.OnAttack += OnAttack;
+            selectedGameObject.PositionChanged += OnMove;
 
             // If the turn order is empty, rebuild it.
             if (turn.Size <= 0)
@@ -146,13 +159,10 @@ namespace VEngine.Scenes.Combat
             // And then the turn console
             UpdateTurnConsole();
 
-            // Reset the controls console
-            SetupControls();
-
             // Copy in the new controls
             if (selectedGameObject is IControllable)
             {
-                IControllable controllable = selectedGameObject as IControllable;
+                IControllable? controllable = selectedGameObject as IControllable;
 
                 foreach (ControlBase conhost in controllable.GetControls())
                 {
@@ -199,6 +209,28 @@ namespace VEngine.Scenes.Combat
             hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
         }
 
+
+        /// <summary>
+        /// Runs when the current game object has it's position changed.
+        /// </summary>
+        private void OnMove(object? sender, ValueChangedEventArgs<Point> args) 
+        {
+            // If the arena was rendering a pattern rerender it
+            arena.RenderPattern(args.NewValue);
+
+            // tell the arena to update all its positions
+            arena.UpdatePositions();
+        }
+
+        private void OnAttack(object? sender, GameEvent args)
+        {
+            // Get the first target out of the game event
+            IEnumerable<GameObject> targets = args.GetData<IEnumerable<GameObject>>("targets");
+            GameObject target = targets.First();
+
+            Logger.Report(sender, $"Attacked {target}");
+        }
+
         private void ProcessKeyEvent(KeyPressedEvent kpe)
         {
             switch (kpe.Key)
@@ -225,10 +257,26 @@ namespace VEngine.Scenes.Combat
 
                 case 'j':
                     Logger.Report(this, "j pressed");
-                    Pattern p = new();
-                    p.Mark(0, 0);
-                    p.Mark(1, 0);
-                    RenderPattern(p, selectedGameObject.Position);
+                    if(arena.HasCachedPattern)
+                    {
+                        arena.RenderPattern(selectedGameObject.Position);
+                    }
+                    else
+                    {
+                        Pattern p = new();
+                        p.Mark(0, 0);
+                        p.Mark(1, 0);
+                        arena.RenderPattern(p, selectedGameObject.Position);
+                    }
+
+                    break;
+
+                case 'l':
+                    Pattern p2 = new();
+                    p2.Mark(0, 0);
+                    p2.Mark(1, 0);
+                    ExecuteAttack(selectedGameObject, p2);
+
                     break;
             }
         }

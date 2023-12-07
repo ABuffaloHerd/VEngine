@@ -26,6 +26,7 @@ namespace VEngine
 
             RegisterKey(Keys.J, 'j');
             RegisterKey(Keys.Q, 'q');
+            RegisterKey(Keys.L, 'l');
 
             RegisterKey(Keys.Space, (char)32);
 
