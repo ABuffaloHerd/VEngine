@@ -131,17 +131,12 @@ namespace VEngine.Scenes.Combat
              * - OnAttack
              */
 
-            var gameObject = selectedGameObject;
-            if (gameObject == null) 
+            if (selectedGameObject != null)
             {
-                selectedGameObject = turn.Dequeue();
+                selectedGameObject.PositionChanged -= OnMove;
+                selectedGameObject.OnAttack -= OnAttack;
             }
-            else
-            {
-                gameObject.PositionChanged -= OnMove;
-                gameObject.OnAttack -= OnAttack;
-                selectedGameObject = turn.Dequeue();
-            }
+            selectedGameObject = turn.Dequeue();
 
             selectedGameObject.OnAttack += OnAttack;
             selectedGameObject.PositionChanged += OnMove;
@@ -205,8 +200,15 @@ namespace VEngine.Scenes.Combat
         private void UpdateHud()
         {
             hud.Clear();
-            hud.Print(0, 0, selectedGameObject.Name);
+            //hud.Print(0, 0, selectedGameObject.Name);
             hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
+
+            // get controls from the current game object
+            ICollection<ControlBase> controlBases = selectedGameObject.GetHudElements();
+            foreach(ControlBase control in controlBases)
+            {
+                hud.Controls.Add(control);
+            }
         }
 
 
@@ -236,19 +238,19 @@ namespace VEngine.Scenes.Combat
             switch (kpe.Key)
             {
                 case 'w':
-                    selectedGameObject.Move(new Point(0, -1));
+                    Move(new Point(0, -1));
                     break;
 
                 case 'a':
-                    selectedGameObject.Move(new Point(-1, 0));
+                    Move(new Point(-1, 0));
                     break;
 
                 case 's':
-                    selectedGameObject.Move(new Point(0, 1));
+                    Move(new Point(0, 1));
                     break;
 
                 case 'd':
-                    selectedGameObject.Move(new Point(1, 0));
+                    Move(new Point(1, 0));
                     break;
 
                 case ' ':
@@ -283,30 +285,51 @@ namespace VEngine.Scenes.Combat
 
         private void ProcessCombatEvent(CombatEvent e)
         {
-            Logger.Report(this, e.ToString());
-            int damage = e.GetData<int>("amount");
-            string thing = e.GetData<GameObject>("me").Name;
+            // check the type of combat event before processing.
+            switch(e.EventType)
+            {
+                case CombatEventType.INFO:
+                    Logger.Report(this, e.ToString());
+                    int damage = e.GetData<int>("amount");
+                    string thing = e.GetData<GameObject>("me").Name;
 
-            fightFeed.Print($"{thing} took {damage} damage");
+                    fightFeed.Print($"{thing} took {damage} damage");
+                    break;
+
+                case CombatEventType.ACTION:
+                    // figure out which action to do etc
+                    // debug code below is to attack one tile ahead
+                    Pattern p2 = new();
+                    p2.Mark(0, 0);
+                    p2.Mark(1, 0);
+                    ExecuteAttack(selectedGameObject, p2);
+
+                    break;
+            }
         }
 
-
+        /// <summary>
+        /// All events come to this function before being dispatched to handler functions
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">The event</param>
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
             if(e is KeyPressedEvent)
             {
                 ProcessKeyEvent(e as KeyPressedEvent);
+                Logger.Report(this, $"Game event received is key pressed event with hashcode {e.GetHashCode()}");
             }
 
             if(e is CombatEvent)
             {
                 ProcessCombatEvent(e as CombatEvent);
+                Logger.Report(this, $"Game event received is combat event with hashcode {e.GetHashCode()}");
             }
 
             if(sender is IControllable)
             {
                 Logger.Report(this, "Received game event from controllable object");
-                fightFeed.Print("A button was pressed");
             }
 
             UpdateHud();

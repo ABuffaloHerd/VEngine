@@ -77,7 +77,6 @@ namespace VEngine.Data
         public static bool operator >=(Stat lhs, int rhs)
             => lhs.Current >= rhs;
 
-
         public static Stat operator ++(Stat stat)
         {
             stat.Current++;
@@ -87,6 +86,18 @@ namespace VEngine.Data
         public static Stat operator --(Stat stat)
         {
             stat.Current--;
+            return stat;
+        }
+
+        public static Stat operator +(Stat stat, int value)
+        {
+            stat.Current += value;
+            return stat;
+        }
+
+        public static Stat operator -(Stat stat, int value)
+        {
+            stat.Current += value;
             return stat;
         }
 

@@ -115,13 +115,6 @@ namespace VEngine
             // TODO: remove when finished
             if(e.Contains("test"))
                 Logger.Report(this, e.ToString());
-
-            // ===== Special Conditions ===== //
-            // If the source is a controllable game object, send it to the current scene anyway
-            if(sender is IControllable)
-            {
-                Event.Invoke(sender, e);
-            }
         }
     }
 

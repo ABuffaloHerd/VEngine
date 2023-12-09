@@ -1,4 +1,6 @@
 ﻿using SadConsole.Entities;
+using SadConsole.UI;
+using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,7 @@ namespace VEngine.Objects
 {
     public class GameObject : Entity
     {
+        public Stat HP { get; set; }
         public Stat Speed { get; set; }
 
         public Stat MoveDist { get; set; }
@@ -35,6 +38,7 @@ namespace VEngine.Objects
             effects = new();
             Speed = (Stat)100;
             MoveDist = (Stat)10;
+            HP = 10; // default debug
         }
 
         public void Move(Point dest)
@@ -59,7 +63,7 @@ namespace VEngine.Objects
             // Damage calculation, on attack effects etc
             foreach(GameObject target in targets)
             {
-                target.TakeDamage(0, DamageType.NONE);
+                target.TakeDamage(1, DamageType.NONE);
             }
 
             // Trigger the on attack event for subscribers to react
@@ -67,8 +71,8 @@ namespace VEngine.Objects
             // === Sample code === //
             GameEvent attacked = new();
             attacked.AddData("targets", targets);
-            attacked.AddData("damage", 0);
-            attacked.AddData("total_damage", 0);
+            attacked.AddData("damage", 1);
+            attacked.AddData("total_damage", 1);
 
             OnAttack(this, attacked);
 
@@ -77,13 +81,37 @@ namespace VEngine.Objects
         public virtual void TakeDamage(int damage, DamageType type)
         {
             // Damage calculation (defense, res etc)
+            HP.Current -= damage;
 
             CombatEvent damaged = new();
             damaged.AddData("amount", damage);
             damaged.AddData("me", this);
             damaged.Target = EventTarget.CURRENT_SCENE;
 
+            Logger.Report(this, $"Took {damage} damage. HP: {HP.Current} / {HP.Max}");
+
             GameManager.Instance.SendGameEvent(this, damaged);
+        }
+
+        /// <summary>
+        /// Builds a collection of control bases containing hud elements
+        /// based off current object's stats
+        /// </summary>
+        /// <returns>Collection of these control bases</returns>
+        public virtual ICollection<ControlBase> GetHudElements()
+        {
+            List<ControlBase> list = new();
+
+            ProgressBar hpBar = new(20, 1, HorizontalAlignment.Left)
+            {
+                Progress = (float)HP.Current / (float)HP.Max,
+                Position = new(5, 0)
+            };
+            hpBar.BarColor = Color.Red;
+
+            list.Add(hpBar);
+
+            return list;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Data;
 using VEngine.Events;
 using VEngine.Logging;
 
@@ -23,8 +24,9 @@ namespace VEngine.Objects
             b.Position = (2, 2);
             b.Click += (s, e) =>
             {
-                GameManager.Instance.SendGameEvent(this,
-                    new GameEvent("controllable game object button clicked"));
+                CombatEvent combatEvent = new();
+                combatEvent.EventType = CombatEventType.ACTION;
+                GameManager.Instance.SendGameEvent(this, combatEvent);
             };
             b.UseKeyboard = false; // stops memory leaks by plugging it up with duct tape
 
@@ -36,6 +38,8 @@ namespace VEngine.Objects
         public override void Attack(IEnumerable<GameObject> targets)
         {
             // instead of doing fuck all like the base class, use the weapon object's attack function
+            // but for now just use the base attack to see that it works
+            base.Attack(targets);
         }
     }
 }

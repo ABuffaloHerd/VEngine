@@ -25,6 +25,8 @@ namespace VEngine.Scenes.Combat
         {
             // From the given range, give possible targets in a collection to the attacker
             List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position);
+
+            // remove the current object from hurting itself
             targets.Remove(selectedGameObject);
 
             foreach (GameObject target in targets) 
@@ -34,6 +36,22 @@ namespace VEngine.Scenes.Combat
             attacker.Attack(targets);
 
             Logger.Report(this, "attack executed");
+        }
+
+        /// <summary>
+        /// Performs bounds checking before moving the selected game object
+        /// </summary>
+        /// <param name="direction">The direction to move in</param>
+        private bool Move(Point direction)
+        {
+            bool yes = arena.IsTileFree(selectedGameObject.Position + direction);
+
+            if (yes)
+            {
+                selectedGameObject.Position += direction;
+            }
+
+            return yes;
         }
     }
 }
