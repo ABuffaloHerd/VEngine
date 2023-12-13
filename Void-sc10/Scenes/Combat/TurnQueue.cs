@@ -19,7 +19,7 @@ namespace VEngine.Scenes.Combat
         public TurnQueue() 
         {
 
-        }  
+        }
 
         public GameObject Dequeue()
         {
@@ -36,6 +36,7 @@ namespace VEngine.Scenes.Combat
         /// <param name="obj">New object</param>
         public void Enqueue(GameObject obj)
         {
+            if (obj.IsStatic) return;
             Node newNode = new Node(obj);
             Size++;  // Increment size for every new node
 
@@ -57,10 +58,61 @@ namespace VEngine.Scenes.Combat
             Sort();
         }
 
+        /// <summary>
+        /// Clears and rebuilds the entire queue
+        /// </summary>
+        /// <param name="gameObjects">Objects to add</param>
+        public void Rebuild(ICollection<GameObject> gameObjects)
+        {
+            head = null;
+            Size = 0;
+
+            Enqueue(gameObjects);
+        }
+
         public void Enqueue(ICollection<GameObject> collection)
         {
             foreach (var obj in collection)
                 Enqueue(obj);
+        }
+
+        /// <summary>
+        /// Removes game object
+        /// </summary>
+        /// <param name="obj">object to remove</param>
+        /// <returns>true if it worked</returns>
+        public bool Remove(GameObject obj)
+        {
+            if (head == null)
+                return false;
+
+            Node current = head;
+            Node previous = null;
+
+            while (current != null)
+            {
+                if (current.obj.Equals(obj))
+                {
+                    if (previous == null)
+                    {
+                        // Remove from head
+                        head = current.Next;
+                    }
+                    else
+                    {
+                        // Remove from middle or end
+                        previous.Next = current.Next;
+                    }
+
+                    Size--;
+                    return true;
+                }
+
+                previous = current;
+                current = current.Next;
+            }
+
+            return false; // Object not found
         }
 
         /// <summary>
@@ -238,7 +290,7 @@ namespace VEngine.Scenes.Combat
 
             public void Reset()
             {
-                current = head;
+                current = null;
             }
         }
         private class Node

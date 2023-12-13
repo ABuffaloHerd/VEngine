@@ -14,24 +14,35 @@ namespace VEngine.Data
 
         public IEnumerable<Point> Points { get => points; } 
 
+        /// <summary>
+        /// <inheritdoc cref="Pattern.Pattern()"/>
+        /// </summary>
+        /// <param name="points">Points to use</param>
         public Pattern(HashSet<Point> points)
         {
             this.points = points;
         }
 
+        /// <summary>
+        /// Patterns are always defined facing right.
+        /// </summary>
         public Pattern()
         {
             points = new();
         }
 
-        public bool Mark(Point p)
+        public Pattern Mark(Point p)
         {
-            return points.Add(p);
+            points.Add(p);
+
+            return this;
         }
 
-        public bool Mark(int x, int y)
+        public Pattern Mark(int x, int y)
         {
-            return points.Add(new(x, y));
+            points.Add(new(x, y));
+
+            return this;
         }
 
         public void Mark(ICollection<Point> points)

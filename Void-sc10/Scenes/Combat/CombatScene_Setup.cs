@@ -61,11 +61,6 @@ namespace VEngine.Scenes.Combat
                 .AddTitle("HUD");
 
             new Border(hud, b);
-
-            for(int y = 0; y < 40; y++)
-            {
-                hud.Print(0, y, (y % 10).ToString());
-            }
         }
 
         private void SetupParty()

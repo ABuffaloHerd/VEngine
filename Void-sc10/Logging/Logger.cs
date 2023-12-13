@@ -8,10 +8,21 @@ namespace VEngine.Logging
 {
     public static class Logger
     {
-        public static void Report(object sender, string text)
+        public static void Report(object? sender, string text)
         {
+            if (sender == null) sender = new object();
             StringBuilder sb = new();
             sb.Append(sender.ToString())
+                .Append(" : ")
+                .Append(text);
+
+            System.Console.WriteLine(sb.ToString());
+        }
+
+        public static void Report(string sender, string text)
+        {
+            StringBuilder sb = new();
+            sb.Append(sender)
                 .Append(" : ")
                 .Append(text);
 

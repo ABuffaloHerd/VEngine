@@ -55,7 +55,7 @@ namespace VEngine
         /// <param name="c">Char representation of key to register</param>
         private static void RegisterKey(Keys k, char c)
         {
-            registeredKeys[k] = () => gm.Instance.SendGameEvent(null, new KeyPressedEvent(c));
+            registeredKeys[k] = () => gm.Instance.SendGameEvent(null, new KeyPressedEvent(c, k));
         }
     }
 }

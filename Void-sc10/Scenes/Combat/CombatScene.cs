@@ -14,6 +14,7 @@ using VEngine.Logging;
 using Microsoft.Xna.Framework.Graphics;
 using SadConsole.UI.Controls;
 using Newtonsoft.Json.Bson;
+using System.Diagnostics;
 
 namespace VEngine.Scenes.Combat
 {
@@ -36,7 +37,7 @@ namespace VEngine.Scenes.Combat
         private HashSet<GameObject> gameObjects;
         private HashSet<ControllableGameObject> players;
 
-        private GameObject selectedGameObject;
+        private GameObject? selectedGameObject;
 
         private HashSet<Action<GameObject>> OnAttackEffects;
 
@@ -55,6 +56,7 @@ namespace VEngine.Scenes.Combat
 
             gameObjects = new();
             players = new();
+            selectedGameObject = null;
 
             /* ===== Test code ===== */
             AnimatedScreenObject animated = new("test", 1, 1);
@@ -85,12 +87,27 @@ namespace VEngine.Scenes.Combat
             pgo.Name = "Controllable";
             pgo.Speed = 250;
 
-            AddGameObject(test);
-            AddGameObject(test2);
-            AddGameObject(test3);
-            AddGameObject(test4);
+            // put some walls
+            AnimatedScreenObject wallobj = new("wall", 1, 1);
+            wallobj.CreateFrame()[0].Glyph = (char)219;
+
+            StaticGameObject wall = new(wallobj, 1);
+
+            AnimatedScreenObject aso2 = new("Ranger", 1, 1);
+            aso2.CreateFrame()[0].Glyph = 'M';
+            aso2.Frames[0].SetForeground(0, 0, Color.Gray);
+            Ranger ranger = new(aso2, 1);
+            ranger.Name = "Minako";
+            ranger.Speed = 120;
+
+            //AddGameObject(test);
+            //AddGameObject(test2);
+            //AddGameObject(test3);
+            //AddGameObject(test4);
             AddGameObject(test5);
             AddGameObject(pgo);
+            AddGameObject(ranger);
+            AddGameObject(wall);
 
             /* ===== End test code ===== */
 
@@ -108,50 +125,57 @@ namespace VEngine.Scenes.Combat
             turn.Sort();
         }
 
+        public void RemoveGameObject(GameObject gameObject) 
+        {
+            gameObjects.Remove(gameObject);
+            arena.RemoveEntity(gameObject);
+            turn.Remove(gameObject);
+            UpdateTurnConsole(); // re render the turn console to reflect these changes
+
+            Logger.Report(this, $"Removed {gameObject}");
+        }
+
         /// <summary>
         /// Runs when it's a new object's turn
         /// </summary>
         private void OnNextTurn()
         {
             // Reset the arena
-            arena.ClearEffects();
+            arena.StopRenderPattern();
+
+            // === This section handles turn ordering === //
+            // If the turn order is empty, rebuild it.
+            if (turn.Size <= 0)
+            {
+                Logger.Report(this, "Turnqueue rebuild triggered");
+                turn.Rebuild(gameObjects);
+            }
 
             turn.Sort();
 
-            /* 
-             * The Pop phase selects the fastest game object in the queue.
-             * If the queue is empty, it is rebuilt during this phase.
-             */
-
-            // This section handles event subscriptions
+            // === This section handles event subscriptions === //
 
             /**
              * The following events must be subscribed and unsubscribed from each turn:
-             * - OnMove
-             * - OnAttack
+             * - OnMove <-> PositionChanged
+             * - OnAttack <-> OnAttack
+             * - DirectionChanged <-> OnDirectionChanged
              */
 
             if (selectedGameObject != null)
             {
                 selectedGameObject.PositionChanged -= OnMove;
                 selectedGameObject.OnAttack -= OnAttack;
+                selectedGameObject.DirectionChanged -= OnDirectionChanged;
             }
             selectedGameObject = turn.Dequeue();
 
             selectedGameObject.OnAttack += OnAttack;
             selectedGameObject.PositionChanged += OnMove;
+            selectedGameObject.DirectionChanged += OnDirectionChanged;
 
-            // If the turn order is empty, rebuild it.
-            if (turn.Size <= 0)
-            {
-                Logger.Report(this, "Turnqueue rebuild triggered");
-                turn.Enqueue(gameObjects);
-            }
-
-            // Start by updating the hud
+            // === This section handles console setup === //
             UpdateHud();
-
-            // And then the turn console
             UpdateTurnConsole();
 
             // Copy in the new controls
@@ -199,7 +223,7 @@ namespace VEngine.Scenes.Combat
 
         private void UpdateHud()
         {
-            hud.Clear();
+            hud.Controls.Clear();
             //hud.Print(0, 0, selectedGameObject.Name);
             hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
 
@@ -218,19 +242,49 @@ namespace VEngine.Scenes.Combat
         private void OnMove(object? sender, ValueChangedEventArgs<Point> args) 
         {
             // If the arena was rendering a pattern rerender it
-            arena.RenderPattern(args.NewValue);
+            if(arena.IsRenderingPattern)
+                arena.RenderCachedPattern(args.NewValue, selectedGameObject.Facing);
 
             // tell the arena to update all its positions
             arena.UpdatePositions();
         }
 
+        /// <summary>
+        /// Runs when an attack is executed. Reports information to fight feed. <br></br>
+        /// The event received must have the following fields: <br></br>
+        ///     - targets : list of targets that were attacked
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="args">game event</param>
         private void OnAttack(object? sender, GameEvent args)
         {
-            // Get the first target out of the game event
+            // Get the targets out of the game event
             IEnumerable<GameObject> targets = args.GetData<IEnumerable<GameObject>>("targets");
 
             foreach(GameObject target in targets)
-                Logger.Report(sender, $"Attacked {target}");
+            {
+                Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
+
+                // check if the target is dead
+                if(target.IsDead)
+                {
+                    Logger.Report(this, $"{target} died.");
+                    fightFeed.Print($"{target} died.");
+                    RemoveGameObject(target);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Runs when an object turns its head
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnDirectionChanged(object? sender, ValueChangedEventArgs<Data.Direction> args)
+        {
+            // all this does is re render any patterns
+            if (arena.IsRenderingPattern)
+                arena.RenderCachedPattern(selectedGameObject.Position, args.NewValue);
         }
 
         private void ProcessKeyEvent(KeyPressedEvent kpe)
@@ -257,18 +311,46 @@ namespace VEngine.Scenes.Combat
                     OnNextTurn();
                     break;
 
+                /// === LOOKING KEYS === ///
+                case (char)37:
+                case (char)38:
+                case (char)39:
+                case (char)40:
+                    switch(kpe.SadKey)
+                    {
+                        case Keys.Up:
+                            selectedGameObject.Facing = Data.Direction.UP;
+                            break;
+                        case Keys.Down:
+                            selectedGameObject.Facing = Data.Direction.DOWN;
+                            break;
+                        case Keys.Left:
+                            selectedGameObject.Facing = Data.Direction.LEFT;
+                            break;
+                        case Keys.Right:
+                            selectedGameObject.Facing = Data.Direction.RIGHT;
+                            break;
+                    }
+                    break;
+
+
+                /// === TESTING KEYS === ///
                 case 'j':
                     Logger.Report(this, "j pressed");
-                    if(arena.HasCachedPattern)
+
+                    if (arena.IsRenderingPattern)
                     {
-                        arena.RenderPattern(selectedGameObject.Position);
+                        arena.StopRenderPattern();
                     }
                     else
-                    {
-                        Pattern p = new();
-                        p.Mark(0, 0);
-                        p.Mark(1, 0);
-                        arena.RenderPattern(p, selectedGameObject.Position);
+                    {   
+                        // feature not a bug
+                        if (selectedGameObject is not ControllableGameObject) return;
+                        else
+                        {
+                            Pattern p = (selectedGameObject as ControllableGameObject).GetRange();
+                            arena.RenderPattern(p, selectedGameObject.Position, selectedGameObject.Facing);
+                        }
                     }
 
                     break;
@@ -277,7 +359,12 @@ namespace VEngine.Scenes.Combat
                     Pattern p2 = new();
                     p2.Mark(0, 0);
                     p2.Mark(1, 0);
-                    ExecuteAttack(selectedGameObject, p2);
+                    if (selectedGameObject is ControllableGameObject)
+                    {
+                        ExecuteAttack(selectedGameObject, (selectedGameObject as ControllableGameObject).GetRange());
+                    }
+                    else
+                        ExecuteAttack(selectedGameObject, p2);
 
                     break;
             }
@@ -318,18 +405,11 @@ namespace VEngine.Scenes.Combat
             if(e is KeyPressedEvent)
             {
                 ProcessKeyEvent(e as KeyPressedEvent);
-                Logger.Report(this, $"Game event received is key pressed event with hashcode {e.GetHashCode()}");
             }
 
             if(e is CombatEvent)
             {
                 ProcessCombatEvent(e as CombatEvent);
-                Logger.Report(this, $"Game event received is combat event with hashcode {e.GetHashCode()}");
-            }
-
-            if(sender is IControllable)
-            {
-                Logger.Report(this, "Received game event from controllable object");
             }
 
             UpdateHud();

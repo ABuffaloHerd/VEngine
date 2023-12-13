@@ -1,5 +1,6 @@
 ﻿using SadConsole.Effects;
 using SadConsole.Entities;
+using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,28 +13,17 @@ using VEngine.Objects;
 namespace VEngine.Scenes.Combat
 {
     /// <summary>
-    /// This class handles everything to do with rendering entities and checking collision
+    /// This class handles everything to do with rendering entities and checking collision.
+    /// Don't use this outside of combat scenes.
     /// </summary>
-    internal class Arena : Console
+    public class Arena : Console
     {
         public EntityManager EntityManager { get; private set; }
 
         /// <summary>
         /// Is it rendering a pattern? If set to false stops rendering said pattern.
         /// </summary>
-        public bool IsRenderingPattern 
-        {
-            get => isRenderingPattern;
-            set
-            {
-                if(value == false)
-                {
-                    ClearEffects();
-                    isRenderingPattern = false;
-                }
-            }
-        }
-        private bool isRenderingPattern;
+        public bool IsRenderingPattern { get; private set; }
 
         public bool HasCachedPattern 
         {
@@ -43,7 +33,7 @@ namespace VEngine.Scenes.Combat
         private Dictionary<Point, GameObject> positions;
         private Pattern? currentPattern; // cache the current pattern
 
-        public Arena(int width, int height) : base(width, height)
+        internal Arena(int width, int height) : base(width, height)
         {
             EntityManager = new();
 
@@ -57,6 +47,12 @@ namespace VEngine.Scenes.Combat
             EntityManager.Add(gameObject);
 
             // Rebuild position cache
+            UpdatePositions();
+        }
+
+        public void RemoveEntity(GameObject gameObject)
+        {
+            EntityManager.Remove(gameObject); 
             UpdatePositions();
         }
 
@@ -74,9 +70,9 @@ namespace VEngine.Scenes.Combat
         /// </summary>
         /// <param name="p">pattern to render</param>
         /// <param name="offset">offset of the pattern</param>
-        public void RenderPattern(Pattern p, Point offset)
+        public void RenderPattern(Pattern p, Point offset, Data.Direction direction)
         {
-            ClearEffects();
+            StopRenderPattern();
 
             Blinker b = new()
             {
@@ -88,7 +84,8 @@ namespace VEngine.Scenes.Combat
                 RunEffectOnApply = true
             };
 
-            foreach (var point in p)
+            // turn enum direction into a number that the pattern recognises as a valid rotation
+            foreach (var point in p.GetRotated((int)direction))
             {
                 Point newOffset = point + offset;
                 Surface.SetForeground(newOffset.X, newOffset.Y, Color.Yellow);
@@ -96,7 +93,7 @@ namespace VEngine.Scenes.Combat
                 Surface.SetEffect(newOffset.X, newOffset.Y, b);
             }
 
-            isRenderingPattern = true;
+            IsRenderingPattern = true;
             currentPattern = p; //save current pattern
         }
 
@@ -106,11 +103,11 @@ namespace VEngine.Scenes.Combat
         /// <param name="p">pattern</param>
         /// <param name="offset">offset to shift tile checking by</param>
         /// <returns></returns>
-        public List<GameObject> GetInPattern(Pattern p, Point offset)
+        public List<GameObject> GetInPattern(Pattern p, Point offset, Data.Direction direction)
         {
             List<GameObject> list = new();
 
-            foreach(Point point in p)
+            foreach(Point point in p.GetRotated((int)direction))
             {
                 // check each point in the index
                 GameObject item;
@@ -123,22 +120,29 @@ namespace VEngine.Scenes.Combat
             return list;
         }
 
-        public void RenderPattern(Point offset)
+        /// <summary>
+        /// Renders a pattern stored in the cache variable
+        /// </summary>
+        /// <param name="offset">Position offset</param>
+        /// <param name="direction">GameObject.Facing</param>
+        public void RenderCachedPattern(Point offset, Data.Direction direction)
         {
-            if (!isRenderingPattern) return;
-            ClearEffects();
+            StopRenderPattern();
 
             if (currentPattern != null)
-                RenderPattern(currentPattern, offset);
+                RenderPattern(currentPattern, offset, direction);
             else
                 Logger.Report(this, "Warning! No pattern loaded in cache!");
         }
 
-        public void ClearEffects()
+        /// <summary>
+        /// Does what you think it does
+        /// </summary>
+        public void StopRenderPattern()
         {
             Surface.Clear();
 
-            isRenderingPattern = false;
+            IsRenderingPattern = false;
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace VEngine.Scenes.Combat
             currentPattern = p;
         }
 
-        public void ClearPattern()
+        public void ClearCachePattern()
         {
             currentPattern = null;
         }

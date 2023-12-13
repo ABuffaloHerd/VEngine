@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadConsole.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace VEngine.Events
         /// Friendly char representation
         /// </summary>
         public char Key { get; private set; }
+        public Keys SadKey { get; private set; }
 
         /// <summary>
         /// Creates event given char
@@ -22,6 +24,11 @@ namespace VEngine.Events
         public KeyPressedEvent(char key)
         {
             Key = key;
+        }
+
+        public KeyPressedEvent(char key, Keys sadKey) : this(key)
+        {
+            SadKey = sadKey;
         }
 
         public IGameEvent AddData(string key, object value)

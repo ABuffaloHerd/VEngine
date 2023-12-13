@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Events;
 using VEngine.Logging;
+using VEngine.Scenes.Combat;
 
 namespace VEngine.Objects
 {
@@ -17,13 +18,43 @@ namespace VEngine.Objects
     {
         public Stat HP { get; set; }
         public Stat Speed { get; set; }
-
         public Stat MoveDist { get; set; }
-        public Data.Direction Looking { get; set; }
+
+        /// <summary>
+        /// Does this do anything apart from exist?
+        /// </summary>
+        public bool IsStatic { get; set; } = false;
+
+        /// <summary>
+        /// Get your head out of your six.
+        /// </summary>
+        public Data.Direction Facing 
+        {
+            get => facing;
+            set
+            {
+                if (facing == value) return;
+                Data.Direction old = facing;
+                facing = value;
+                OnDirectionChanged(old, value);
+            }
+
+        }
+        private Data.Direction facing = Data.Direction.RIGHT;
 
         private List<Effect> effects;
 
-        public event EventHandler<GameEvent> OnAttack;
+        public event EventHandler<GameEvent>? OnAttack;
+
+        /// <summary>
+        /// Triggered when Facing is changed
+        /// </summary>
+        public event EventHandler<ValueChangedEventArgs<Data.Direction>>? DirectionChanged;
+
+        public bool IsDead
+        {
+            get => HP.Current <= 0;
+        }
 
         /// <summary>
         /// Creates a game object to be used in combat scenarios
@@ -41,7 +72,7 @@ namespace VEngine.Objects
             HP = 10; // default debug
         }
 
-        public void Move(Point dest)
+        public virtual void Move(Point dest)
         {
             if (MoveDist <= 0) return;
             Position += dest;
@@ -56,11 +87,13 @@ namespace VEngine.Objects
             }
         }
 
-        public virtual void Attack(IEnumerable<GameObject> targets)
+        public virtual void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
             Logger.Report(this, "Attack function triggered");
 
             // Damage calculation, on attack effects etc
+
+            /// === TESTING CODE === ///
             foreach(GameObject target in targets)
             {
                 target.TakeDamage(1, DamageType.NONE);
@@ -68,13 +101,14 @@ namespace VEngine.Objects
 
             // Trigger the on attack event for subscribers to react
 
-            // === Sample code === //
+            // === Sample event === //
             GameEvent attacked = new();
             attacked.AddData("targets", targets);
             attacked.AddData("damage", 1);
             attacked.AddData("total_damage", 1);
 
-            OnAttack(this, attacked);
+            // This is always called
+            OnAttack?.Invoke(this, attacked);
 
         }
 
@@ -105,13 +139,36 @@ namespace VEngine.Objects
             ProgressBar hpBar = new(20, 1, HorizontalAlignment.Left)
             {
                 Progress = (float)HP.Current / (float)HP.Max,
-                Position = new(5, 0)
+                Position = new(5, 0),
+                DisplayText = $"{HP.Current} / {HP.Max}"
             };
             hpBar.BarColor = Color.Red;
-
             list.Add(hpBar);
 
+            Label label = new("HP:");
+            label.Position = (0, 0);
+            list.Add(label);
+
             return list;
+        }
+
+        /// <summary>
+        /// Required for deriving classes to invoke the OnAttack event
+        /// </summary>
+        /// <param name="event">Send event from weapons or spells here</param>
+        protected void RaiseOnAttack(GameEvent @event)
+        {
+            OnAttack?.Invoke(this, @event);
+        }
+
+        /// <summary>
+        /// Triggers DirectionChanged event
+        /// </summary>
+        /// <param name="old">old val</param>
+        /// <param name="new">new val</param>
+        protected void OnDirectionChanged(Data.Direction old, Data.Direction @new)
+        {
+            DirectionChanged?.Invoke(this, new(old, @new));
         }
     }
 }

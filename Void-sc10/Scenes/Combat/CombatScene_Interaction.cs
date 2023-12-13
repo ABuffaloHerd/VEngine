@@ -24,22 +24,22 @@ namespace VEngine.Scenes.Combat
         public void ExecuteAttack(GameObject attacker, Pattern range)
         {
             // From the given range, give possible targets in a collection to the attacker
-            List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position);
+            List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position, selectedGameObject.Facing);
 
             // remove the current object from hurting itself
             targets.Remove(selectedGameObject);
 
             foreach (GameObject target in targets) 
             {
-                Logger.Report(this, target.ToString());
+                Logger.Report(this, $"{target} is a potential target.");
             }
-            attacker.Attack(targets);
+            attacker.Attack(targets, arena);
 
             Logger.Report(this, "attack executed");
         }
 
         /// <summary>
-        /// Performs bounds checking before moving the selected game object
+        /// Performs bounds and stat checking before moving the selected game object
         /// </summary>
         /// <param name="direction">The direction to move in</param>
         private bool Move(Point direction)
@@ -48,7 +48,7 @@ namespace VEngine.Scenes.Combat
 
             if (yes)
             {
-                selectedGameObject.Position += direction;
+                selectedGameObject.Move(direction);
             }
 
             return yes;

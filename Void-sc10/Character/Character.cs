@@ -11,7 +11,7 @@ namespace VEngine.Character
     public struct CharacterStats
     {
         int ATK { get; set; } // attack stat added to weapon stats
-        int DEF { get; set; } // defense stats added to armour pieces
+        int DEF { get; set; } // defense stat
         int RES { get; set; } // magic resistance %
         int HP  { get; set; } // healthy
         int MP  { get; set; } // magical

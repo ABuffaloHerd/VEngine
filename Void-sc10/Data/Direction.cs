@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace VEngine.Data
 {
+    /// <summary>
+    /// Directions and their rotations from right facing in degrees
+    /// </summary>
     public enum Direction
     {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
+        UP = 270,
+        DOWN = 90,
+        LEFT = 180,
+        RIGHT = 0
     }
 
     public enum Rotation
