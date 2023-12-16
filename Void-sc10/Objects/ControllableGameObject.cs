@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Events;
+using VEngine.Factory;
 using VEngine.Items;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
@@ -28,6 +29,10 @@ namespace VEngine.Objects
             {
                 throw new Exception("Major fuck up in controllable game object constructor");
             }
+
+            // set attributes for MP bar
+            MP.IsOverloadable = true;
+            MP.Current = 10;
         }
 
         public Pattern GetRange()
@@ -42,8 +47,10 @@ namespace VEngine.Objects
             b.Position = (2, 2);
             b.Click += (s, e) =>
             {
-                CombatEvent combatEvent = new();
-                combatEvent.EventType = CombatEventType.ACTION;
+                CombatEvent combatEvent = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ACTION)
+                    .Build();
+
                 GameManager.Instance.SendGameEvent(this, combatEvent);
             };
             b.UseKeyboard = false; // stops memory leaks by plugging it up with duct tape
@@ -61,8 +68,8 @@ namespace VEngine.Objects
             {
                 Progress = MP.Current / MP.Max,
                 Position = (5, 2),
-                DisplayText = $"{MP.Current} / {MP.Max}",
-                BarColor = Color.Blue
+                DisplayText = (MP.Overloaded ? "Overload! " : "") + $"{MP.Current} / {MP.Max}",
+                BarColor = MP.Overloaded ? Color.Purple : Color.Blue,
             };
             Label mplabel = new("MP: ")
             {
@@ -77,7 +84,8 @@ namespace VEngine.Objects
                 Position = (5, 4),
                 DisplayText = $"{SP.Current} / {SP.Max}",
                 DisplayTextColor = Color.Black,
-                BarColor = Color.Yellow
+                BarColor = Color.Yellow,
+                BackgroundGlyph = 178
             };
             Label spLabel = new("SP: ")
             {

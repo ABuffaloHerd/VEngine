@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Logging;
 
 namespace VEngine.Events
 {
@@ -23,6 +24,16 @@ namespace VEngine.Events
         /// something funny was said
         /// </summary>
         SPEECH,
+
+        /// <summary>
+        /// For attacks
+        /// </summary>
+        ATTACK,
+
+        /// <summary>
+        /// For taking damage
+        /// </summary>
+        DAMAGED
     }
     public class CombatEvent : GameEvent, IGameEvent
     {
@@ -30,12 +41,104 @@ namespace VEngine.Events
 
         public CombatEventType EventType { get; set; }
 
-        private Dictionary<string, object> data;
+        private static string[] attackFields =
+        {
+            "amount",
+            "source",
+            "weapon",
+            "targets"
+        };
 
-        public CombatEvent()
+        private static string[] actionFields =
+        {
+            "action"
+        };
+
+        private static string[] speechFields =
+        {
+            "character",
+            "words"
+        };
+
+        private static string[] damagedFields =
+        {
+            "me",
+            "amount"
+        };
+
+        private CombatEvent()
         {
             data = new();
             EventType = CombatEventType.INFO; // default type is info
+        }
+
+        private CombatEvent(CombatEventType eventType, Dictionary<string, object> data)
+        {
+            EventType = eventType;
+            this.data = data;
+        }
+
+        public static CombatEvent Create(CombatEventType type, Dictionary<string, object> data)
+        {
+            CombatEvent returnme = new(type, data);
+            returnme.Validate();
+            return returnme;
+        }
+
+        /// <summary>
+        /// List of mandatory fields: <br></br>
+        /// INFO:<br></br>
+        /// amount of damage - "amount"<br></br>
+        /// name of source   - "source"<br></br>
+        /// name of weapon attacked with - "weapon"<br></br>
+        /// list of targets  - "targets"<br></br><br></br>
+        /// 
+        /// ACTION:<br></br>
+        /// name of action - "action"<br></br><br></br>
+        /// 
+        /// SPEECH:<br></br>
+        /// name of character - "character"<br></br>
+        /// words to say      - "words"<br></br>
+        /// </summary>
+        private void Validate()
+        {
+            // Throw exception or handle missing mandatory fields
+            switch (EventType)
+            {
+                case CombatEventType.ATTACK:
+                    foreach (string field in attackFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in info type combat event!");
+                    }
+                    break;
+
+                case CombatEventType.DAMAGED:
+                    foreach (string field in damagedFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in info type combat event!");
+                    }
+                    break;
+
+                case CombatEventType.ACTION:
+                    foreach (string field in actionFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in action type combat event!");
+                    }
+                    break;
+
+                case CombatEventType.SPEECH:
+                    foreach (string field in speechFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");
+                    }
+                    break;
+            }
+
+            Logger.Report(this, "Validation for combat event passed");
         }
     }
 }

@@ -15,6 +15,15 @@ namespace VEngine.Data
         private int _current;
         private int _max;
 
+        /// <summary>
+        /// If true, allows current to go over the max.
+        /// </summary>
+        public bool IsOverloadable { get; set; } = false;
+
+        public bool Overloaded 
+        {
+            get => _current > _max;
+        }
         public bool ResetCurrent
         {
             set
@@ -25,7 +34,7 @@ namespace VEngine.Data
         public int Current
         {
             get => _current;
-            set => _current = Math.Min(value, _max);
+            set => _current = IsOverloadable ? _current = value : Math.Min(value, _max);
         }
 
         public int Max

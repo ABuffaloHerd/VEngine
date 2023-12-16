@@ -58,7 +58,7 @@ namespace VEngine.Scenes.Combat
 
         public bool IsTileFree(Point pos)
         {
-            Logger.Report(this, $"Checking {pos.X}, {pos.Y}");
+            Logger.Report(this, $"Checking target {pos.X}, {pos.Y}");
             if (pos.X > Width || pos.Y > Height) return false;
             if (pos.X < 0 || pos.Y < 0) return false;
 
@@ -173,6 +173,17 @@ namespace VEngine.Scenes.Combat
         }
 
         /// <summary>
+        /// Updates single entry to prevent O(n) updating
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        public void UpdatePositions(ValueChangedEventArgs<Point> eventArgs)
+        {
+            positions.TryGetValue(eventArgs.OldValue, out GameObject obj);
+            positions.Remove(eventArgs.OldValue);
+            positions.Add(eventArgs.NewValue, obj);
+        }
+
+        /// <summary>
         /// Normally i'd implement a telefrag but testing takes priority.
         /// This method sends an object to a random position in a 5x5 range around where it shouldn't be
         /// </summary>
@@ -207,6 +218,8 @@ namespace VEngine.Scenes.Combat
                 // E.g., keep the offender in the current position or take some other action
                 throw new Exception("No valid bounce target and idk what else to do apart from explode");
             }
+
+            UpdatePositions();
         }
 
     }

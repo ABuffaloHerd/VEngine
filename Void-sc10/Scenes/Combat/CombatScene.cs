@@ -224,6 +224,7 @@ namespace VEngine.Scenes.Combat
         private void UpdateHud()
         {
             hud.Controls.Clear();
+            hud.Surface.Clear(0, 17, 20);
             //hud.Print(0, 0, selectedGameObject.Name);
             hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
 
@@ -233,6 +234,7 @@ namespace VEngine.Scenes.Combat
             {
                 hud.Controls.Add(control);
             }
+
         }
 
 
@@ -246,7 +248,7 @@ namespace VEngine.Scenes.Combat
                 arena.RenderCachedPattern(args.NewValue, selectedGameObject.Facing);
 
             // tell the arena to update all its positions
-            arena.UpdatePositions();
+            arena.UpdatePositions(args);
         }
 
         /// <summary>
@@ -375,7 +377,7 @@ namespace VEngine.Scenes.Combat
             // check the type of combat event before processing.
             switch(e.EventType)
             {
-                case CombatEventType.INFO:
+                case CombatEventType.DAMAGED:
                     Logger.Report(this, e.ToString());
                     int damage = e.GetData<int>("amount");
                     string thing = e.GetData<GameObject>("me").Name;

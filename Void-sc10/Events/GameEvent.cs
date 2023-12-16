@@ -12,7 +12,7 @@ namespace VEngine.Events
     /// </summary>
     public class GameEvent : IGameEvent
     {
-        private Dictionary<string, object> data;
+        protected Dictionary<string, object> data;
 
         public virtual EventTarget Target
         {

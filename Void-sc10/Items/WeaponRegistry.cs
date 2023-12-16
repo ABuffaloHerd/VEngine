@@ -7,6 +7,7 @@ using VEngine.Objects;
 using VEngine.Data;
 using VEngine.Events;
 using VEngine.Logging;
+using VEngine.Factory;
 
 namespace VEngine.Items
 {
@@ -25,9 +26,12 @@ namespace VEngine.Items
                     obj.TakeDamage(finalDamage, DamageType.PHYSICAL);
                 }
 
-                CombatEvent ev = new();
-                ev.AddData("amount", 2);
-                ev.AddData("targets", targets);
+                CombatEvent ev = new CombatEventBuilder()
+                    .AddField("amount", finalDamage)
+                    .AddField("targets", targets)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
 
                 return ev;
             });
@@ -53,9 +57,12 @@ namespace VEngine.Items
                 else
                     Logger.Report(null, "found no targets");
 
-                CombatEvent ev = new();
-                ev.AddData("amount", finalDamage);
-                ev.AddData("targets", list);
+                CombatEvent ev = new CombatEventBuilder()
+                    .AddField("amount", finalDamage)
+                    .AddField("targets", list)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
 
                 return ev;
             });

@@ -28,7 +28,7 @@ namespace VEngine.Objects
                 Position = (6, 10),
                 DisplayText = $"{Ammo.Current} / {Ammo.Max}",
                 BarColor = Color.Brown,
-                DisplayTextColor = Color.Black
+                DisplayTextColor = Color.Lavender
             };
             Label ammolabel = new("AMMO: ");
             ammolabel.Position = (0, 10);

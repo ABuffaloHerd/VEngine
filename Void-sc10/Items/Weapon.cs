@@ -42,9 +42,6 @@ namespace VEngine.Items
         public CombatEvent ApplyEffect(IEnumerable<GameObject> targets, GameObject wielder, Arena arena)
         {
             CombatEvent ev = attackFunction(this, targets, wielder, arena);
-
-            ev.AddData("weapon", this);
-            Logger.Report(this, "weapon was used");
             return ev;
         }
 

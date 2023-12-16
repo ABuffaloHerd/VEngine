@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using VEngine.Data;
 using VEngine.Events;
+using VEngine.Factory;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
 
@@ -24,6 +25,16 @@ namespace VEngine.Objects
         /// Does this do anything apart from exist?
         /// </summary>
         public bool IsStatic { get; set; } = false;
+
+        /// <summary>
+        /// Can i walk into this?
+        /// </summary>
+        public bool HasCollision { get; set; } = true;
+
+        /// <summary>
+        /// What is this object, really?
+        /// </summary>
+        public Type Type { get; set; } = Type.ENTITY; 
 
         /// <summary>
         /// Get your head out of your six.
@@ -117,14 +128,31 @@ namespace VEngine.Objects
             // Damage calculation (defense, res etc)
             HP.Current -= damage;
 
-            CombatEvent damaged = new();
-            damaged.AddData("amount", damage);
-            damaged.AddData("me", this);
-            damaged.Target = EventTarget.CURRENT_SCENE;
+            CombatEvent damaged = new CombatEventBuilder()
+                .SetEventType(CombatEventType.DAMAGED)
+                .AddField("amount", damage)
+                .AddField("me", this)
+                .Build();
 
             Logger.Report(this, $"Took {damage} damage. HP: {HP.Current} / {HP.Max}");
 
             GameManager.Instance.SendGameEvent(this, damaged);
+        }
+
+        /// <summary>
+        /// Should run when this object starts its turn
+        /// </summary>
+        public virtual void OnStartTurn()
+        {
+
+        }
+
+        /// <summary>
+        /// Runs on this object's end phase
+        /// </summary>
+        public virtual void OnEndTurn()
+        {
+
         }
 
         /// <summary>
