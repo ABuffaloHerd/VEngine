@@ -33,7 +33,12 @@ namespace VEngine.Events
         /// <summary>
         /// For taking damage
         /// </summary>
-        DAMAGED
+        DAMAGED,
+
+        /// <summary>
+        /// For creating things
+        /// </summary>
+        SUMMON
     }
     public class CombatEvent : GameEvent, IGameEvent
     {
@@ -66,6 +71,11 @@ namespace VEngine.Events
             "amount"
         };
 
+        private static string[] summonFields =
+        {
+            "summon"
+        };
+
         private CombatEvent()
         {
             data = new();
@@ -95,6 +105,10 @@ namespace VEngine.Events
         /// 
         /// ACTION:<br></br>
         /// name of action - "action"<br></br><br></br>
+        /// 
+        /// SUMMON: <br></br>
+        /// thing to summon - "summon"<br></br><br></br>
+        /// 
         /// 
         /// SPEECH:<br></br>
         /// name of character - "character"<br></br>
@@ -131,6 +145,14 @@ namespace VEngine.Events
 
                 case CombatEventType.SPEECH:
                     foreach (string field in speechFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");
+                    }
+                    break;
+
+                case CombatEventType.SUMMON:
+                    foreach (string field in summonFields)
                     {
                         if (!data.ContainsKey(field))
                             throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");

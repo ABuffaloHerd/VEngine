@@ -100,6 +100,14 @@ namespace VEngine.Scenes.Combat
             ranger.Name = "Minako";
             ranger.Speed = 120;
 
+
+            AnimatedScreenObject aso3 = new("Mage", 1, 1);
+            aso3.CreateFrame()[0].Glyph = 'S';
+            aso3.Frames[0].SetForeground(0, 0, Color.PaleGoldenrod);
+            Mage mage = new(aso3, 1);
+            mage.Name = "Saki";
+            mage.Speed = 90;
+
             //AddGameObject(test);
             //AddGameObject(test2);
             //AddGameObject(test3);
@@ -108,6 +116,7 @@ namespace VEngine.Scenes.Combat
             AddGameObject(pgo);
             AddGameObject(ranger);
             AddGameObject(wall);
+            AddGameObject(mage);
 
             /* ===== End test code ===== */
 
@@ -133,6 +142,20 @@ namespace VEngine.Scenes.Combat
             UpdateTurnConsole(); // re render the turn console to reflect these changes
 
             Logger.Report(this, $"Removed {gameObject}");
+        }
+
+        /// <summary>
+        ///  Only run when an object is summoned.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        private void SummonGameObject(GameObject gameObject)
+        {
+            gameObjects.Add(gameObject);
+            // special case for magic circles
+            if(gameObject is MagicCircle)
+            {
+                arena.AddMagicCircle(gameObject as MagicCircle);
+            }
         }
 
         /// <summary>
@@ -179,6 +202,7 @@ namespace VEngine.Scenes.Combat
             UpdateTurnConsole();
 
             // Copy in the new controls
+            controls.Controls.Clear();
             if (selectedGameObject is IControllable)
             {
                 IControllable? controllable = selectedGameObject as IControllable;
@@ -193,7 +217,6 @@ namespace VEngine.Scenes.Combat
             else
             {
                 controls.IsEnabled = false;
-                controls.Controls.Clear();
             }
 
             // Reset the current object's move value
@@ -392,6 +415,41 @@ namespace VEngine.Scenes.Combat
                     p2.Mark(0, 0);
                     p2.Mark(1, 0);
                     ExecuteAttack(selectedGameObject, p2);
+
+                    break;
+
+                case CombatEventType.SUMMON:
+                    // figure out what to summon
+                    switch(e.GetData<string>("summon"))
+                    {
+                        case "magic_circle":
+                            // check 4 adjacent tiles to see if they're free
+                            List<Point> l = new()
+                            {
+                                (1, 0),
+                                (0, 1),
+                                (-1, 0),
+                                (0, -1)
+                            };
+
+                            foreach(Point p in l)
+                            {
+                                if(arena.IsTileFree(selectedGameObject.Position + p, true))
+                                {
+                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND)
+                                    {
+                                        Position = selectedGameObject.Position + p
+                                    };
+
+                                    SummonGameObject(mc);
+
+                                    fightFeed.Print("Summoned magic circle!");
+                                    break;
+                                }    
+                            }
+
+                            break;
+                    }
 
                     break;
             }

@@ -24,8 +24,13 @@ namespace VEngine.Objects
         CONSTRUCT,
 
         /// <summary>
-        /// Magic circle or [stands]
+        /// [stands]
         /// </summary>
-        SUMMON
+        SUMMON,
+
+        /// <summary>
+        /// magic circle
+        /// </summary>
+        CIRCLE
     }
 }

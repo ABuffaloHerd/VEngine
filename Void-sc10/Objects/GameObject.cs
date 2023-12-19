@@ -21,6 +21,8 @@ namespace VEngine.Objects
         public Stat Speed { get; set; }
         public Stat MoveDist { get; set; }
 
+        public Alignment Alignment { get; set; } = Alignment.FRIEND;
+
         /// <summary>
         /// Does this do anything apart from exist?
         /// </summary>

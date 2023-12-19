@@ -40,19 +40,11 @@ namespace VEngine.Objects
             return weapon.Range;
         }
 
-        public ICollection<ControlBase> GetControls()
+        public virtual ICollection<ControlBase> GetControls()
         {
             List<ControlBase> controlBases = new();
             Button b = new("blah");
             b.Position = (2, 2);
-            b.Click += (s, e) =>
-            {
-                CombatEvent combatEvent = new CombatEventBuilder()
-                    .SetEventType(CombatEventType.ACTION)
-                    .Build();
-
-                GameManager.Instance.SendGameEvent(this, combatEvent);
-            };
             b.UseKeyboard = false; // stops memory leaks by plugging it up with duct tape
 
             controlBases.Add(b);

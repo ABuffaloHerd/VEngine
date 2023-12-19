@@ -18,6 +18,8 @@ namespace VEngine.Scenes.Combat
     /// </summary>
     public class Arena : Console
     {
+        private const int defaultSize = 12;
+        private readonly Point defaultPosition = new (32, 4);
         public EntityManager EntityManager { get; private set; }
 
         /// <summary>
@@ -31,14 +33,43 @@ namespace VEngine.Scenes.Combat
         }
 
         private Dictionary<Point, GameObject> positions;
+        private Dictionary<Point, MagicCircle> magicCircles;
         private Pattern? currentPattern; // cache the current pattern
 
         internal Arena(int width, int height) : base(width, height)
         {
+            if (height > width) throw new ArgumentException("height cannot be larger than width. Fix it.");
+
+            float scaleFactor = 64f / width;
+            int size = (int) Math.Floor(scaleFactor * defaultSize);
+            FontSize = (size, size);
+
+            // Calculate the dynamic part of the vertical offset
+            int dynamicOffset = (width - height) / 2;  // The difference between width and height, halved
+
+            // Adjust this dynamic offset by the scale factor
+            int scaledDynamicOffset = (int)Math.Floor(dynamicOffset / scaleFactor);
+
+            // Calculate the total vertical offset
+            // Assuming the '4' in your formula is a fixed adjustment needed for alignment
+            int verticalOffset = (int)(scaleFactor / 4) + scaledDynamicOffset;
+
+            // Calculate the new Y position
+            int newYPosition = (int)Math.Floor(defaultPosition.Y / scaleFactor) + verticalOffset;
+
+            // calculate the position based on the arena's width
+            Point newPosition = new Point(
+                (int)Math.Floor(defaultPosition.X / scaleFactor),
+                //(int)Math.Floor(defaultPosition.Y / scaleFactor) + verticalOffset
+                newYPosition
+            );
+            Position = newPosition;
+
+            Resize(width, height, true);
+
             EntityManager = new();
-
             SadComponents.Add(EntityManager);
-
+            magicCircles = new();
             positions = new();
         }
 
@@ -56,11 +87,30 @@ namespace VEngine.Scenes.Combat
             UpdatePositions();
         }
 
-        public bool IsTileFree(Point pos)
+        public void AddMagicCircle(MagicCircle magicCircle)
+        {
+            EntityManager.Add(magicCircle);
+
+            magicCircles.Add(magicCircle.Position, magicCircle);
+        }
+
+        public void RemoveMagicCircle(MagicCircle magicCircle)
+        {
+            EntityManager.Remove(magicCircle);
+
+            magicCircles.Remove(magicCircle.Position);
+        }
+
+        public bool IsTileFree(Point pos, bool mCircles = false)
         {
             Logger.Report(this, $"Checking target {pos.X}, {pos.Y}");
-            if (pos.X > Width || pos.Y > Height) return false;
+            if (pos.X > Width - 1 || pos.Y > Height - 1) return false;
             if (pos.X < 0 || pos.Y < 0) return false;
+
+            if(mCircles) // check magic circles
+            {
+                if (magicCircles.ContainsKey(pos)) return false;
+            }
 
             return !positions.ContainsKey(pos);
         }

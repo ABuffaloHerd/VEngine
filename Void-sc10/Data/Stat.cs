@@ -100,14 +100,12 @@ namespace VEngine.Data
 
         public static Stat operator +(Stat stat, int value)
         {
-            stat.Current += value;
-            return stat;
+            return new Stat(stat.Current + value, stat.Max);
         }
 
         public static Stat operator -(Stat stat, int value)
         {
-            stat.Current += value;
-            return stat;
+            return new Stat(stat.Current - value, stat.Max);
         }
 
         public int Compare(Stat x, Stat y)
