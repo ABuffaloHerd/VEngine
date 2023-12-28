@@ -26,7 +26,7 @@ namespace VEngine.Scenes.Combat
             foreach(string str in buffer) 
             {
                 if (y == this.Height)
-                    Surface.Print(0, --y, "[c:g b:Orange:Black:6]" + str);
+                    Surface.Print(0, --y, "[c:g b:Orange:Black:10]" + str);
                 else
                     Surface.Print(0, --y, str);
             }
@@ -179,7 +179,7 @@ namespace VEngine.Scenes.Combat
         }
 
         private class Node
-        { 
+        {
             public T Data;
             public Node? Next { get; set; }
             public Node? Prev { get; set; }

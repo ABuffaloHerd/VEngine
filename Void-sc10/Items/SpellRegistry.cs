@@ -17,7 +17,7 @@ namespace VEngine.Items
         static Spell ArcaneBlast = new(
             "Arcane Blast",
             "I'm gonna play arcane blast with efficiency at level 11 so that brings the cost down to zero then in response to my declaration i am going to pay one and ignite the soul",
-            30,
+            30, // do the above to make your opponent think that you think you know the rules but react to the resolution of their spellshield arcane with another ignite the soul so they get one enlighten counter and take 11 damage to the face.
             20,
             new Pattern()
                 .Mark(7, 0)

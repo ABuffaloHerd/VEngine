@@ -8,6 +8,8 @@ namespace VEngine.Objects
 {
     public class MagicCircle : StaticGameObject
     {
+        private GameObject owner;
+
         private static AnimatedScreenObject prepareAppearance(Color color)
         {
             AnimatedScreenObject aso = new("circle", 1, 1);
@@ -17,10 +19,11 @@ namespace VEngine.Objects
             return aso;
         }
 
-        public MagicCircle(Color color, Alignment alignment) : base(prepareAppearance(color), -1)
+        public MagicCircle(Color color, Alignment alignment, GameObject owner) : base(prepareAppearance(color), -1)
         {
             Type = Type.CIRCLE;
             Alignment = alignment;
+            this.owner = owner;
         }
     }
 }

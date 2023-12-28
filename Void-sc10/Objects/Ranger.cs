@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Data;
+using VEngine.Events;
+using VEngine.Factory;
 using VEngine.Items;
+using VEngine.Logging;
 using VEngine.Scenes.Combat;
 
 namespace VEngine.Objects
@@ -41,6 +44,18 @@ namespace VEngine.Objects
 
         public override void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
+            if(Ammo - 1 < 0)
+            {
+                Logger.Report(this, "out of ammo!");
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.INFO)
+                    .AddField("info", $"{Name}: Out of ammo!")
+                    .Build();
+
+                GameManager.Instance.SendGameEvent(this, ev);
+
+                return;
+            }
             base.Attack(targets, arena);
 
             Ammo--;

@@ -87,7 +87,7 @@ namespace VEngine.Scenes.Combat
             Children.Add(bgm);
 
             /// TODO: Make this a parameter
-            arena = new(48, 48)
+            arena = new(32, 16)
             {
                 //Position = new(32, 4)
             };

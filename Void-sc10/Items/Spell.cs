@@ -36,12 +36,19 @@ namespace VEngine.Items
         }
         public CombatEvent ApplyEffect(IEnumerable<GameObject> targets, GameObject wielder, Arena arena)
         {
-            throw new NotImplementedException();
+            return attackFunction(this, targets, wielder, arena);
         }
 
-        public object Clone()
+        public virtual object Clone()
         {
-            throw new NotImplementedException();
+            return new Spell(
+                Name,
+                Description,
+                Damage,
+                Cost,
+                Range,
+                attackFunction
+            );
         }
     }
 }

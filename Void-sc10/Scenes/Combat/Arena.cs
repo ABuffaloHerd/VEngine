@@ -1,4 +1,5 @@
-﻿using SadConsole.Effects;
+﻿using SadConsole.Components;
+using SadConsole.Effects;
 using SadConsole.Entities;
 using SadRogue.Primitives;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Logging;
 using VEngine.Objects;
@@ -38,11 +40,16 @@ namespace VEngine.Scenes.Combat
 
         internal Arena(int width, int height) : base(width, height)
         {
-            if (height > width) throw new ArgumentException("height cannot be larger than width. Fix it.");
+            if (height > width) throw new ArgumentException("height cannot be larger than width. If you want a tall arena, fill it with walls.");
 
             float scaleFactor = 64f / width;
             int size = (int) Math.Floor(scaleFactor * defaultSize);
             FontSize = (size, size);
+
+            /// When width and height are equal, dynamicOffset becomes zero, making scaledDynamicOffset and consequently 
+            /// verticalOffset also zero (ignoring the fixed 4 adjustment).
+            /// As height decreases relative to width, dynamicOffset increases, and so does verticalOffset, 
+            /// pushing the console upward to keep it vertically centered.
 
             // Calculate the dynamic part of the vertical offset
             int dynamicOffset = (width - height) / 2;  // The difference between width and height, halved
@@ -51,7 +58,7 @@ namespace VEngine.Scenes.Combat
             int scaledDynamicOffset = (int)Math.Floor(dynamicOffset / scaleFactor);
 
             // Calculate the total vertical offset
-            // Assuming the '4' in your formula is a fixed adjustment needed for alignment
+            // 4 appears to be a magic number but it's just the default Y position.
             int verticalOffset = (int)(scaleFactor / 4) + scaledDynamicOffset;
 
             // Calculate the new Y position
@@ -71,6 +78,22 @@ namespace VEngine.Scenes.Combat
             SadComponents.Add(EntityManager);
             magicCircles = new();
             positions = new();
+
+
+
+            AnimatedEffect testobj = new("test", 3, 3,
+                TimeSpan.FromSeconds(1),
+                (1, 0)
+            );
+            testobj.FontSize = this.FontSize;
+            testobj.Position = (6, 6);
+            testobj.CreateFrame().SetGlyph(0, 0, 'a');
+            testobj.CreateFrame().SetGlyph(0, 0, 'b');
+            testobj.Repeat = true;
+            testobj.AnimationDuration = TimeSpan.FromSeconds(2);
+            testobj.Start();
+
+            Children.Add(testobj);
         }
 
         public void AddEntity(GameObject gameObject)

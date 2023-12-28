@@ -152,6 +152,7 @@ namespace VEngine.Scenes.Combat
         {
             gameObjects.Add(gameObject);
             // special case for magic circles
+
             if(gameObject is MagicCircle)
             {
                 arena.AddMagicCircle(gameObject as MagicCircle);
@@ -418,6 +419,13 @@ namespace VEngine.Scenes.Combat
 
                     break;
 
+                case CombatEventType.INFO:
+                    // print to fight feed
+                    string data = e.GetData<string>("info");
+
+                    fightFeed.Print(data); 
+                    break;
+
                 case CombatEventType.SUMMON:
                     // figure out what to summon
                     switch(e.GetData<string>("summon"))
@@ -436,7 +444,7 @@ namespace VEngine.Scenes.Combat
                             {
                                 if(arena.IsTileFree(selectedGameObject.Position + p, true))
                                 {
-                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND)
+                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND, selectedGameObject)
                                     {
                                         Position = selectedGameObject.Position + p
                                     };
