@@ -110,6 +110,11 @@ namespace VEngine.Scenes.Combat
             magicCircles.Remove(magicCircle.Position);
         }
 
+        public int CountMagicCircle()
+        {
+            return magicCircles.Count;
+        }
+
         public bool IsTileFree(Point pos, bool mCircles = false)
         {
             Logger.Report(this, $"Checking target {pos.X}, {pos.Y}");

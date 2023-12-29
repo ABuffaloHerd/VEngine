@@ -15,14 +15,28 @@ namespace VEngine.Objects
     /// </summary>
     public class Mage : ControllableGameObject
     {
+        public int MagicCircles { get; set; }
         private List<Spell> spells;
         public Mage(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
+            MagicCircles = 0;
             // testing 
             spells = new()
             {
                 (Spell)SpellRegistry.Fireball.Clone()
             };
+        }
+
+        public override void OnStartTurn()
+        {
+            base.OnStartTurn(); // must call this because it handles effects
+
+            // Passive: Mages gain 10 max MP for each magic circle and regenerate 5 MP
+            MP.Max = 10 + (MagicCircles * 10);
+            for (int x = 0; x < MagicCircles; x++)
+            {
+                MP.Current += 5;
+            }
         }
 
         public override ICollection<ControlBase> GetControls()

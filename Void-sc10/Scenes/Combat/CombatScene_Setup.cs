@@ -95,7 +95,8 @@ namespace VEngine.Scenes.Combat
 
             controls = new(29, 18)
             {
-                Position = new(1, 53)
+                Position = new(1, 53),
+                UseKeyboard = false
             };
             Children.Add(controls);
 

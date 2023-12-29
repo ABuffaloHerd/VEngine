@@ -73,7 +73,7 @@ namespace VEngine.Items
                 }
 
                 AnimatedEffect explode = AnimationPresets.ExplosionEffect(3, TimeSpan.FromSeconds(0.2));
-                //AnimatedEffect explode = AnimationPresets.TestEffect(4);
+
                 explode.Position = wielder.Facing switch
                 {
                     Data.Direction.UP => (0, -3),

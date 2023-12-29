@@ -58,7 +58,7 @@ namespace VEngine.Objects
 
             ProgressBar mpBar = new(20, 1, HorizontalAlignment.Left)
             {
-                Progress = MP.Current / MP.Max,
+                Progress = MP.Current / (float)MP.Max,
                 Position = (5, 2),
                 DisplayText = (MP.Overloaded ? "Overload! " : "") + $"{MP.Current} / {MP.Max}",
                 BarColor = MP.Overloaded ? Color.Purple : Color.Blue,
@@ -72,7 +72,7 @@ namespace VEngine.Objects
 
             ProgressBar spBar = new(20, 1, HorizontalAlignment.Left)
             {
-                Progress = SP.Current / SP.Max,
+                Progress = SP.Current / (float)SP.Max,
                 Position = (5, 4),
                 DisplayText = $"{SP.Current} / {SP.Max}",
                 DisplayTextColor = Color.Black,

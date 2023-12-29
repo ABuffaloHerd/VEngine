@@ -93,6 +93,17 @@ namespace VEngine.Scenes.Combat
             wallobj.CreateFrame()[0].Glyph = (char)219;
 
             StaticGameObject wall = new(wallobj, 1);
+            wall.Position = (3, 3);
+
+            StaticGameObject wall2 = new(wallobj, 1)
+            {
+                Position = (3, 2)
+            };
+
+            StaticGameObject wall3 = new(wallobj, 1)
+            {
+                Position = (3, 4)
+            };
 
             //AnimatedScreenObject aso2 = new("Ranger", 1, 1);
             //aso2.CreateFrame()[0].Glyph = 'M';
@@ -101,6 +112,7 @@ namespace VEngine.Scenes.Combat
             Ranger ranger = new(aso2, 1);
             ranger.Name = "Minako";
             ranger.Speed = 120;
+            ranger.Position = (7, 6);
 
 
             //AnimatedScreenObject aso3 = new("Mage", 1, 1);
@@ -110,15 +122,18 @@ namespace VEngine.Scenes.Combat
             Mage mage = new(aso3, 1);
             mage.Name = "Saki";
             mage.Speed = 90;
+            mage.Position = (0, 3);
 
             //AddGameObject(test);
             //AddGameObject(test2);
             //AddGameObject(test3);
             //AddGameObject(test4);
-            AddGameObject(test5);
-            AddGameObject(pgo);
+            //AddGameObject(test5);
+            //AddGameObject(pgo);
             AddGameObject(ranger);
             AddGameObject(wall);
+            AddGameObject(wall2);
+            AddGameObject(wall3);
             AddGameObject(mage);
 
             /* ===== End test code ===== */

@@ -157,6 +157,10 @@ namespace VEngine.Scenes.Combat
                                     SummonGameObject(mc);
 
                                     fightFeed.Print("Summoned magic circle!");
+
+                                    // Since only mages can summon magic circles, it is safe to assume that if we made it this far, the selected game object is a mage.
+                                    (selectedGameObject as Mage).MagicCircles = arena.CountMagicCircle();
+
                                     break;
                                 }
                             }
