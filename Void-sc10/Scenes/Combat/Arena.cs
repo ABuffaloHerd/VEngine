@@ -79,21 +79,14 @@ namespace VEngine.Scenes.Combat
             magicCircles = new();
             positions = new();
 
+            // Set the animation presets global fontsize to this font size so glyphs are the same size
+            AnimationPresets.FontSize = this.FontSize;
 
+            AnimatedEffect ef = AnimationPresets.ExplosionEffect(8, TimeSpan.FromSeconds(2));
 
-            AnimatedEffect testobj = new("test", 3, 3,
-                TimeSpan.FromSeconds(1),
-                (1, 0)
-            );
-            testobj.FontSize = this.FontSize;
-            testobj.Position = (6, 6);
-            testobj.CreateFrame().SetGlyph(0, 0, 'a');
-            testobj.CreateFrame().SetGlyph(0, 0, 'b');
-            testobj.Repeat = true;
-            testobj.AnimationDuration = TimeSpan.FromSeconds(2);
-            testobj.Start();
-
-            Children.Add(testobj);
+            ef.Position = (6, 6);
+            Children.Add(ef);
+            ef.Start();
         }
 
         public void AddEntity(GameObject gameObject)

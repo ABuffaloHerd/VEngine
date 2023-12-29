@@ -9,10 +9,11 @@ using Components = SadConsole.Components;
 
 namespace VEngine.Animations
 {
-    public class AnimatedEffect : AnimatedScreenObject
+    public class AnimatedEffect : AnimatedScreenObject, ICloneable
     {
         private Components.Timer timer;
         private Point direction;
+        private TimeSpan interval;
 
         /// <summary>
         /// Automatically moving animted screen object
@@ -20,10 +21,10 @@ namespace VEngine.Animations
         /// <inheritdoc></inheritdoc>
         public AnimatedEffect(string name, int width, int height, TimeSpan moveInterval, Point direction) : base(name, width, height)
         {
-            timer = new(moveInterval);
             this.direction = direction;
+            this.interval = moveInterval;
 
-            timer.Start();
+            timer = new(moveInterval);
             SadComponents.Add(timer);
 
             timer.TimerElapsed += MoveMe;
@@ -42,6 +43,14 @@ namespace VEngine.Animations
         public void StopTimer()
         {
             timer.Stop();
+        }
+
+        public object Clone()
+        {
+            return new AnimatedEffect(
+                Name, Width, Height,
+                interval, direction
+            );
         }
     }
 }
