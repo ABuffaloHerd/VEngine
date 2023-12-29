@@ -30,6 +30,9 @@ namespace VEngine.Scenes.Combat
             // remove the current object from hurting itself
             targets.Remove(selectedGameObject);
 
+            // Stop the arena from rendering any effects so that effects from the attack are not hidden
+            arena.StopRenderPattern();
+
             // Do the attack. This sends an event to the scene with attack information.
             attacker.Attack(targets, arena);
 
@@ -45,6 +48,10 @@ namespace VEngine.Scenes.Combat
             // remove the current object from hurting itself
             targets.Remove(selectedGameObject);
 
+            // Stop the arena from rendering any effects so that effects from the attack are not hidden
+            arena.StopRenderPattern();
+
+            // Cast the spell
             attacker.Cast(targets, arena, s);
 
             Logger.Report(this, "Spell cast!");

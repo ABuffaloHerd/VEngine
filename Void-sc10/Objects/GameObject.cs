@@ -147,7 +147,13 @@ namespace VEngine.Objects
 
         }
 
-        public virtual void TakeDamage(int damage, DamageType type)
+        /// <summary>
+        /// Performs damage calculations and the actual reduction of HP
+        /// </summary>
+        /// <param name="damage">Amount of pain</param>
+        /// <param name="type">Style of pain</param>
+        /// <returns>Amount of pain taken after painkillers</returns>
+        public virtual int TakeDamage(int damage, DamageType type)
         {
             // Damage calculation (defense, res etc)
             HP.Current -= damage;
@@ -161,6 +167,8 @@ namespace VEngine.Objects
             Logger.Report(this, $"Took {damage} damage. HP: {HP.Current} / {HP.Max}");
 
             GameManager.Instance.SendGameEvent(this, damaged);
+
+            return damage;
         }
 
         /// <summary>

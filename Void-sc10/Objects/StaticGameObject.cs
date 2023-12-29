@@ -48,9 +48,9 @@ namespace VEngine.Objects
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="type"></param>
-        public sealed override void TakeDamage(int damage, DamageType type)
+        public sealed override int TakeDamage(int damage, DamageType type)
         {
-            // don't do shit
+            return 0;
         }
 
         /// <summary>

@@ -9,6 +9,8 @@ using VEngine.Events;
 using VEngine.Logging;
 using VEngine.Factory;
 
+using Algorithms = VEngine.Data.Algorithms;
+
 namespace VEngine.Items
 {
     public static class WeaponRegistry
@@ -67,15 +69,20 @@ namespace VEngine.Items
             new Pattern().Mark(2, 0).Mark(3, 0).Mark(4, 0).Mark(5, 0),
             (weapon, targets, wielder, arena) =>
             {
-                int finalDamage = weapon.Damage;
+                int finalDamage = 0;
                 var target = Data.Algorithms.Closest(targets, wielder.Position);
                 var list = new List<GameObject>();
 
                 if (target != null)
                 {
                     Logger.Report(null, "Found a single target to attack!");
-                    target.TakeDamage(finalDamage, DamageType.PHYSICAL);
-                    list.Add(target);
+
+                    // line of sight checking
+                    if(Algorithms.HasLineOfSight(target.Position, wielder.Position, arena))
+                    {
+                        finalDamage = target.TakeDamage(weapon.Damage, DamageType.PHYSICAL);
+                        list.Add(target);
+                    }
                 }
                 else
                     Logger.Report(null, "found no targets");

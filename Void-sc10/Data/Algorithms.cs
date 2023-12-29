@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Logging;
 using VEngine.Objects;
+using VEngine.Scenes.Combat;
 
 namespace VEngine.Data
 {
@@ -87,6 +88,52 @@ namespace VEngine.Data
             }
 
             return points;
+        }
+
+        /// <summary>
+        /// Uses Bresenham's line algorithm to determine if there is line of sight between the two points
+        /// </summary>
+        /// <param name="start">start</param>
+        /// <param name="end">end</param>
+        /// <param name="arena">Arena</param>
+        /// <returns></returns>
+        public static bool HasLineOfSight(Point start, Point end, Arena arena)
+        {
+            int x = start.X;
+            int y = start.Y;
+            int dx = Math.Abs(end.X - start.X);
+            int dy = Math.Abs(end.Y - start.Y);
+            int sx = start.X < end.X ? 1 : -1;
+            int sy = start.Y < end.Y ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                if (arena.IsTileFree((x, y)))
+                {
+                    return false; // Obstacle found, line of sight is blocked
+                }
+
+                if (x == end.X && y == end.Y)
+                {
+                    break; // Reached end point, no obstacles found
+                }
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x += sx;
+                }
+
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y += sy;
+                }
+            }
+
+            return true; // Clear line of sight
         }
     }
 }
