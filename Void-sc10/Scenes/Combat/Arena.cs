@@ -42,7 +42,7 @@ namespace VEngine.Scenes.Combat
         {
             if (height > width) throw new ArgumentException("height cannot be larger than width. If you want a tall arena, fill it with walls.");
 
-            float scaleFactor = 64f / width;
+            float scaleFactor = 64f / width; // 64 is the default size.
             int size = (int) Math.Floor(scaleFactor * defaultSize);
             FontSize = (size, size);
 

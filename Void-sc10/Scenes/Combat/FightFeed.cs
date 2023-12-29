@@ -10,10 +10,31 @@ namespace VEngine.Scenes.Combat
     internal class FightFeed : Console
     {
         private DoubleEndedStack<string> buffer;
+
+        private readonly Point defaultPosition = (98, 33);
+        private const int defaultSize = 12;
         public FightFeed(int width, int height) : base(width, height)
         {
             buffer = new();
             Surface.UsePrintProcessor = true;
+
+            FontSize = ((int)(defaultSize / 1.5), defaultSize);
+
+            //float scaleFactorWidth = 29f / width;
+            //float scaleFactorHeight = 38f / height;
+
+            //float scaleFactor = Math.Min(scaleFactorWidth, scaleFactorHeight);
+            //int size = (int)Math.Floor(scaleFactor * defaultSize);
+            //FontSize = (size, size);
+
+            //int scaledX = defaultPosition.X * (int)(1 / scaleFactorWidth);
+            //int scaledY = defaultPosition.Y * (int)(1 / scaleFactorHeight);
+
+            //Position = (scaledX, scaledY);
+
+            Resize((int)(width * 1.5f), height, true);
+
+            Position = ((int)(defaultPosition.X * 1.5), defaultPosition.Y);
         }
 
         public override void Update(TimeSpan delta)

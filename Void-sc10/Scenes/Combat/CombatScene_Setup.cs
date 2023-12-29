@@ -118,10 +118,7 @@ namespace VEngine.Scenes.Combat
             };
             Children.Add(focus);
 
-            fightFeed = new(29, 38)
-            {
-                Position = new(98, 33)
-            };
+            fightFeed = new(29, 38);
             Children.Add(fightFeed);
 
             turnOrder = new(14, 30)
