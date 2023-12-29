@@ -1,4 +1,5 @@
-﻿using SadConsole.Entities;
+﻿using SadConsole.Effects;
+using SadConsole.Entities;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Events;
 using VEngine.Factory;
+using VEngine.Items;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
 
@@ -53,11 +55,14 @@ namespace VEngine.Objects
             }
 
         }
-        private Data.Direction facing = Data.Direction.RIGHT;
+        protected Data.Direction facing = Data.Direction.RIGHT;
 
-        private List<Effect> effects;
+        protected List<Effect> effects;
+
+        protected EffectsManager effectsManager;
 
         public event EventHandler<GameEvent>? OnAttack;
+        public event EventHandler<GameEvent>? OnSpellCast;
 
         /// <summary>
         /// Triggered when Facing is changed
@@ -100,6 +105,19 @@ namespace VEngine.Objects
             }
         }
 
+        /// <summary>
+        /// Should run when this object starts its turn
+        /// </summary>
+        public virtual void OnStartTurn()
+        {
+            AppearanceSurface.Animation.Start();
+        }
+
+        /// <summary>
+        /// Function that actually executes the attack. It is the one responsible for sending the combat event to the game manager via OnAttack.Invoke
+        /// </summary>
+        /// <param name="targets"></param>
+        /// <param name="arena"></param>
         public virtual void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
             Logger.Report(this, "Attack function triggered");
@@ -122,6 +140,10 @@ namespace VEngine.Objects
 
             // This is always called
             OnAttack?.Invoke(this, attacked);
+        }
+
+        public virtual void Cast(IEnumerable<GameObject> targets, Arena arena, Spell spell)
+        {
 
         }
 
@@ -139,14 +161,6 @@ namespace VEngine.Objects
             Logger.Report(this, $"Took {damage} damage. HP: {HP.Current} / {HP.Max}");
 
             GameManager.Instance.SendGameEvent(this, damaged);
-        }
-
-        /// <summary>
-        /// Should run when this object starts its turn
-        /// </summary>
-        public virtual void OnStartTurn()
-        {
-
         }
 
         /// <summary>

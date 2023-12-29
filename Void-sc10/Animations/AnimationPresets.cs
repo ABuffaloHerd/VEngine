@@ -5,14 +5,61 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using VEngine.Data;
+using Algorithms = VEngine.Data.Algorithms;
+
 namespace VEngine.Animations
 {
+    /// <summary>
+    /// The only reason effects exist in the first place is because of [Haisen "Burari Haieki Gesha no Tabi"]
+    /// </summary>
     public static class AnimationPresets
     {
         public static Point FontSize { get; set; }
         static AnimationPresets()
         {
 
+        }
+
+        /// <summary>
+        /// Prepares a preset animated screen object for 1x1 character blinking.
+        /// </summary>
+        /// <param name="glyph">Glyph of character</param>
+        /// <param name="fg">foreground colour</param>
+        /// <param name="bg">background colour</param>
+        /// <returns></returns>
+        public static AnimatedScreenObject BlinkingEffect(string name, char glyph, Color fg, Color bg, Point size)
+        {
+            AnimatedScreenObject aso = new(name, size.X, size.Y)
+            {
+                AnimationDuration = TimeSpan.FromSeconds(2),
+                Repeat = false
+            };
+
+            for(int fc = 0; fc < 6; fc++)
+            {
+                if (fc % 2 == 0)
+                {
+                    aso.CreateFrame().SetGlyph(0, 0, glyph);
+                    aso.Frames[fc].SetForeground(0, 0, fg);
+                    aso.Frames[fc].SetBackground(0, 0, bg);
+                }
+                else
+                {
+                    aso.CreateFrame().SetGlyph(0, 0, 0);
+                    aso.Frames[fc].SetBackground(0, 0, fg);
+                }
+            }
+
+            aso.AnimationStateChanged += (s, e) =>
+            {
+                if(e.NewState == AnimatedScreenObject.AnimationState.Finished)
+                {
+                    aso.CurrentFrameIndex = 0;
+                }
+            };
+
+            return aso;
         }
 
         public static AnimatedEffect ExplosionEffect(int radius, TimeSpan speed)
@@ -22,12 +69,14 @@ namespace VEngine.Animations
             ef.FontSize = FontSize;
             ef.Repeat = false; // stop after playing once
             ef.AnimationDuration = speed;
+            ef.Center = (radius, radius);
 
             Random rand = new();
 
             char blast = '#';
-            char[] particles = { '*', '+', '.', '^' };
+            char[] particles = { '*', '+', '.', '^', 'o', 'O', '0' };
 
+            // set center
             // setup frames
             // we'll use the radius for number of frames.
             // fc = frame count
@@ -40,15 +89,16 @@ namespace VEngine.Animations
                 ef.CreateFrame();
 
                 // now for each point in the circumference, we set the char to blast.
-                foreach(var point in GetPointsInCircumference(++r, (radius, radius))) 
+                foreach(var point in Algorithms.GetPointsInCircumference(++r, (radius, radius))) 
                 {
                     ef.Frames[fc].SetGlyph(point.X, point.Y, blast);
+                    ef.Frames[fc].SetForeground(point.X, point.Y, Color.Orange);
                 }
 
                 // then put random particles inside the circle.
                 // the formula is ceil(2 ^ (x / 1.6) - 2)
                 int numberOfPoints = (int)Math.Ceiling(Math.Pow(2, radius/1.6f) - 2); 
-                var innerPoints = GetRandomPointsInCircle(r - 2, (radius, radius), numberOfPoints);
+                var innerPoints = Algorithms.GetRandomPointsInCircle(r - 1, (radius, radius), numberOfPoints);
                 foreach (var point in innerPoints)
                 {
                     char particle = particles[rand.Next(particles.Length)];
@@ -57,50 +107,25 @@ namespace VEngine.Animations
                 }
             }
 
-            // lastly, add an empty frame.
+            // lastly, add an empty frame
             ef.CreateFrame();
+
 
             return ef;
         }
 
-        private static HashSet<Point> GetPointsInCircumference(int radius, Point center)
+        public static AnimatedEffect TestEffect(int radius)
         {
-            HashSet<Point> points = new();
+            AnimatedEffect effect = new("asdf", radius * 2, radius * 2, TimeSpan.MaxValue, (radius, radius));
+            effect.FontSize = FontSize;
+            effect.Center = (radius, radius);
+            effect.CreateFrame();
+            effect.Repeat = true;
+            effect.Frames[0].SetGlyph(0, 0, 'N');
+            effect.Frames[0].DefaultBackground = Color.White;
+            effect.AnimationDuration = TimeSpan.MaxValue;
 
-            for (int theta = 0; theta < 360; theta++)
-            {
-                double rads = theta * Math.PI / 180;
-                int x = center.X + (int)(radius * Math.Cos(rads));
-                int y = center.Y + (int)(radius * Math.Sin(rads));
-
-                points.Add((x, y));
-            }
-
-            return points;
-        }
-
-        private static HashSet<Point> GetRandomPointsInCircle(int radius, Point center, int numberOfPoints)
-        {
-            HashSet<Point> points = new HashSet<Point>();
-            Random rnd = new Random();
-            int centerX = center.X;
-            int centerY = center.Y;
-            int radiusSquared = radius * radius;
-
-            for (int count = 0; count < numberOfPoints; count++)
-            {
-                // Generate a random point within the bounding box
-                int x = rnd.Next(centerX + radius);
-                int y = rnd.Next(centerY + radius);
-
-                // Check if the point is within the circle
-                if ((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= radiusSquared)
-                {
-                    points.Add(new Point(x, y));
-                }
-            }
-
-            return points;
+            return effect;
         }
     }
 }

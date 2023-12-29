@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Events;
 using VEngine.Factory;
+using VEngine.Items;
 
 namespace VEngine.Objects
 {
@@ -14,9 +15,14 @@ namespace VEngine.Objects
     /// </summary>
     public class Mage : ControllableGameObject
     {
+        private List<Spell> spells;
         public Mage(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
-
+            // testing 
+            spells = new()
+            {
+                (Spell)SpellRegistry.Fireball.Clone()
+            };
         }
 
         public override ICollection<ControlBase> GetControls()
@@ -43,6 +49,42 @@ namespace VEngine.Objects
             {
                 b
             };
+
+            int y = 2;
+            foreach(Spell spell in spells)
+            {
+                Button b2 = new(spell.Name);
+                b2.Position = (0, ++y);
+                b2.Click += (s, e) =>
+                {
+                    CombatEvent ce = new CombatEventBuilder()
+                        .SetEventType(CombatEventType.CAST)
+                        .AddField("spell", spell)
+                        .Build();
+
+                    GameManager.Instance.SendGameEvent(this, ce);
+                };
+
+                Button b3 = new("range")
+                {
+                    // 20 looks like a magic number because it is. 27 is the size of the controls console
+                    // minus (5, length of "range" + 2 for button padding)
+                    Position = (20, y)
+                };
+                b3.Click += (s, e) =>
+                {
+                    CombatEvent ce = new CombatEventBuilder()
+                        .SetEventType(CombatEventType.ACTION)
+                        .AddField("action", "show_range")
+                        .AddField("pattern", spell.Range)
+                        .Build();
+
+                    GameManager.Instance.SendGameEvent(this, ce);
+                };
+
+                controls.Add(b2);
+                controls.Add(b3);
+            }
 
             return controls;
         }

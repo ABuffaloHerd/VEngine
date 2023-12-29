@@ -13,6 +13,29 @@ namespace VEngine.Items
 {
     public static class WeaponRegistry
     {
+        public static Weapon Hands = new(
+            "Bare Hands",
+            "Give em' the hands! - Oskar", // Todo: Choose between this and "I COULD KILL YOU IN FIVE SECONDS WITH ME BARE HANDS. I'M TRAINED I AM" - Michael Rosen
+            1, 
+            new Pattern().Mark(1, 0),
+            (weapon, targets, wielder, arena) =>
+            {
+                int finalDamage = weapon.Damage;
+                foreach (GameObject obj in targets)
+                {
+                    obj.TakeDamage(finalDamage, DamageType.PHYSICAL);
+                }
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .AddField("amount", finalDamage)
+                    .AddField("targets", targets)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
+
+                return ev;
+            });
+
         public static Weapon WoodenSword = new(
             "Wooden sword",
             "A wooden stick that barely meets the criteria of being a weapon",

@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SadConsole.UI.Controls;
 using Newtonsoft.Json.Bson;
 using System.Diagnostics;
+using VEngine.Animations;
 
 namespace VEngine.Scenes.Combat
 {
@@ -24,7 +25,7 @@ namespace VEngine.Scenes.Combat
         private Console bgm;
         private Console focus;
         private Console turnOrder;
-        
+
         private ControlsConsole controls;
         private ControlsConsole hud;
         private ControlsConsole party;
@@ -93,17 +94,19 @@ namespace VEngine.Scenes.Combat
 
             StaticGameObject wall = new(wallobj, 1);
 
-            AnimatedScreenObject aso2 = new("Ranger", 1, 1);
-            aso2.CreateFrame()[0].Glyph = 'M';
-            aso2.Frames[0].SetForeground(0, 0, Color.Gray);
+            //AnimatedScreenObject aso2 = new("Ranger", 1, 1);
+            //aso2.CreateFrame()[0].Glyph = 'M';
+            //aso2.Frames[0].SetForeground(0, 0, Color.Gray);
+            AnimatedScreenObject aso2 = AnimationPresets.BlinkingEffect("Ranger", 'M', Color.Gray, Color.Black, (1, 1));
             Ranger ranger = new(aso2, 1);
             ranger.Name = "Minako";
             ranger.Speed = 120;
 
 
-            AnimatedScreenObject aso3 = new("Mage", 1, 1);
-            aso3.CreateFrame()[0].Glyph = 'S';
-            aso3.Frames[0].SetForeground(0, 0, Color.PaleGoldenrod);
+            //AnimatedScreenObject aso3 = new("Mage", 1, 1);
+            //aso3.CreateFrame()[0].Glyph = 'S';
+            //aso3.Frames[0].SetForeground(0, 0, Color.PaleGoldenrod);
+            AnimatedScreenObject aso3 = AnimationPresets.BlinkingEffect("Mage", 'S', Color.PaleGoldenrod, Color.Black, (1, 1));
             Mage mage = new(aso3, 1);
             mage.Name = "Saki";
             mage.Speed = 90;
@@ -134,7 +137,7 @@ namespace VEngine.Scenes.Combat
             turn.Sort();
         }
 
-        public void RemoveGameObject(GameObject gameObject) 
+        public void RemoveGameObject(GameObject gameObject)
         {
             gameObjects.Remove(gameObject);
             arena.RemoveEntity(gameObject);
@@ -153,7 +156,7 @@ namespace VEngine.Scenes.Combat
             gameObjects.Add(gameObject);
             // special case for magic circles
 
-            if(gameObject is MagicCircle)
+            if (gameObject is MagicCircle)
             {
                 arena.AddMagicCircle(gameObject as MagicCircle);
             }
@@ -225,6 +228,9 @@ namespace VEngine.Scenes.Combat
 
             // Alert the fight feed
             fightFeed.Print($"It is now {selectedGameObject.Name}'s turn.");
+
+            // Trigger select game object's on turn start function
+            selectedGameObject.OnStartTurn();
         }
 
         /// <summary>
@@ -254,7 +260,7 @@ namespace VEngine.Scenes.Combat
 
             // get controls from the current game object
             ICollection<ControlBase> controlBases = selectedGameObject.GetHudElements();
-            foreach(ControlBase control in controlBases)
+            foreach (ControlBase control in controlBases)
             {
                 hud.Controls.Add(control);
             }
@@ -265,10 +271,10 @@ namespace VEngine.Scenes.Combat
         /// <summary>
         /// Runs when the current game object has it's position changed.
         /// </summary>
-        private void OnMove(object? sender, ValueChangedEventArgs<Point> args) 
+        private void OnMove(object? sender, ValueChangedEventArgs<Point> args)
         {
             // If the arena was rendering a pattern rerender it
-            if(arena.IsRenderingPattern)
+            if (arena.IsRenderingPattern)
                 arena.RenderCachedPattern(args.NewValue, selectedGameObject.Facing);
 
             // tell the arena to update all its positions
@@ -287,12 +293,12 @@ namespace VEngine.Scenes.Combat
             // Get the targets out of the game event
             IEnumerable<GameObject> targets = args.GetData<IEnumerable<GameObject>>("targets");
 
-            foreach(GameObject target in targets)
+            foreach (GameObject target in targets)
             {
                 Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
 
                 // check if the target is dead
-                if(target.IsDead)
+                if (target.IsDead)
                 {
                     Logger.Report(this, $"{target} died.");
                     fightFeed.Print($"{target} died.");
@@ -311,176 +317,6 @@ namespace VEngine.Scenes.Combat
             // all this does is re render any patterns
             if (arena.IsRenderingPattern)
                 arena.RenderCachedPattern(selectedGameObject.Position, args.NewValue);
-        }
-
-        private void ProcessKeyEvent(KeyPressedEvent kpe)
-        {
-            switch (kpe.Key)
-            {
-                case 'w':
-                    Move(new Point(0, -1));
-                    break;
-
-                case 'a':
-                    Move(new Point(-1, 0));
-                    break;
-
-                case 's':
-                    Move(new Point(0, 1));
-                    break;
-
-                case 'd':
-                    Move(new Point(1, 0));
-                    break;
-
-                case ' ':
-                    OnNextTurn();
-                    break;
-
-                /// === LOOKING KEYS === ///
-                case (char)37:
-                case (char)38:
-                case (char)39:
-                case (char)40:
-                    switch(kpe.SadKey)
-                    {
-                        case Keys.Up:
-                            selectedGameObject.Facing = Data.Direction.UP;
-                            break;
-                        case Keys.Down:
-                            selectedGameObject.Facing = Data.Direction.DOWN;
-                            break;
-                        case Keys.Left:
-                            selectedGameObject.Facing = Data.Direction.LEFT;
-                            break;
-                        case Keys.Right:
-                            selectedGameObject.Facing = Data.Direction.RIGHT;
-                            break;
-                    }
-                    break;
-
-
-                /// === TESTING KEYS === ///
-                case 'j':
-                    Logger.Report(this, "j pressed");
-
-                    if (arena.IsRenderingPattern)
-                    {
-                        arena.StopRenderPattern();
-                    }
-                    else
-                    {   
-                        // feature not a bug
-                        if (selectedGameObject is not ControllableGameObject) return;
-                        else
-                        {
-                            Pattern p = (selectedGameObject as ControllableGameObject).GetRange();
-                            arena.RenderPattern(p, selectedGameObject.Position, selectedGameObject.Facing);
-                        }
-                    }
-
-                    break;
-
-                case 'l':
-                    Pattern p2 = new();
-                    p2.Mark(0, 0);
-                    p2.Mark(1, 0);
-                    if (selectedGameObject is ControllableGameObject)
-                    {
-                        ExecuteAttack(selectedGameObject, (selectedGameObject as ControllableGameObject).GetRange());
-                    }
-                    else
-                        ExecuteAttack(selectedGameObject, p2);
-
-                    break;
-            }
-        }
-
-        private void ProcessCombatEvent(CombatEvent e)
-        {
-            // check the type of combat event before processing.
-            switch(e.EventType)
-            {
-                case CombatEventType.DAMAGED:
-                    Logger.Report(this, e.ToString());
-                    int damage = e.GetData<int>("amount");
-                    string thing = e.GetData<GameObject>("me").Name;
-
-                    fightFeed.Print($"{thing} took {damage} damage");
-                    break;
-
-                case CombatEventType.ACTION:
-                    // figure out which action to do etc
-                    // debug code below is to attack one tile ahead
-                    Pattern p2 = new();
-                    p2.Mark(0, 0);
-                    p2.Mark(1, 0);
-                    ExecuteAttack(selectedGameObject, p2);
-
-                    break;
-
-                case CombatEventType.INFO:
-                    // print to fight feed
-                    string data = e.GetData<string>("info");
-
-                    fightFeed.Print(data); 
-                    break;
-
-                case CombatEventType.SUMMON:
-                    // figure out what to summon
-                    switch(e.GetData<string>("summon"))
-                    {
-                        case "magic_circle":
-                            // check 4 adjacent tiles to see if they're free
-                            List<Point> l = new()
-                            {
-                                (1, 0),
-                                (0, 1),
-                                (-1, 0),
-                                (0, -1)
-                            };
-
-                            foreach(Point p in l)
-                            {
-                                if(arena.IsTileFree(selectedGameObject.Position + p, true))
-                                {
-                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND, selectedGameObject)
-                                    {
-                                        Position = selectedGameObject.Position + p
-                                    };
-
-                                    SummonGameObject(mc);
-
-                                    fightFeed.Print("Summoned magic circle!");
-                                    break;
-                                }    
-                            }
-
-                            break;
-                    }
-
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// All events come to this function before being dispatched to handler functions
-        /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">The event</param>
-        protected override void ProcessGameEvent(object sender, IGameEvent e)
-        {
-            if(e is KeyPressedEvent)
-            {
-                ProcessKeyEvent(e as KeyPressedEvent);
-            }
-
-            if(e is CombatEvent)
-            {
-                ProcessCombatEvent(e as CombatEvent);
-            }
-
-            UpdateHud();
         }
     }
 }

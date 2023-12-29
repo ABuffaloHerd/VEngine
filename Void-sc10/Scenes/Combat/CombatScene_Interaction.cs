@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Data;
+using VEngine.Items;
 using VEngine.Logging;
 using VEngine.Objects;
 
@@ -29,13 +30,24 @@ namespace VEngine.Scenes.Combat
             // remove the current object from hurting itself
             targets.Remove(selectedGameObject);
 
-            foreach (GameObject target in targets) 
-            {
-                Logger.Report(this, $"{target} is a potential target.");
-            }
+            // Do the attack. This sends an event to the scene with attack information.
             attacker.Attack(targets, arena);
 
             Logger.Report(this, "attack executed");
+        }
+
+        // Slightly different implementation for spells
+        public void CastSpell(GameObject attacker, Pattern range, Spell s)
+        {
+            // From the given range, give possible targets in a collection to the attacker
+            List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position, selectedGameObject.Facing);
+
+            // remove the current object from hurting itself
+            targets.Remove(selectedGameObject);
+
+            attacker.Cast(targets, arena, s);
+
+            Logger.Report(this, "Spell cast!");
         }
 
         /// <summary>

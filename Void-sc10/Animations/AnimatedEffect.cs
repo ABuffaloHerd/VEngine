@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using VEngine.Data;
 using Components = SadConsole.Components;
 
 namespace VEngine.Animations
@@ -14,6 +14,8 @@ namespace VEngine.Animations
         private Components.Timer timer;
         private Point direction;
         private TimeSpan interval;
+
+        public Point Destination { get; set; }
 
         /// <summary>
         /// Automatically moving animted screen object
@@ -32,7 +34,10 @@ namespace VEngine.Animations
 
         private void MoveMe(object? sender, EventArgs e)
         {
-            this.Position += direction;
+            Position += direction;
+
+            if (Position == Destination)
+                State = AnimationState.Finished;
         }
 
         public void StartTimer()
@@ -49,8 +54,10 @@ namespace VEngine.Animations
         {
             return new AnimatedEffect(
                 Name, Width, Height,
-                interval, direction
-            );
+                interval, direction)
+            {
+                Destination = this.Destination
+            };
         }
     }
 }

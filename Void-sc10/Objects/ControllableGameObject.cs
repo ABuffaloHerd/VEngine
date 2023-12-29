@@ -97,5 +97,14 @@ namespace VEngine.Objects
             // always trigger OnAttack
             RaiseOnAttack(ev);
         }
+
+        public override void Cast(IEnumerable<GameObject> targets, Arena arena, Spell spell)
+        {
+            if (MP - spell.Cost < 0) return; // check for mp
+
+            MP -= spell.Cost;
+            var ev = spell.ApplyEffect(targets, this, arena);
+            RaiseOnAttack(ev);
+        }
     }
 }

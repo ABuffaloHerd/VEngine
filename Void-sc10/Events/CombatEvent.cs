@@ -38,7 +38,12 @@ namespace VEngine.Events
         /// <summary>
         /// For creating things
         /// </summary>
-        SUMMON
+        SUMMON,
+
+        /// <summary>
+        /// Cast a spell
+        /// </summary>
+        CAST
     }
     public class CombatEvent : GameEvent, IGameEvent
     {
@@ -74,6 +79,11 @@ namespace VEngine.Events
         private static string[] summonFields =
         {
             "summon"
+        };
+
+        private static string[] castFields =
+        {
+            "spell"
         };
 
         private CombatEvent()
@@ -153,6 +163,14 @@ namespace VEngine.Events
 
                 case CombatEventType.SUMMON:
                     foreach (string field in summonFields)
+                    {
+                        if (!data.ContainsKey(field))
+                            throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");
+                    }
+                    break;
+
+                case CombatEventType.CAST:
+                    foreach (string field in castFields)
                     {
                         if (!data.ContainsKey(field))
                             throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");

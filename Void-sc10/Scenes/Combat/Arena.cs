@@ -21,7 +21,7 @@ namespace VEngine.Scenes.Combat
     public class Arena : Console
     {
         private const int defaultSize = 12;
-        private readonly Point defaultPosition = new (32, 4);
+        private readonly Point defaultPosition = new (32, 4); // todo: make this initializable from constructor or otherwise.
         public EntityManager EntityManager { get; private set; }
 
         /// <summary>
@@ -58,8 +58,7 @@ namespace VEngine.Scenes.Combat
             int scaledDynamicOffset = (int)Math.Floor(dynamicOffset / scaleFactor);
 
             // Calculate the total vertical offset
-            // 4 appears to be a magic number but it's just the default Y position.
-            int verticalOffset = (int)(scaleFactor / 4) + scaledDynamicOffset;
+            int verticalOffset = (int)(scaleFactor / defaultPosition.Y) + scaledDynamicOffset;
 
             // Calculate the new Y position
             int newYPosition = (int)Math.Floor(defaultPosition.Y / scaleFactor) + verticalOffset;
@@ -81,12 +80,6 @@ namespace VEngine.Scenes.Combat
 
             // Set the animation presets global fontsize to this font size so glyphs are the same size
             AnimationPresets.FontSize = this.FontSize;
-
-            AnimatedEffect ef = AnimationPresets.ExplosionEffect(8, TimeSpan.FromSeconds(2));
-
-            ef.Position = (6, 6);
-            Children.Add(ef);
-            ef.Start();
         }
 
         public void AddEntity(GameObject gameObject)
@@ -247,6 +240,17 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue(eventArgs.OldValue, out GameObject obj);
             positions.Remove(eventArgs.OldValue);
             positions.Add(eventArgs.NewValue, obj);
+        }
+
+        /// <summary>
+        /// Adds an effect. Caller is responsible for setting position.
+        /// </summary>
+        /// <param name="effect"></param>
+        public void PlayAnimatedEffect(AnimatedEffect effect)
+        {
+            Children.Add(effect);
+            effect.Position += (1, 1); // offset it. I don't know why but this fixes all positioning issues.
+            effect.Start();
         }
 
         /// <summary>
