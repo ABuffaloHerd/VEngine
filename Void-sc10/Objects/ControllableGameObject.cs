@@ -49,6 +49,7 @@ namespace VEngine.Objects
 
             controlBases.Add(b);
 
+            PlugMemoryLeaks(controlBases);
             return controlBases;
         }
 
@@ -86,6 +87,8 @@ namespace VEngine.Objects
             list.Add(spBar);
             list.Add(spLabel);
 
+
+            PlugMemoryLeaks(list);
             return list;
         }
 

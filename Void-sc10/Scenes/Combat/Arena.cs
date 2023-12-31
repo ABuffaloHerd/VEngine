@@ -38,6 +38,13 @@ namespace VEngine.Scenes.Combat
         private Dictionary<Point, MagicCircle> magicCircles;
         private Pattern? currentPattern; // cache the current pattern
 
+        /// <summary>
+        /// Creates a new arena with specified width and height. Automatically scales and positions itself.<br></br>
+        /// Sizes work best with multiples of 4 larger than 24, but the min is 16 before it totally breaks down.
+        /// </summary>
+        /// <param name="width">Obese</param>
+        /// <param name="height">Lanky</param>
+        /// <exception cref="ArgumentException">Arena can't be tall. Yet.</exception>
         internal Arena(int width, int height) : base(width, height)
         {
             if (height > width) throw new ArgumentException("height cannot be larger than width. If you want a tall arena, fill it with walls.");
@@ -223,6 +230,12 @@ namespace VEngine.Scenes.Combat
             currentPattern = null;
         }
 
+        public void Mark(int x, int y)
+        {
+            Surface.SetForeground(x, y, Color.Red);
+            Surface.SetBackground(x, y, Color.Red);
+        }
+
         public void UpdatePositions()
         {
             positions = new();
@@ -256,6 +269,14 @@ namespace VEngine.Scenes.Combat
             Children.Add(effect);
             effect.Position += (1, 1); // offset it. I don't know why but this fixes all positioning issues.
             effect.Start();
+        }
+
+        public GameObject? At(int x, int y)
+        {
+            GameObject? a;
+            positions.TryGetValue((x, y), out a);
+
+            return a;
         }
 
         /// <summary>

@@ -60,7 +60,7 @@ namespace VEngine.Events
 
             foreach(var kvp in data)
             {
-                sb.Append(kvp.Key + " : " + kvp.Value);
+                sb.Append(kvp.Key + " : " + kvp.Value).Append('\n');
             }
 
             return sb.ToString();

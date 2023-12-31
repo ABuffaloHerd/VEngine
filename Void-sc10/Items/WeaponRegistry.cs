@@ -75,13 +75,16 @@ namespace VEngine.Items
 
                 if (target != null)
                 {
-                    Logger.Report(null, "Found a single target to attack!");
+                    Logger.Report("rifle", $"Found a single target to attack at {target.Position.X}, {target.Position.Y}!");
 
-                    // line of sight checking
-                    if(Algorithms.HasLineOfSight(target.Position, wielder.Position, arena))
+                    if (Algorithms.CheckLineOfSight(target.Position, wielder.Position, target, wielder, arena))
                     {
                         finalDamage = target.TakeDamage(weapon.Damage, DamageType.PHYSICAL);
                         list.Add(target);
+                    }
+                    else
+                    {
+                        Logger.Report("rifle", "line of sight check failed");
                     }
                 }
                 else

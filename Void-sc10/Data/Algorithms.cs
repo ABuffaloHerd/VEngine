@@ -95,9 +95,9 @@ namespace VEngine.Data
         /// </summary>
         /// <param name="start">start</param>
         /// <param name="end">end</param>
-        /// <param name="arena">Arena</param>
+        /// <param name="isFree">Lambda to check if this tile is free</param>
         /// <returns></returns>
-        public static bool HasLineOfSight(Point start, Point end, Arena arena)
+        public static bool HasLineOfSight(Point start, Point end, Func<Point, bool> isFree)
         {
             int x = start.X;
             int y = start.Y;
@@ -109,8 +109,10 @@ namespace VEngine.Data
 
             while (true)
             {
-                if (arena.IsTileFree((x, y)))
+                Logger.Report("Algorithms", $"Checking {x}, {y}");
+                if (!isFree((x, y)))
                 {
+                    Logger.Report("Algorithms", "isFree check failed.");
                     return false; // Obstacle found, line of sight is blocked
                 }
 
@@ -134,6 +136,43 @@ namespace VEngine.Data
             }
 
             return true; // Clear line of sight
+        }
+
+        /// <summary>
+        /// Line of sight checking for weapons and spells
+        /// </summary>
+        /// <param name="targetPosition">target location</param>
+        /// <param name="sourcePosition">start location</param>
+        /// <param name="target">kill that</param>
+        /// <param name="source">I AM NOT A FUCKING OBSTACLE</param>
+        /// <param name="arena">arena</param>
+        /// <returns>is there a line of sight?</returns>
+        public static bool CheckLineOfSight(Point targetPosition, Point sourcePosition, GameObject target, GameObject source, Arena arena)
+        {
+            Func<Point, bool> isFree = (pos) =>
+            {
+                var objectAtPos = arena.At(pos.X, pos.Y);
+                if (objectAtPos != null)
+                {
+                    if (objectAtPos.GetHashCode() == target.GetHashCode() || objectAtPos.GetHashCode() == source.GetHashCode())
+                    {
+                        // It's the target or the source, so not an obstacle
+                        return true;
+                    }
+                    else
+                    {
+                        // It's some other object, so it's an obstacle
+                        return false;
+                    }
+                }
+                else
+                {
+                    // No object, check if the tile is free
+                    return arena.IsTileFree(pos);
+                }
+            };
+
+            return Algorithms.HasLineOfSight(targetPosition, sourcePosition, isFree);
         }
     }
 }

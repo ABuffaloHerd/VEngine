@@ -100,6 +100,7 @@ namespace VEngine.Objects
                 controls.Add(b3);
             }
 
+            PlugMemoryLeaks(controls);
             return controls;
         }
     }

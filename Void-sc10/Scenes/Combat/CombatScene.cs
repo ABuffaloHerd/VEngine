@@ -7,15 +7,17 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using VEngine.Events;
 using VEngine.Objects;
 using VEngine.Data;
 using VEngine.Logging;
+using VEngine.Animations;
+
 using Microsoft.Xna.Framework.Graphics;
 using SadConsole.UI.Controls;
-using Newtonsoft.Json.Bson;
-using System.Diagnostics;
-using VEngine.Animations;
+
+using Effect = VEngine.Objects.Effect;
 
 namespace VEngine.Scenes.Combat
 {
@@ -40,7 +42,8 @@ namespace VEngine.Scenes.Combat
 
         private GameObject? selectedGameObject;
 
-        private HashSet<Action<GameObject>> OnAttackEffects;
+        private HashSet<Effect> OnAttackEffects;
+        private HashSet<Effect> OnTurnStartEffects;
 
         public CombatScene() : base()
         {
@@ -58,6 +61,9 @@ namespace VEngine.Scenes.Combat
             gameObjects = new();
             players = new();
             selectedGameObject = null;
+
+            OnAttackEffects = new();
+            OnTurnStartEffects = new();
 
             /* ===== Test code ===== */
             AnimatedScreenObject animated = new("test", 1, 1);
@@ -124,6 +130,14 @@ namespace VEngine.Scenes.Combat
             mage.Speed = 90;
             mage.Position = (0, 3);
 
+            AnimatedScreenObject aso4 = AnimationPresets.BlinkingEffect("Mage2", 'E', Color.LightGray, Color.Black, (1, 1));
+            Mage mage2 = new(aso4, 1);
+            mage2.Name = "Elaine";
+            mage2.Speed = 101;
+            mage2.Position = (0, 5);
+            mage2.RES = 50;
+            mage2.DEF = 2;
+
             //AddGameObject(test);
             //AddGameObject(test2);
             //AddGameObject(test3);
@@ -135,6 +149,9 @@ namespace VEngine.Scenes.Combat
             AddGameObject(wall2);
             AddGameObject(wall3);
             AddGameObject(mage);
+            AddGameObject(mage2);
+
+            // Test on turn conditions
 
             /* ===== End test code ===== */
 
@@ -246,6 +263,13 @@ namespace VEngine.Scenes.Combat
 
             // Trigger select game object's on turn start function
             selectedGameObject.OnStartTurn();
+
+            // Trigger the scene's global on turn start 
+            foreach(var effect in OnTurnStartEffects)
+            {
+                foreach(GameObject obj in gameObjects)
+                effect.Apply()
+            }
         }
 
         /// <summary>

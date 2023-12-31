@@ -22,6 +22,8 @@ namespace VEngine.Objects
         public Stat HP { get; set; }
         public Stat Speed { get; set; }
         public Stat MoveDist { get; set; }
+        public Stat DEF { get; set; }
+        public Stat RES { get; set; }
 
         public Alignment Alignment { get; set; } = Alignment.FRIEND;
 
@@ -88,6 +90,10 @@ namespace VEngine.Objects
             Speed = (Stat)100;
             MoveDist = (Stat)10;
             HP = 10; // default debug
+
+            // defaults
+            DEF = 0;
+            RES = 0;
         }
 
         public virtual void Move(Point dest)
@@ -155,20 +161,41 @@ namespace VEngine.Objects
         /// <returns>Amount of pain taken after painkillers</returns>
         public virtual int TakeDamage(int damage, DamageType type)
         {
+            int taken;
             // Damage calculation (defense, res etc)
-            HP.Current -= damage;
+            switch(type)
+            {
+                case DamageType.MAGIC:
+                    // reduce by RES%
+                    if (RES.Current != 0)
+                        taken = (int)Math.Floor(damage * (RES.Current / 100f));
+                    else
+                        taken = damage;
+                    break;
+
+                case DamageType.PHYSICAL:
+                    // reduce by DEF
+                    taken = damage - DEF.Current;
+                    break;
+
+                default:
+                    taken = damage;
+                    break;
+            }
+
+            HP.Current -= taken;
 
             CombatEvent damaged = new CombatEventBuilder()
                 .SetEventType(CombatEventType.DAMAGED)
-                .AddField("amount", damage)
+                .AddField("amount", taken)
                 .AddField("me", this)
                 .Build();
 
-            Logger.Report(this, $"Took {damage} damage. HP: {HP.Current} / {HP.Max}");
+            Logger.Report(this, $"Took {taken} damage. HP: {HP.Current} / {HP.Max}");
 
             GameManager.Instance.SendGameEvent(this, damaged);
 
-            return damage;
+            return taken;
         }
 
         /// <summary>
@@ -221,6 +248,14 @@ namespace VEngine.Objects
         protected void OnDirectionChanged(Data.Direction old, Data.Direction @new)
         {
             DirectionChanged?.Invoke(this, new(old, @new));
+        }
+
+        protected static void PlugMemoryLeaks(IEnumerable<ControlBase> controls)
+        {
+            foreach (ControlBase control in controls)
+            {
+                control.UseKeyboard = false;
+            }
         }
     }
 }
