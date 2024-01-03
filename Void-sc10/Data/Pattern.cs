@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace VEngine.Data
 {
-    public class Pattern : IEnumerable<Point>
+    public partial class Pattern : IEnumerable<Point>
     {
         private HashSet<Point> points;
 

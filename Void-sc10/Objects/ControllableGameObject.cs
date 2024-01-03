@@ -42,15 +42,7 @@ namespace VEngine.Objects
 
         public virtual ICollection<ControlBase> GetControls()
         {
-            List<ControlBase> controlBases = new();
-            Button b = new("blah");
-            b.Position = (2, 2);
-            b.UseKeyboard = false; // stops memory leaks by plugging it up with duct tape
-
-            controlBases.Add(b);
-
-            PlugMemoryLeaks(controlBases);
-            return controlBases;
+            return new List<ControlBase>();
         }
 
         public override ICollection<ControlBase> GetHudElements()

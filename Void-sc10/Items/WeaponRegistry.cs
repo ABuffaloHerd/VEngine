@@ -130,5 +130,65 @@ namespace VEngine.Items
 
                 return ev;
             });
+
+        public static Sword ChiXiao = new(
+            "Chi Xiao",
+            "Deals damage twice.\nAbility: Pick up to 10 targets and slash all of them, dealing 140% damage. Lucky last gets 300% physical and magic damage.",
+            5,
+            new Pattern().Mark(1, 0),
+            (weapon, targets, wielder, arena) =>
+            {
+                int finalDamage = 0;
+                var target = targets.FirstOrDefault();
+
+                if (target != null)
+                {
+                    int calcDamage = weapon.Damage;
+                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                }
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
+                    .AddField("amount", finalDamage)
+                    .AddField("targets", targets)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
+
+                return ev;
+            },
+            new Pattern(Pattern.Presets.Diamond(3).ToHashSet()),
+            2,
+            (weapon, targets, wielder, arena) =>
+            {
+                IEnumerator<GameObject> enumerator = targets.GetEnumerator();
+                int tally = 0;
+                for (int x = 0; x < 10; x++)
+                {
+                    if(!enumerator.MoveNext())
+                    {
+                        enumerator.Reset();
+                        enumerator.MoveNext();
+                    }
+
+                    tally += enumerator.Current.TakeDamage((int)(weapon.Damage * 1.4f), DamageType.PHYSICAL);
+                    if(x == 10)
+                    {
+                        tally += enumerator.Current.TakeDamage(weapon.Damage * 3, DamageType.PHYSICAL);
+                        tally += enumerator.Current.TakeDamage(weapon.Damage * 3, DamageType.MAGIC);
+                    }
+                }
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
+                    .AddField("amount", tally)
+                    .AddField("targets", targets)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
+
+                return ev;
+            });
     }
 }
