@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using VEngine.Data;
+using VEngine.Effects;
 using VEngine.Events;
 using VEngine.Factory;
 using VEngine.Items;
@@ -105,7 +106,7 @@ namespace VEngine.Objects
 
         public virtual void Update()
         {
-            foreach(Effect ef in effects)
+            foreach(EntityEffect ef in effects)
             {
                 ef.Apply(this);
             }
@@ -200,6 +201,7 @@ namespace VEngine.Objects
 
         /// <summary>
         /// Runs on this object's end phase
+        /// Ticks down all effects currently affecting this object.
         /// </summary>
         public virtual void OnEndTurn()
         {

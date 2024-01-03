@@ -29,6 +29,7 @@ namespace VEngine.Items
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", finalDamage)
                     .AddField("targets", targets)
                     .AddField("source", wielder)
@@ -52,6 +53,7 @@ namespace VEngine.Items
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", finalDamage)
                     .AddField("targets", targets)
                     .AddField("source", wielder)
@@ -91,8 +93,37 @@ namespace VEngine.Items
                     Logger.Report(null, "found no targets");
 
                 CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", finalDamage)
                     .AddField("targets", list)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
+
+                return ev;
+            });
+
+        public static Weapon CombatSword = new(
+            "Federation Issue Sword",
+            "Standard issue shortsword. Deals 4 + 50% DEF damage twice.",
+            4,
+            new Pattern().Mark(1, 0),
+            (weapon, targets, wielder, arena) =>
+            {
+                int finalDamage = 0;
+                var target = targets.FirstOrDefault();
+
+                if (target != null) 
+                {
+                    int calcDamage = (wielder.DEF / 2).Current + weapon.Damage;
+                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                }
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
+                    .AddField("amount", finalDamage)
+                    .AddField("targets", targets)
                     .AddField("source", wielder)
                     .AddField("weapon", weapon)
                     .Build();

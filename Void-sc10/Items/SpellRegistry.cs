@@ -39,6 +39,7 @@ namespace VEngine.Items
                     Logger.Report(null, "found no targets");
 
                 CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", finalDamage)
                     .AddField("targets", list)
                     .AddField("source", spell)
@@ -87,6 +88,7 @@ namespace VEngine.Items
                 arena.PlayAnimatedEffect(explode);
 
                 CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", finalDamage)
                     .AddField("targets", targets)
                     .AddField("source", spell)

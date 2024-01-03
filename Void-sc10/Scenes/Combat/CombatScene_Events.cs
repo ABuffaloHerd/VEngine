@@ -103,7 +103,6 @@ namespace VEngine.Scenes.Combat
             switch (e.EventType)
             {
                 case CombatEventType.DAMAGED:
-                    Logger.Report(this, e.ToString());
                     int damage = e.GetData<int>("amount");
                     string thing = e.GetData<GameObject>("me").Name;
 
@@ -126,7 +125,7 @@ namespace VEngine.Scenes.Combat
 
                 case CombatEventType.INFO:
                     // print to fight feed
-                    string data = e.GetData<string>("info");
+                    string data = e.GetData<string>("content");
 
                     fightFeed.Print(data);
                     break;

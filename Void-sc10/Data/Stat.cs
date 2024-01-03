@@ -108,6 +108,23 @@ namespace VEngine.Data
             return new Stat(stat.Current - value, stat.Max);
         }
 
+        public static Stat operator *(Stat stat, int value)
+        {
+            return new(stat.Current * value, stat.Max);
+        }
+
+        /// <summary>
+        /// Warning! Uses integer division.
+        /// </summary>
+        /// <param name="stat"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Stat operator /(Stat stat, int value) 
+        {
+            return new(stat.Current / value, stat.Max);
+        }
+
+
         public int Compare(Stat x, Stat y)
         {
             return x.Current - y.Current;

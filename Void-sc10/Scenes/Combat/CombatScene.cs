@@ -17,7 +17,9 @@ using VEngine.Animations;
 using Microsoft.Xna.Framework.Graphics;
 using SadConsole.UI.Controls;
 
-using Effect = VEngine.Objects.Effect;
+using Effect = VEngine.Effects.Effect;
+using VEngine.Factory;
+using VEngine.Effects;
 
 namespace VEngine.Scenes.Combat
 {
@@ -42,8 +44,9 @@ namespace VEngine.Scenes.Combat
 
         private GameObject? selectedGameObject;
 
-        private HashSet<Effect> OnAttackEffects;
-        private HashSet<Effect> OnTurnStartEffects;
+        private HashSet<ArenaEffect> OnCycleEffects;
+        private HashSet<EntityEffect> OnAttackEffects;
+        private HashSet<EntityEffect> OnTurnStartEffects;
 
         public CombatScene() : base()
         {
@@ -63,6 +66,7 @@ namespace VEngine.Scenes.Combat
             selectedGameObject = null;
 
             OnAttackEffects = new();
+            OnCycleEffects = new();
             OnTurnStartEffects = new();
 
             /* ===== Test code ===== */
@@ -138,6 +142,12 @@ namespace VEngine.Scenes.Combat
             mage2.RES = 50;
             mage2.DEF = 2;
 
+            AnimatedScreenObject aso5 = AnimationPresets.BlinkingEffect("Guard", 'H', Color.Red, Color.Black, (1, 1));
+            Guard guard = new(aso5, 1);
+            guard.Name = "Hirina";
+            guard.Speed = 100;
+            guard.Position = (1, 3);
+
             //AddGameObject(test);
             //AddGameObject(test2);
             //AddGameObject(test3);
@@ -150,8 +160,36 @@ namespace VEngine.Scenes.Combat
             AddGameObject(wall3);
             AddGameObject(mage);
             AddGameObject(mage2);
+            AddGameObject(guard);
 
             // Test on turn conditions
+            EntityEffect effect = new("Test", "Take 1 true damage at start of turn", 1,
+                (obj) =>
+                {
+                    obj.TakeDamage(1, DamageType.TRUE);
+
+                    CombatEvent ce = new CombatEventBuilder()
+                        .SetEventType(CombatEventType.INFO)
+                        .AddField("content", $"Dealt 1 damage to {obj}")
+                        .Build();
+
+                    return ce;
+                }
+            );
+            //OnTurnStartEffects.Add(effect);
+
+            // Test on cycle conditions
+            ArenaEffect arenaEffect = new("test 2", "take 2 true damage per cycle", 1,
+                (objs) =>
+                {
+                    foreach(var obj in objs)
+                    {
+                        obj.TakeDamage(2, DamageType.TRUE);
+                    }
+
+                    return null;
+                });
+            OnCycleEffects.Add(arenaEffect);
 
             /* ===== End test code ===== */
 
@@ -206,8 +244,13 @@ namespace VEngine.Scenes.Combat
             // If the turn order is empty, rebuild it.
             if (turn.Size <= 0)
             {
-                Logger.Report(this, "Turnqueue rebuild triggered");
+                Logger.Report(this, "Next cycle has started");
+                fightFeed.Print("The next cycle has begun.");
+                fightFeed.Print("");
                 turn.Rebuild(gameObjects);
+
+                // Trigger on next cycle function
+                OnNextCycle();
             }
 
             turn.Sort();
@@ -267,9 +310,26 @@ namespace VEngine.Scenes.Combat
             // Trigger the scene's global on turn start 
             foreach(var effect in OnTurnStartEffects)
             {
-                foreach(GameObject obj in gameObjects)
-                effect.Apply()
+                effect.ApplyEffect(selectedGameObject);
             }
+
+            CheckAllIfDead();
+        }
+
+        private void OnNextCycle()
+        {
+            foreach(var effect in OnCycleEffects)
+            {
+                effect.ApplyEffect(gameObjects);
+
+                if(!effect.IsInfinite && effect.Timer <= 0)
+                {
+                    OnCycleEffects.Remove(effect);
+                    fightFeed.Print($"Effect {effect.Name} has expired.");
+                }
+            }
+
+            CheckAllIfDead();
         }
 
         /// <summary>
@@ -336,14 +396,30 @@ namespace VEngine.Scenes.Combat
             {
                 Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
 
-                // check if the target is dead
-                if (target.IsDead)
-                {
-                    Logger.Report(this, $"{target} died.");
-                    fightFeed.Print($"{target} died.");
-                    RemoveGameObject(target);
-                }
+                CheckIfDead(target);
             }
+        }
+
+        /// <summary>
+        /// Alright who's not dead sound off.
+        /// </summary>
+        /// <param name="target"></param>
+        private void CheckIfDead(GameObject target)
+        {
+            if (target.IsDead)
+            {
+                fightFeed.Print($"{target} died.");
+                RemoveGameObject(target);
+            }
+        }
+
+        /// <summary>
+        /// 💀
+        /// </summary>
+        private void CheckAllIfDead()
+        {
+            foreach (GameObject obj in gameObjects)
+                CheckIfDead(obj);
         }
 
         /// <summary>

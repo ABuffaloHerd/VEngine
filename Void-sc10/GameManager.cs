@@ -110,11 +110,6 @@ namespace VEngine
                     // it belongs here. break for further processing
                     break;
             }
-
-            // Case for test events
-            // TODO: remove when finished
-            if(e.Contains("test"))
-                Logger.Report(this, e.ToString());
         }
     }
 

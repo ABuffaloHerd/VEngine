@@ -107,7 +107,7 @@ namespace VEngine.Events
 
         /// <summary>
         /// List of mandatory fields: <br></br>
-        /// INFO:<br></br>
+        /// DAMAGED:<br></br>
         /// amount of damage - "amount"<br></br>
         /// name of source   - "source"<br></br>
         /// name of weapon attacked with - "weapon"<br></br>
@@ -175,6 +175,11 @@ namespace VEngine.Events
                         if (!data.ContainsKey(field))
                             throw new InvalidOperationException($"Missing mandatory field {field} in speech type combat event!");
                     }
+                    break;
+
+                case CombatEventType.INFO:
+                    if(!data.ContainsKey("content"))
+                        throw new InvalidOperationException($"Missing mandatory field \"content\" in speech type combat event!");
                     break;
             }
 

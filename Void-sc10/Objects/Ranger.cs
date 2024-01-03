@@ -49,7 +49,7 @@ namespace VEngine.Objects
                 Logger.Report(this, "out of ammo!");
                 CombatEvent ev = new CombatEventBuilder()
                     .SetEventType(CombatEventType.INFO)
-                    .AddField("info", $"{Name}: Out of ammo!")
+                    .AddField("content", $"{Name}: Out of ammo!")
                     .Build();
 
                 GameManager.Instance.SendGameEvent(this, ev);
