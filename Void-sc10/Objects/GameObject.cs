@@ -39,7 +39,7 @@ namespace VEngine.Objects
         public bool HasCollision { get; set; } = true;
 
         /// <summary>
-        /// What is this object, really?
+        /// Take a guess. Is this potato a bomb?
         /// </summary>
         public Type Type { get; set; } = Type.ENTITY; 
 
@@ -117,7 +117,7 @@ namespace VEngine.Objects
         /// </summary>
         public virtual void OnStartTurn()
         {
-            AppearanceSurface.Animation.Start();
+            Blink();
         }
 
         /// <summary>
@@ -210,7 +210,9 @@ namespace VEngine.Objects
 
         /// <summary>
         /// Builds a collection of control bases containing hud elements
-        /// based off current object's stats
+        /// based off current object's stats. <br></br>
+        /// Listen, the only way i could get this to update correctly was by rebuilding it every time an action is taken
+        /// As a result keep this as efficient as possible.
         /// </summary>
         /// <returns>Collection of these control bases</returns>
         public virtual ICollection<ControlBase> GetHudElements()
@@ -231,6 +233,25 @@ namespace VEngine.Objects
             list.Add(label);
 
             return list;
+        }
+
+        public virtual void Blink()
+        {
+            AppearanceSurface.Animation.Start();
+        }
+
+        public virtual void Overlay(char glyph)
+        {
+            Logger.Report(this, "Overlay enabled");
+            CellDecorator decorator = new(Color.Red, 'X', Mirror.None);
+            //CellDecoratorHelpers.AddDecorator(decorator, AppearanceSurface.Animation.Frames[0]));
+            AppearanceSurface.Animation.Frames[0].AddDecorator(0, decorator);
+        }
+
+        public virtual void DisableOverlay()
+        {
+            Logger.Report(this, "cleared overlays");
+            AppearanceSurface.Animation.Frames[0].SetDecorator(0, null);
         }
 
         /// <summary>

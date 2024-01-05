@@ -16,12 +16,14 @@ namespace VEngine.Objects
     public class Mage : ControllableGameObject
     {
         public int MagicCircles { get; set; }
-        private List<Spell> spells;
+        private List<Spell> spellBook;
+        private Spell selectedSpell;
         public Mage(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
             MagicCircles = 0;
+            selectedSpell = null;
             // testing 
-            spells = new()
+            spellBook = new()
             {
                 (Spell)SpellRegistry.Fireball.Clone()
             };
@@ -41,7 +43,7 @@ namespace VEngine.Objects
 
         public override ICollection<ControlBase> GetControls()
         {
-            Button b = new("Summon")
+            Button b = new("Summon magic circle")
             {
                 Position = (0, 0)
             };
@@ -59,46 +61,102 @@ namespace VEngine.Objects
                 GameManager.Instance.SendGameEvent(this, combat);
             };
 
-            List<ControlBase> controls = new()
+            Label title = new("[c:r b:yellow][c:r f:black]Spellbook")
             {
-                b
+                Position = (0, 2)
+            };
+            title.Surface.UsePrintProcessor = true;
+
+            ListBox spellList = new(27, 5)
+            {
+                Position = (0, 4),
+            };
+            spellList.SelectedItemChanged += (s, args) =>
+            {
+                selectedSpell = (Spell)args.Item;
             };
 
-            int y = 2;
-            foreach(Spell spell in spells)
+            foreach (Spell spell in spellBook)
             {
-                Button b2 = new(spell.Name);
-                b2.Position = (0, ++y);
-                b2.Click += (s, e) =>
-                {
-                    CombatEvent ce = new CombatEventBuilder()
-                        .SetEventType(CombatEventType.CAST)
-                        .AddField("spell", spell)
-                        .Build();
-
-                    GameManager.Instance.SendGameEvent(this, ce);
-                };
-
-                Button b3 = new("range")
-                {
-                    // 20 looks like a magic number because it is. 27 is the size of the controls console
-                    // minus (5, length of "range" + 2 for button padding)
-                    Position = (20, y)
-                };
-                b3.Click += (s, e) =>
-                {
-                    CombatEvent ce = new CombatEventBuilder()
-                        .SetEventType(CombatEventType.ACTION)
-                        .AddField("action", "show_range")
-                        .AddField("pattern", spell.Range)
-                        .Build();
-
-                    GameManager.Instance.SendGameEvent(this, ce);
-                };
-
-                controls.Add(b2);
-                controls.Add(b3);
+                spellList.Items.Add(spell);
             }
+            if (spellBook.Count > 0)
+                spellList.SelectedIndex = 0;
+
+            Button castButton = new("Cast")
+            {
+                Position = (0, 15)
+            };
+            castButton.Click += (s, e) =>
+            {
+                if (selectedSpell == null) return;
+                CombatEvent ce = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.CAST)
+                    .AddField("spell", selectedSpell)
+                    .Build();
+
+                GameManager.Instance.SendGameEvent(this, ce);
+            };
+
+            Button showRange = new("Range")
+            {
+                Position = (9, 15)
+            };
+            showRange.Click += (s, e) =>
+            {
+                if (selectedSpell == null) return;
+                CombatEvent ce = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ACTION)
+                    .AddField("action", "show_range")
+                    .AddField("pattern", selectedSpell.Range)
+                    .Build();
+
+                GameManager.Instance.SendGameEvent(this, ce);
+            };
+
+            List<ControlBase> controls = new()
+            {
+                b,
+                title,
+                spellList,
+                castButton,
+                showRange
+            };
+            //int y = 2;
+            //foreach(Spell spell in spellBook)
+            //{
+            //    Button b2 = new(spell.Name);
+            //    b2.Position = (0, ++y);
+            //    b2.Click += (s, e) =>
+            //    {
+            //        CombatEvent ce = new CombatEventBuilder()
+            //            .SetEventType(CombatEventType.CAST)
+            //            .AddField("spell", spell)
+            //            .Build();
+
+            //        GameManager.Instance.SendGameEvent(this, ce);
+            //    };
+
+            //    Button b3 = new("range")
+            //    {
+            //        // 20 looks like a magic number because it is. 27 is the size of the controls console
+            //        // minus (5, length of "range" + 2 for button padding)
+            //        Position = (20, y)
+            //    };
+            //    b3.Click += (s, e) =>
+            //    {
+            //        CombatEvent ce = new CombatEventBuilder()
+            //            .SetEventType(CombatEventType.ACTION)
+            //            .AddField("action", "show_range")
+            //            .AddField("pattern", spell.Range)
+            //            .Build();
+
+            //        GameManager.Instance.SendGameEvent(this, ce);
+            //    };
+
+            //    controls.Add(b2);
+            //    controls.Add(b3);
+            //}
 
             PlugMemoryLeaks(controls);
             return controls;

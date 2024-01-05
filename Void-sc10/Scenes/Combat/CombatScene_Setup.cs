@@ -99,7 +99,7 @@ namespace VEngine.Scenes.Combat
 
             hud = new(29, 18)
             {
-                Position = new(1, 33)
+                Position = new(1, 33),
             };
             Children.Add(hud);
 

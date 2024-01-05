@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadConsole.Effects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -36,7 +37,7 @@ namespace VEngine.Animations
                 Repeat = false
             };
 
-            for(int fc = 0; fc < 6; fc++)
+            for (int fc = 0; fc < 6; fc++)
             {
                 if (fc % 2 == 0)
                 {
@@ -53,7 +54,7 @@ namespace VEngine.Animations
 
             aso.AnimationStateChanged += (s, e) =>
             {
-                if(e.NewState == AnimatedScreenObject.AnimationState.Finished)
+                if (e.NewState == AnimatedScreenObject.AnimationState.Finished)
                 {
                     aso.CurrentFrameIndex = 0;
                 }

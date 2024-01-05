@@ -354,8 +354,8 @@ namespace VEngine.Scenes.Combat
         {
             hud.Controls.Clear();
             hud.Surface.Clear(0, 17, 20);
-            //hud.Print(0, 0, selectedGameObject.Name);
-            hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
+
+            //hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
 
             // get controls from the current game object
             ICollection<ControlBase> controlBases = selectedGameObject.GetHudElements();
@@ -363,7 +363,6 @@ namespace VEngine.Scenes.Combat
             {
                 hud.Controls.Add(control);
             }
-
         }
 
 
@@ -372,12 +371,13 @@ namespace VEngine.Scenes.Combat
         /// </summary>
         private void OnMove(object? sender, ValueChangedEventArgs<Point> args)
         {
+            // tell the arena to update all its positions
+            arena.UpdatePositions(args);
+
             // If the arena was rendering a pattern rerender it
             if (arena.IsRenderingPattern)
                 arena.RenderCachedPattern(args.NewValue, selectedGameObject.Facing);
 
-            // tell the arena to update all its positions
-            arena.UpdatePositions(args);
         }
 
         /// <summary>

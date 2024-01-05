@@ -50,5 +50,10 @@ namespace VEngine.Items
                 attackFunction
             );
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
