@@ -60,6 +60,8 @@ namespace VEngine.Objects
         }
         protected Data.Direction facing = Data.Direction.RIGHT;
 
+        public virtual Pattern Range => null;
+
         protected List<Effect> effects;
 
         protected EffectsManager effectsManager;
@@ -238,20 +240,6 @@ namespace VEngine.Objects
         public virtual void Blink()
         {
             AppearanceSurface.Animation.Start();
-        }
-
-        public virtual void Overlay(char glyph)
-        {
-            Logger.Report(this, "Overlay enabled");
-            CellDecorator decorator = new(Color.Red, 'X', Mirror.None);
-            //CellDecoratorHelpers.AddDecorator(decorator, AppearanceSurface.Animation.Frames[0]));
-            AppearanceSurface.Animation.Frames[0].AddDecorator(0, decorator);
-        }
-
-        public virtual void DisableOverlay()
-        {
-            Logger.Report(this, "cleared overlays");
-            AppearanceSurface.Animation.Frames[0].SetDecorator(0, null);
         }
 
         /// <summary>

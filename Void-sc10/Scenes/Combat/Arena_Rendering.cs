@@ -19,18 +19,18 @@ namespace VEngine.Scenes.Combat
         private SadConsole.Renderers.IRenderStep _secondSurfaceRenderStep;
         private ScreenSurface _secondSurfaceWrapper;
 
-        public ICellSurface SecondSurface => _secondSurfaceWrapper.Surface;
+        public ICellSurface SecondSurface => _secondSurfaceWrapper.Surface; // This surface is used for the overlay.
         protected void SetupRenderer()
         {
-            // Create the top layer that's above entities
-            _secondSurfaceWrapper = new(this.Width, this.Height);
-
             // Create the new render step and tell it to render the second surface
             _secondSurfaceRenderStep = new SadConsole.Renderers.SurfaceTargetRenderStep();
             _secondSurfaceRenderStep.SetData(_secondSurfaceWrapper);
 
             // Add the new render step to the current renderer for this ScreenSurface
             Renderer!.Steps.Add(_secondSurfaceRenderStep);
+
+            _secondSurfaceWrapper.ViewHeight = this.Height;
+            _secondSurfaceWrapper.ViewWidth = this.Width;
         }
 
         protected override void OnFontChanged(IFont oldFont, Point oldFontSize)
@@ -44,6 +44,7 @@ namespace VEngine.Scenes.Combat
         {
             base.Update(delta);
             _secondSurfaceWrapper.Update(delta);
+            _secondSurfaceWrapper.ViewPosition = this.ViewPosition;
         }
 
         protected override void Dispose(bool disposing)

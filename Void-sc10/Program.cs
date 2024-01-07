@@ -7,7 +7,7 @@ Settings.WindowTitle = "VEngine-sc10";
 
 Builder startup = new Builder()
     .SetScreenSize(128, 72)
-    .SetStartingScreen<CombatScene>()
+    .SetStartingScreen<TitleScene>()
     .IsStartingScreenFocused(true)
     .ConfigureFonts((config, game) => config.UseCustomFont("Resources/Font/Cheepicus12.font"))
     .AddFrameUpdateEvent(KeyboardHandler.HandleKeyboard)

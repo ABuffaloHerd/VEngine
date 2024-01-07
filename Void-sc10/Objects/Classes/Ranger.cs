@@ -11,8 +11,9 @@ using VEngine.Items;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
 
-namespace VEngine.Objects
+namespace VEngine.Objects.Classes
 {
+    // Watch out sniper
     public class Ranger : ControllableGameObject
     {
         public Stat Ammo { get; set; } = 2;
@@ -27,7 +28,7 @@ namespace VEngine.Objects
 
             ProgressBar ammobar = new(20, 1, HorizontalAlignment.Left)
             {
-                Progress = (float)Ammo.Current / (float)Ammo.Max,
+                Progress = Ammo.Current / (float)Ammo.Max,
                 Position = (6, 10),
                 DisplayText = $"{Ammo.Current} / {Ammo.Max}",
                 BarColor = Color.Brown,
@@ -44,7 +45,7 @@ namespace VEngine.Objects
 
         public override void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
-            if(Ammo - 1 < 0)
+            if (Ammo - 1 < 0)
             {
                 Logger.Report(this, "out of ammo!");
                 CombatEvent ev = new CombatEventBuilder()

@@ -15,10 +15,10 @@ using VEngine.Objects;
 namespace VEngine.Scenes.Combat
 {
     /// <summary>
-    /// This class handles everything to do with rendering entities and checking collision.
+    /// This class handles everything to do with rendering entities and checking collision. It knows what's where
     /// Don't use this outside of combat scenes.
     /// </summary>
-    public partial class Arena : Console
+    public partial class Arena : ScreenSurface
     {
         private const int defaultSize = 12;
         private readonly Point defaultPosition = new (32, 4); // todo: make this initializable from constructor or otherwise.
@@ -49,6 +49,10 @@ namespace VEngine.Scenes.Combat
         {
             if (height > width) throw new ArgumentException("height cannot be larger than width. If you want a tall arena, fill it with walls.");
 
+            // Create the top layer that's above entities
+            _secondSurfaceWrapper = new(width, height);
+            _secondSurfaceWrapper.Surface.DefaultBackground = Color.Red;
+
             float scaleFactor = 64f / width; // 64 is the default size.
             int size = (int) Math.Floor(scaleFactor * defaultSize);
             FontSize = (size, size);
@@ -73,7 +77,6 @@ namespace VEngine.Scenes.Combat
             // calculate the position based on the arena's width
             Point newPosition = new Point(
                 (int)Math.Floor(defaultPosition.X / scaleFactor),
-                //(int)Math.Floor(defaultPosition.Y / scaleFactor) + verticalOffset
                 newYPosition
             );
             Position = newPosition;
@@ -88,7 +91,6 @@ namespace VEngine.Scenes.Combat
             // Set the animation presets global fontsize to this font size so glyphs are the same size
             AnimationPresets.FontSize = this.FontSize;
 
-            // Setup funny renderer steps
             SetupRenderer();
         }
 

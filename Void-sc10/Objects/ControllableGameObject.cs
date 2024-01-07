@@ -21,6 +21,14 @@ namespace VEngine.Objects
         public Stat MP { get; set; } = 10; // default values
         public Stat SP { get; set; } = 5;
 
+        public override Pattern Range
+        {
+            get
+            {
+                return weapon.Range;
+            }
+        }
+
         public ControllableGameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
             weapon = WeaponRegistry.WoodenSword.Clone() as Weapon;
@@ -29,6 +37,9 @@ namespace VEngine.Objects
             {
                 throw new Exception("Major fuck up in controllable game object constructor");
             }
+
+            // default for all controllables
+            Alignment = Alignment.FRIEND;
 
             // set attributes for MP bar
             MP.IsOverloadable = true;

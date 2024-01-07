@@ -9,11 +9,15 @@ namespace VEngine.Scenes.Combat
 {
     public partial class CombatScene : Scene
     {
-        private void SetupArena()
+        private void SetupArena(int width, int height)
         {
             // i'm not typing border.borderparameters 20 times
+            arena = new(width, height);
+            Children.Add(arena);
+
             var b = Border.BorderParameters
                 .GetDefault()
+                .ChangeBorderBackgroundColor(Color.Transparent)
                 .AddTitle("ARENA");
             new Border(arena, b);
         }
@@ -85,10 +89,6 @@ namespace VEngine.Scenes.Combat
                 Position = new(32, 69)
             };
             Children.Add(bgm);
-
-            /// TODO: Make this a parameter
-            arena = new(32, 16);
-            Children.Add(arena);
 
             controls = new(29, 18)
             {

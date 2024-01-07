@@ -9,6 +9,7 @@ using VEngine.Objects;
 using VEngine.Data;
 using SadConsole.Input;
 using VEngine.Items;
+using VEngine.Objects.Classes;
 
 namespace VEngine.Scenes.Combat
 {
@@ -118,6 +119,11 @@ namespace VEngine.Scenes.Combat
                             // get range and tell arena to display it
                             Pattern p = e.GetData<Pattern>("pattern");
                             arena.RenderPattern(p, selectedGameObject.Position, selectedGameObject.Facing);
+                            break;
+
+                        case "attack":
+                            // run attack logic
+                            ExecuteAttack(selectedGameObject, selectedGameObject.Range);
                             break;
                     }
 

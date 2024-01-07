@@ -66,9 +66,10 @@ namespace VEngine.Scenes
             GC.SuppressFinalize(this);
         }
 
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             // I don't know what sadconsole does in its disposal so run it.
+            Logger.Report(this, "disposing.");
             base.Dispose(true);
 
             if(!disposed)

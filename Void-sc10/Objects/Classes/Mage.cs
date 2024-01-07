@@ -8,11 +8,12 @@ using VEngine.Events;
 using VEngine.Factory;
 using VEngine.Items;
 
-namespace VEngine.Objects
+namespace VEngine.Objects.Classes
 {
     /// <summary>
     /// Mages get a mana boost for every magic circle owned by them
     /// </summary>
+    /// Fireball!
     public class Mage : ControllableGameObject
     {
         public int MagicCircles { get; set; }
@@ -34,7 +35,7 @@ namespace VEngine.Objects
             base.OnStartTurn(); // must call this because it handles effects
 
             // Passive: Mages gain 10 max MP for each magic circle and regenerate 5 MP
-            MP.Max = 10 + (MagicCircles * 10);
+            MP.Max = 10 + MagicCircles * 10;
             for (int x = 0; x < MagicCircles; x++)
             {
                 MP.Current += 5;
@@ -55,8 +56,8 @@ namespace VEngine.Objects
                     .AddField("summon", "magic_circle")
                     .Build();
 
-                if ((MP - 10) < 0) return;
-                this.MP -= 10; // costs 10 mana
+                if (MP - 10 < 0) return;
+                MP -= 10; // costs 10 mana
 
                 GameManager.Instance.SendGameEvent(this, combat);
             };

@@ -48,12 +48,15 @@ namespace VEngine.Scenes.Combat
         private HashSet<EntityEffect> OnAttackEffects;
         private HashSet<EntityEffect> OnTurnStartEffects;
 
-        public CombatScene() : base()
+        private static int instanceCount = 0;
+        private CombatScene() : base()
         {
+            Logger.Report(this, $"CombatScene being created: {this.GetHashCode()} ");
+            if (instanceCount >= 1 ) throw new Exception("Somebody is creating two combat scenes.");
+            instanceCount++;
             turn = new();
 
             SetupConsoles();
-            SetupArena();
             SetupFightFeed();
             SetupControls();
             SetupTurnOrder();
@@ -68,99 +71,6 @@ namespace VEngine.Scenes.Combat
             OnAttackEffects = new();
             OnCycleEffects = new();
             OnTurnStartEffects = new();
-
-            /* ===== Test code ===== */
-            AnimatedScreenObject animated = new("test", 1, 1);
-            animated.CreateFrame()[0].Glyph = 'T';
-
-            GameObject test = new(animated, 1);
-            test.Name = "Testobj";
-
-            GameObject test2 = new(animated, 1);
-            test2.Name = "Test 2";
-            test2.Speed = (Stat)200;
-
-            GameObject test3 = new(animated, 1);
-            test3.Name = "Test 3";
-            test3.Speed = (Stat)90;
-
-            GameObject test4 = new(animated, 1);
-            test4.Name = "Test 4";
-            test4.Speed = (Stat)190;
-
-            GameObject test5 = new(animated, 1);
-            test5.Name = "Test 5";
-            test5.Speed = (Stat)20;
-
-            AnimatedScreenObject aso = new("Controllable", 1, 1);
-            aso.CreateFrame()[0].Glyph = (char)1;
-            ControllableGameObject pgo = new(aso, 2);
-            pgo.Name = "Controllable";
-            pgo.Speed = 250;
-
-            // put some walls
-            AnimatedScreenObject wallobj = new("wall", 1, 1);
-            wallobj.CreateFrame()[0].Glyph = (char)219;
-
-            StaticGameObject wall = new(wallobj, 1);
-            wall.Position = (3, 3);
-
-            StaticGameObject wall2 = new(wallobj, 1)
-            {
-                Position = (3, 2)
-            };
-
-            StaticGameObject wall3 = new(wallobj, 1)
-            {
-                Position = (3, 4)
-            };
-
-            //AnimatedScreenObject aso2 = new("Ranger", 1, 1);
-            //aso2.CreateFrame()[0].Glyph = 'M';
-            //aso2.Frames[0].SetForeground(0, 0, Color.Gray);
-            AnimatedScreenObject aso2 = AnimationPresets.BlinkingEffect("Ranger", 'M', Color.Gray, Color.Black, (1, 1));
-            Ranger ranger = new(aso2, 1);
-            ranger.Name = "Minako";
-            ranger.Speed = 120;
-            ranger.Position = (7, 6);
-
-
-            //AnimatedScreenObject aso3 = new("Mage", 1, 1);
-            //aso3.CreateFrame()[0].Glyph = 'S';
-            //aso3.Frames[0].SetForeground(0, 0, Color.PaleGoldenrod);
-            AnimatedScreenObject aso3 = AnimationPresets.BlinkingEffect("Mage", 'S', Color.PaleGoldenrod, Color.Black, (1, 1));
-            Mage mage = new(aso3, 1);
-            mage.Name = "Saki";
-            mage.Speed = 90;
-            mage.Position = (0, 3);
-
-            AnimatedScreenObject aso4 = AnimationPresets.BlinkingEffect("Mage2", 'E', Color.LightGray, Color.Black, (1, 1));
-            Mage mage2 = new(aso4, 1);
-            mage2.Name = "Elaine";
-            mage2.Speed = 101;
-            mage2.Position = (0, 5);
-            mage2.RES = 50;
-            mage2.DEF = 2;
-
-            AnimatedScreenObject aso5 = AnimationPresets.BlinkingEffect("Guard", 'H', Color.Red, Color.Black, (1, 1));
-            Guard guard = new(aso5, 1);
-            guard.Name = "Hirina";
-            guard.Speed = 100;
-            guard.Position = (1, 3);
-
-            //AddGameObject(test);
-            //AddGameObject(test2);
-            //AddGameObject(test3);
-            //AddGameObject(test4);
-            //AddGameObject(test5);
-            //AddGameObject(pgo);
-            AddGameObject(ranger);
-            AddGameObject(wall);
-            AddGameObject(wall2);
-            AddGameObject(wall3);
-            AddGameObject(mage);
-            AddGameObject(mage2);
-            AddGameObject(guard);
 
             // Test on turn conditions
             EntityEffect effect = new("Test", "Take 1 true damage at start of turn", 1,
@@ -177,23 +87,15 @@ namespace VEngine.Scenes.Combat
                 }
             );
             //OnTurnStartEffects.Add(effect);
+        }
 
-            // Test on cycle conditions
-            ArenaEffect arenaEffect = new("test 2", "take 2 true damage per cycle", 1,
-                (objs) =>
-                {
-                    foreach(var obj in objs)
-                    {
-                        obj.TakeDamage(2, DamageType.TRUE);
-                    }
+        public CombatScene(CombatScenario preset) : this()
+        {
+            SetupArena(preset.ArenaWidth, preset.ArenaHeight);
 
-                    return null;
-                });
-            OnCycleEffects.Add(arenaEffect);
+            foreach(var obj in preset.Objects)
+                AddGameObject(obj);
 
-            /* ===== End test code ===== */
-
-            // Start the turn
             OnNextTurn();
         }
 
@@ -355,7 +257,7 @@ namespace VEngine.Scenes.Combat
             hud.Controls.Clear();
             hud.Surface.Clear(0, 17, 20);
 
-            //hud.Print(0, 17, $"M: {selectedGameObject.MoveDist}");
+            hud.Print(0, 17, $"m: {selectedGameObject.MoveDist}");
 
             // get controls from the current game object
             ICollection<ControlBase> controlBases = selectedGameObject.GetHudElements();

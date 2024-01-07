@@ -25,8 +25,10 @@ namespace VEngine
         private readonly Dictionary<string, Func<Scene>> sceneFactory = new()
         {
             { "test_scene", () => new TestScene() },
+            { "scenario_select", () => new ScenarioScene() },
             { "title", () => new TitleScene() },
-            { "arena_layout", () => new CombatLayoutScene() }
+            { "arena_layout", () => new CombatLayoutScene() },
+            { "combattest", () => new CombatScene(ScenarioPresets.CombatTest) }
         };
 
         /// <summary>
