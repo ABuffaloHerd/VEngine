@@ -15,7 +15,7 @@ namespace VEngine.Scenes
         public static CombatScenario CombatTest;
         static ScenarioPresets()
         {
-            CombatTest = new("combat test", "testing classes", 32, 32);
+            CombatTest = new("combat test", "testing classes", 64, 64);
 
             // define some objects
 
@@ -86,15 +86,15 @@ namespace VEngine.Scenes
 
             CombatTest.Objects = new()
             {
-                test,
+                //test,
                 ranger,
-                wall,
-                wall2,
-                wall3,
-                mage,
+                //wall,
+                //wall2,
+                //wall3,
+                //mage,
                 mage2,
-                guard,
-                vanguard
+                //guard,
+                //vanguard
             };
         }
     }

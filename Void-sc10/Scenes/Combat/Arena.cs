@@ -49,10 +49,7 @@ namespace VEngine.Scenes.Combat
         {
             if (height > width) throw new ArgumentException("height cannot be larger than width. If you want a tall arena, fill it with walls.");
 
-            // Create the top layer that's above entities
-            _secondSurfaceWrapper = new(width, height);
-            _secondSurfaceWrapper.Surface.DefaultBackground = Color.Red;
-
+            /// === DYNAMIC RESIZING === ///
             float scaleFactor = 64f / width; // 64 is the default size.
             int size = (int) Math.Floor(scaleFactor * defaultSize);
             FontSize = (size, size);
@@ -81,8 +78,7 @@ namespace VEngine.Scenes.Combat
             );
             Position = newPosition;
 
-            Resize(width, height, true);
-
+            /// === Actual constructor things ===
             EntityManager = new();
             SadComponents.Add(EntityManager);
             magicCircles = new();
@@ -91,6 +87,9 @@ namespace VEngine.Scenes.Combat
             // Set the animation presets global fontsize to this font size so glyphs are the same size
             AnimationPresets.FontSize = this.FontSize;
 
+            // Run second surface setup
+            Logger.Report(this, $"parameter width is {width}");
+            Logger.Report(this, $"parameter height is {height}");
             SetupRenderer();
         }
 

@@ -22,15 +22,19 @@ namespace VEngine.Scenes.Combat
         public ICellSurface SecondSurface => _secondSurfaceWrapper.Surface; // This surface is used for the overlay.
         protected void SetupRenderer()
         {
+            // Create the top layer that's above entities
+            _secondSurfaceWrapper = new(this.Surface.Width, this.Surface.Height);
+            //_secondSurfaceWrapper.Parent = this; // parenting
+            _secondSurfaceWrapper.Surface.DefaultBackground = Color.Transparent;
+            _secondSurfaceWrapper.FontSize = this.FontSize;
+
             // Create the new render step and tell it to render the second surface
             _secondSurfaceRenderStep = new SadConsole.Renderers.SurfaceTargetRenderStep();
             _secondSurfaceRenderStep.SetData(_secondSurfaceWrapper);
+            //_secondSurfaceWrapper.Position = (0, 0);
 
             // Add the new render step to the current renderer for this ScreenSurface
             Renderer!.Steps.Add(_secondSurfaceRenderStep);
-
-            _secondSurfaceWrapper.ViewHeight = this.Height;
-            _secondSurfaceWrapper.ViewWidth = this.Width;
         }
 
         protected override void OnFontChanged(IFont oldFont, Point oldFontSize)
@@ -78,6 +82,7 @@ namespace VEngine.Scenes.Combat
             foreach (var point in p.GetRotated((int)direction))
             {
                 Point newOffset = point + offset;
+                Logger.Report(this, $"setting glyph at position {newOffset}");
                 SecondSurface.SetForeground(newOffset.X, newOffset.Y, Color.Yellow);
                 SecondSurface.SetGlyph(newOffset.X, newOffset.Y, 'X');
                 SecondSurface.SetEffect(newOffset.X, newOffset.Y, b);
