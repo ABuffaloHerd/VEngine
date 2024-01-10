@@ -15,7 +15,7 @@ namespace VEngine.Scenes
         public static CombatScenario CombatTest;
         static ScenarioPresets()
         {
-            CombatTest = new("combat test", "testing classes", 64, 64);
+            CombatTest = new("combat test", "testing classes", 24, 24);
 
             // define some objects
 
@@ -70,31 +70,32 @@ namespace VEngine.Scenes
             mage2.Position = (0, 5);
             mage2.RES = 50;
             mage2.DEF = 2;
+            mage2.MP = 300;
 
             AnimatedScreenObject aso5 = AnimationPresets.BlinkingEffect("Guard", 'H', Color.Red, Color.Black, (1, 1));
             Guard guard = new(aso5, 1);
             guard.Name = "Hirina";
             guard.Speed = 100;
-            guard.Position = (1, 3);
+            guard.Position = (0, 2);
 
             AnimatedScreenObject aso6 = AnimationPresets.BlinkingEffect("Vanguard", 'M', Color.SteelBlue, Color.Black, (1, 1));
             Vanguard vanguard = new(aso6, 1);
             vanguard.Name = "Mariah";
             vanguard.Speed = 190;
-            vanguard.Position = (1, 4);
+            vanguard.Position = (0, 6);
 
 
             CombatTest.Objects = new()
             {
-                //test,
+                test,
                 ranger,
                 //wall,
                 //wall2,
                 //wall3,
-                //mage,
+                mage,
                 mage2,
-                //guard,
-                //vanguard
+                guard,
+                vanguard
             };
         }
     }

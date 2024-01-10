@@ -10,6 +10,10 @@ using VEngine.Factory;
 using VEngine.Logging;
 using VEngine.Objects;
 using VEngine.Animations;
+using System.Collections.Immutable;
+using System.Transactions;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace VEngine.Items
 {
@@ -97,6 +101,74 @@ namespace VEngine.Items
 
                 return ev;
             });
-                
+
+
+        public static Spell Lightning = new(
+            "Lightning",
+            "Strike the 3 healthiest targets in range with shocking electricity. Deals 50% of target's max HP.",
+            30,
+            30,
+            new Pattern()
+                .Mark(2, -1)
+                .Mark(3, -1)
+                .Mark(4, -1)
+                .Mark(2, 0)
+                .Mark(3, 0)
+                .Mark(4, 0)
+                .Mark(2, 1)
+                .Mark(3, 1)
+                .Mark(4, 1),
+            (spell, targets, wielder, arena) =>
+            {
+                int total = 0;
+                // sort targets
+
+                List<GameObject> sorted = targets.ToList();
+                sorted.Sort(new HPComparer());
+
+                int counter = 0;
+                for(int x = 0;  x < sorted.Count() && x < 3; x++)
+                {
+                    GameObject current = sorted[x];
+                    int amount = (int)Math.Floor(current.HP.Current * 0.5);
+                    int taken = sorted[x].TakeDamage(amount, DamageType.MAGIC);
+
+                    total += taken;
+                }
+
+                AnimatedEffect lightning = AnimationPresets.Lightning(3, TimeSpan.FromSeconds(4));
+                //AnimatedEffect lightning = AnimationPresets.TestEffect(1);
+
+                lightning.Position = wielder.Facing switch
+                {
+                    Data.Direction.UP => (0, -3),
+                    Data.Direction.DOWN => (0, 3),
+                    Data.Direction.LEFT => (-3, 0),
+                    Data.Direction.RIGHT => (3, 0),
+                    _ => throw new Exception("Switch fucked up.")
+                }
+                + wielder.Position;
+                arena.PlayAnimatedEffect(lightning);
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
+                    .AddField("amount", total)
+                    .AddField("targets", targets)
+                    .AddField("source", spell)
+                    .AddField("weapon", new object())
+                    .Build();
+
+                return ev;
+            });
+
+    }
+
+    class HPComparer : Comparer<GameObject>
+    {
+        public override int Compare(GameObject? x, GameObject? y)
+        {
+            if (x == null || y == null) return 0;
+            return x.HP.Current.CompareTo(y.HP.Current);
+        }
     }
 }

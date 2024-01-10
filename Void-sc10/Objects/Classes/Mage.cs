@@ -26,7 +26,8 @@ namespace VEngine.Objects.Classes
             // testing 
             spellBook = new()
             {
-                (Spell)SpellRegistry.Fireball.Clone()
+                (Spell)SpellRegistry.Fireball.Clone(),
+                (Spell)SpellRegistry.Lightning.Clone()
             };
         }
 
@@ -35,7 +36,7 @@ namespace VEngine.Objects.Classes
             base.OnStartTurn(); // must call this because it handles effects
 
             // Passive: Mages gain 10 max MP for each magic circle and regenerate 5 MP
-            MP.Max = 10 + MagicCircles * 10;
+            MP.Max = MP.Max + MagicCircles * 10;
             for (int x = 0; x < MagicCircles; x++)
             {
                 MP.Current += 5;

@@ -1,12 +1,15 @@
 ﻿using SadConsole.Effects;
+using SadRogue.Primitives.SerializedTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 using VEngine.Data;
+using VEngine.Logging;
 using Algorithms = VEngine.Data.Algorithms;
 
 namespace VEngine.Animations
@@ -127,6 +130,49 @@ namespace VEngine.Animations
             effect.AnimationDuration = TimeSpan.MaxValue;
 
             return effect;
+        }
+
+        public static AnimatedEffect Lightning(int radius, TimeSpan speed)
+        {
+            AnimatedEffect ef = new("lightning", (radius * 2) - 1, (radius * 2) - 1, TimeSpan.Zero, (0, 0));
+            char lightning = (char)226; // capital gamma looks good enough
+
+            ef.FontSize = FontSize;
+            ef.Repeat = false; // stop after playing once
+            ef.AnimationDuration = TimeSpan.FromSeconds(1);
+            ef.Center = (radius, radius);
+
+            Random rand = new();
+
+            Func<List<Point>> func = () =>
+            {
+                List<Point> points = new();
+                for (int x = 0; x < (radius * radius / 2); x++)
+                {
+                    int a = rand.Next((radius * 2) - 1);
+                    int y = rand.Next((radius * 2) - 1);
+                    points.Add((a, y));
+                }
+
+                return points;
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                var points = func();
+                ef.CreateFrame();
+                foreach(Point p in points)
+                {
+                    ef.Frames[i].SetGlyph(p.X, p.Y, lightning);
+                }
+
+                ef.Frames[i].Surface.DefaultForeground = Color.LightBlue;
+                //ef.Frames[i].Surface.DefaultForeground = Color.Red;
+            }
+
+            //Logger.Report("lightnign effect", $"Contains {ef.Frames.Count} frames");
+            ef.CreateFrame();
+            return ef;
         }
     }
 }

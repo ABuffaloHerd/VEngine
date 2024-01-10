@@ -3,8 +3,10 @@ using SadConsole.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Logging;
 using VEngine.Objects;
@@ -19,7 +21,14 @@ namespace VEngine.Scenes.Combat
         private SadConsole.Renderers.IRenderStep _secondSurfaceRenderStep;
         private ScreenSurface _secondSurfaceWrapper;
 
+        private TimeSpan _lastCull;
+        private const double cullInterval = 10.0d;
+
         public ICellSurface SecondSurface => _secondSurfaceWrapper.Surface; // This surface is used for the overlay.
+
+        /// <summary>
+        /// Don't touch or we'll have another round of headaches, migraines, gamer rage and keyboard bashing.
+        /// </summary>
         protected void SetupRenderer()
         {
             // Create the top layer that's above entities
@@ -49,6 +58,26 @@ namespace VEngine.Scenes.Combat
             base.Update(delta);
             _secondSurfaceWrapper.Update(delta);
             _secondSurfaceWrapper.ViewPosition = this.ViewPosition;
+
+            _lastCull += delta;
+
+            // cull inactive animations to stop memory leaks
+            if (_lastCull.TotalSeconds >= cullInterval)
+            {
+                var finished = Children.OfType<AnimatedEffect>()
+                            .Where(ef => ef.State == AnimatedScreenObject.AnimationState.Stopped || 
+                                         ef.State == AnimatedScreenObject.AnimationState.Finished)
+                            .ToList();
+                foreach(var anim in finished) 
+                {
+                    Children.Remove(anim);
+                }
+
+                // Reset the accumulated time
+                _lastCull = TimeSpan.Zero;
+
+                Logger.Report(this, "Culled animations");
+            }
         }
 
         protected override void Dispose(bool disposing)

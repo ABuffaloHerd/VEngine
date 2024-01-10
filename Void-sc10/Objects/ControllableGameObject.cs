@@ -18,8 +18,8 @@ namespace VEngine.Objects
     {
         protected Weapon weapon;
 
-        public Stat MP { get; set; } = 10; // default values
-        public Stat SP { get; set; } = 5;
+        public Stat MP { get; set; }
+        public Stat SP { get; set; }
 
         public override Pattern Range
         {
@@ -41,9 +41,11 @@ namespace VEngine.Objects
             // default for all controllables
             Alignment = Alignment.FRIEND;
 
+            MP = 10;
+            SP = 5;
+
             // set attributes for MP bar
             MP.IsOverloadable = true;
-            MP.Current = 10;
         }
 
         public Pattern GetRange()
