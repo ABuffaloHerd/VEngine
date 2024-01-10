@@ -132,6 +132,20 @@ namespace VEngine.Animations
             return effect;
         }
 
+        public static AnimatedEffect TestEffect(int x, int y)
+        {
+            AnimatedEffect effect = new("asdf", x, y, TimeSpan.MaxValue, (x, y));
+            effect.FontSize = FontSize;
+            effect.Center = (2, 2);
+            effect.CreateFrame();
+            effect.Repeat = true;
+            effect.Frames[0].SetGlyph(0, 0, 'N');
+            effect.Frames[0].DefaultBackground = Color.White;
+            effect.AnimationDuration = TimeSpan.MaxValue;
+
+            return effect;
+        }
+
         public static AnimatedEffect Lightning(int radius, TimeSpan speed)
         {
             AnimatedEffect ef = new("lightning", (radius * 2) - 1, (radius * 2) - 1, TimeSpan.Zero, (0, 0));
@@ -172,6 +186,23 @@ namespace VEngine.Animations
 
             //Logger.Report("lightnign effect", $"Contains {ef.Frames.Count} frames");
             ef.CreateFrame();
+            return ef;
+        }
+
+        public static AnimatedEffect EnergyParticle(TimeSpan animSpeed, TimeSpan moveSpeed, Point moveDir)
+        {
+            AnimatedEffect ef = new("explosion", 3, 3, moveSpeed, moveDir);
+            ef.Repeat = true;
+            ef.AnimationDuration = animSpeed;
+            ef.FontSize = FontSize;
+            ef.Center = (2, 2); // Math.Ceil(x / 2) and Math.Ceil(y / 2)
+
+            for(int x = 0; x < 10; x++)
+            {
+                var frame = ef.CreateFrame();
+                frame.Surface.FillWithRandomGarbage(Game.Instance.DefaultFont);
+            }
+
             return ef;
         }
     }

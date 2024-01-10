@@ -34,6 +34,16 @@ namespace VEngine.Items
                 var target = Data.Algorithms.Closest(targets, wielder.Position);
                 var list = new List<GameObject>();
 
+                AnimatedEffect effect = AnimationPresets.EnergyParticle(TimeSpan.FromSeconds(0.2), TimeSpan.FromSeconds(0.05), wielder.Facing.ToVector());
+                //AnimatedEffect effect = AnimationPresets.TestEffect(3, 3);
+                effect.Position = wielder.Position;
+
+                if(target != null)
+                    effect.Destination = target.Position;
+                
+                effect.StartTimer();
+                arena.PlayAnimatedEffect(effect);
+
                 if (target != null)
                 {
                     target.TakeDamage(finalDamage, DamageType.MAGIC);
@@ -137,7 +147,6 @@ namespace VEngine.Items
                 }
 
                 AnimatedEffect lightning = AnimationPresets.Lightning(3, TimeSpan.FromSeconds(4));
-                //AnimatedEffect lightning = AnimationPresets.TestEffect(1);
 
                 lightning.Position = wielder.Facing switch
                 {

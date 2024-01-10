@@ -53,6 +53,11 @@ namespace VEngine.Data
             }
         }
 
+        public static Pattern Line(this Pattern p, Data.Direction direction, int length)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Returns a collection of points that have been rotated without modifying the actual data
         /// This is all rotated relative to 0, 0

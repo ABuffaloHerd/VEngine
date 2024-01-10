@@ -14,6 +14,9 @@ namespace VEngine.Animations
         private Components.Timer timer;
         private Point direction;
         private TimeSpan interval;
+        private TimeSpan elapsed = TimeSpan.Zero;
+
+        private DateTime start;
 
         public Point Destination { get; set; }
 
@@ -35,14 +38,25 @@ namespace VEngine.Animations
         private void MoveMe(object? sender, EventArgs e)
         {
             Position += direction;
+            elapsed += DateTime.Now - start;
 
             if (Position == Destination)
+            {
                 State = AnimationState.Finished;
+                StopTimer();
+            }
+
+            if(elapsed > TimeSpan.FromMinutes(1) && Destination == Point.None)
+            {
+                State = AnimationState.Finished;
+                StopTimer();
+            }
         }
 
         public void StartTimer()
         {
             timer.Start();
+            start = DateTime.Now;
         }
 
         public void StopTimer()

@@ -27,7 +27,8 @@ namespace VEngine.Objects.Classes
             spellBook = new()
             {
                 (Spell)SpellRegistry.Fireball.Clone(),
-                (Spell)SpellRegistry.Lightning.Clone()
+                (Spell)SpellRegistry.Lightning.Clone(),
+                (Spell)SpellRegistry.ArcaneBlast.Clone()
             };
         }
 
