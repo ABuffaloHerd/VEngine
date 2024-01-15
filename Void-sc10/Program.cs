@@ -10,7 +10,7 @@ Builder startup = new Builder()
     .SetStartingScreen<TitleScene>()
     .IsStartingScreenFocused(true)
     .ConfigureFonts((config, game) => config.UseCustomFont("Resources/Font/Cheepicus12.font"))
-    .AddFrameUpdateEvent(KeyboardHandler.HandleKeyboard)
+    //.AddFrameUpdateEvent(KeyboardHandler.HandleKeyboard)
     ;
 
 Game.Create(startup);

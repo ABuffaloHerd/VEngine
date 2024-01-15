@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 namespace VEngine.Objects.Classes
 {
     // not problems like what is beauty
-    public class Engineer
+    public class Engineer : ControllableGameObject
     {
+        public Engineer(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
+        {
+        }
     }
 }

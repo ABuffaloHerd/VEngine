@@ -119,6 +119,94 @@ namespace VEngine.Scenes.Combat
             Logger.Report(this, $"Removed {gameObject}");
         }
 
+        public override bool ProcessKeyboard(Keyboard keyboard)
+        {
+            if(keyboard.HasKeysDown) 
+            {
+                foreach(AsciiKey k in keyboard.KeysPressed) 
+                {
+                    switch (k.Key)
+                    {
+                        case Keys.W:
+                            Move(new Point(0, -1));
+                            break;
+
+                        case Keys.A:
+                            Move(new Point(-1, 0));
+                            break;
+
+                        case Keys.S:
+                            Move(new Point(0, 1));
+                            break;
+
+                        case Keys.D:
+                            Move(new Point(1, 0));
+                            break;
+
+                        case Keys.Space:
+                            OnNextTurn();
+                            break;
+
+                        /// === LOOKING KEYS === ///
+                        case Keys.Up:
+                            selectedGameObject.Facing = Data.Direction.UP;
+                            break;
+                        case Keys.Down:
+                            selectedGameObject.Facing = Data.Direction.DOWN;
+                            break;
+                        case Keys.Left:
+                            selectedGameObject.Facing = Data.Direction.LEFT;
+                            break;
+                        case Keys.Right:
+                            selectedGameObject.Facing = Data.Direction.RIGHT;
+                            break;
+
+
+                        /// === TESTING KEYS === ///
+                        case Keys.J:
+                            Logger.Report(this, "j pressed");
+
+                            if (arena.IsRenderingPattern)
+                            {
+                                arena.StopRenderPattern();
+                            }
+                            else
+                            {
+                                // feature not a bug
+                                if (selectedGameObject is not ControllableGameObject) break;
+                                else
+                                {
+                                    Pattern p = (selectedGameObject as ControllableGameObject).GetRange();
+                                    arena.RenderPattern(p, selectedGameObject.Position, selectedGameObject.Facing);
+                                }
+                            }
+
+                            break;
+
+                        case Keys.L:
+                            Pattern p2 = new();
+                            p2.Mark(0, 0);
+                            p2.Mark(1, 0);
+                            if (selectedGameObject is ControllableGameObject)
+                            {
+                                ExecuteAttack(selectedGameObject, (selectedGameObject as ControllableGameObject).GetRange());
+                            }
+                            else
+                                ExecuteAttack(selectedGameObject, p2);
+
+                            break;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return "CombatScene";
+        }
+
         /// <summary>
         ///  Only run when an object is summoned.
         /// </summary>

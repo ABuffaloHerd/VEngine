@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SadConsole;
+using SadConsole.Input;
 using VEngine.Events;
 using VEngine.Logging;
 
@@ -34,6 +35,8 @@ namespace VEngine.Scenes
 
             // Subscribe to the GameManager's event dispatch to receive events from it.
             gmInstance.Event += ProcessGameEvent;
+
+            IsFocused = true;
         }
 
         public override string ToString()
@@ -60,13 +63,21 @@ namespace VEngine.Scenes
             System.Console.WriteLine("Warning: Scene.ProcessGameEvent should only be used in a battle scenario and should be overridden.");
         }
 
+        public override bool ProcessKeyboard(Keyboard keyboard)
+        {
+            if(keyboard.HasKeysDown)
+                Logger.Report(this, "Key pressed.");
+
+            return true;
+        }
+
         new public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             // I don't know what sadconsole does in its disposal so run it.
             Logger.Report(this, "disposing.");

@@ -45,6 +45,18 @@ namespace VEngine.Data
             return this;
         }
 
+        public Pattern Remove(int x, int y)
+        {
+            points.Remove((x, y));
+            return this;
+        }
+
+        public Pattern Remove(Point p)
+        {
+            points.Remove(p);
+            return this;
+        }
+
         public void Mark(ICollection<Point> points)
         {
             foreach(var point in points)
@@ -53,11 +65,25 @@ namespace VEngine.Data
             }
         }
 
-        public static Pattern Line(this Pattern p, Data.Direction direction, int length)
+        public Pattern Line(int length, Data.Direction direction)
         {
-            throw new NotImplementedException();
+            return Line((0, 0), length, direction);
         }
 
+        public Pattern Line(Point start, int length, Data.Direction direction)
+        {
+            Point cursor = start;
+            Point vector = direction.ToVector();
+
+            for (int x = 0; x < length; x++)
+            {
+                Mark(cursor);
+                cursor += vector;
+            }
+            Remove(0, 0);
+
+            return this;
+        }
         /// <summary>
         /// Returns a collection of points that have been rotated without modifying the actual data
         /// This is all rotated relative to 0, 0

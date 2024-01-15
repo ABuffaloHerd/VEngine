@@ -25,9 +25,7 @@ namespace VEngine.Items
             30, // do the above to make your opponent think that you think you know the rules but react to the resolution of their spellshield arcane with another ignite the soul so they get one enlighten counter and take 11 damage to the face.
             20,
             new Pattern()
-                .Mark(7, 0)
-                .Mark(8, 0)
-                .Mark(9, 0),
+                .Line(7, Data.Direction.RIGHT),
             (spell, targets, wielder, arena) =>
             {
                 int finalDamage = spell.Damage;
@@ -135,6 +133,7 @@ namespace VEngine.Items
 
                 List<GameObject> sorted = targets.ToList();
                 sorted.Sort(new HPComparer());
+                sorted.Reverse();
 
                 int counter = 0;
                 for(int x = 0;  x < sorted.Count() && x < 3; x++)
@@ -177,7 +176,7 @@ namespace VEngine.Items
         public override int Compare(GameObject? x, GameObject? y)
         {
             if (x == null || y == null) return 0;
-            return x.HP.Current.CompareTo(y.HP.Current);
+            return x.HP.Current - y.HP.Current;
         }
     }
 }
