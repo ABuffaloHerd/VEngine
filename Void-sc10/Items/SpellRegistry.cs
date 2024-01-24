@@ -44,7 +44,7 @@ namespace VEngine.Items
 
                 if (target != null)
                 {
-                    target.TakeDamage(finalDamage, DamageType.MAGIC);
+                    target.TakeDamage(wielder, spell, finalDamage, DamageType.MAGIC);
                     list.Add(target);
                 }
                 else
@@ -82,7 +82,7 @@ namespace VEngine.Items
 
                 foreach(GameObject obj in targets)
                 {
-                    obj.TakeDamage(finalDamage, DamageType.MAGIC);
+                    obj.TakeDamage(wielder, spell, finalDamage, DamageType.MAGIC);
                 }
 
                 AnimatedEffect explode = AnimationPresets.ExplosionEffect(3, TimeSpan.FromSeconds(0.2));
@@ -140,7 +140,7 @@ namespace VEngine.Items
                 {
                     GameObject current = sorted[x];
                     int amount = (int)Math.Floor(current.HP.Current * 0.5);
-                    int taken = sorted[x].TakeDamage(amount, DamageType.MAGIC);
+                    int taken = sorted[x].TakeDamage(wielder, spell, amount, DamageType.MAGIC);
 
                     total += taken;
                 }

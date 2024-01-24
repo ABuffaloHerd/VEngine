@@ -136,7 +136,7 @@ namespace VEngine.Objects
             /// === TESTING CODE === ///
             foreach(GameObject target in targets)
             {
-                target.TakeDamage(1, DamageType.NONE);
+                target.TakeDamage(this, null, 1, DamageType.NONE);
             }
 
             // Trigger the on attack event for subscribers to react
@@ -162,7 +162,7 @@ namespace VEngine.Objects
         /// <param name="damage">Amount of pain</param>
         /// <param name="type">Style of pain</param>
         /// <returns>Amount of pain taken after painkillers</returns>
-        public virtual int TakeDamage(int damage, DamageType type)
+        public virtual int TakeDamage(GameObject? attacker, ICombatItem? item, int damage, DamageType type)
         {
             int taken;
             // Damage calculation (defense, res etc)

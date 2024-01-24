@@ -13,6 +13,7 @@ namespace VEngine.Scenes.Combat
         {
             // i'm not typing border.borderparameters 20 times
             arena = new(width, height);
+            arena.UseKeyboard = false;
             Children.Add(arena);
 
             var b = Border.BorderParameters
@@ -83,11 +84,15 @@ namespace VEngine.Scenes.Combat
                 Position = new(32, 0)
             };
             Children.Add(title);
+            title.UseKeyboard = false;
+            title.FocusedMode = FocusBehavior.None;
 
             bgm = new(32, 1)
             {
                 Position = new(32, 69)
             };
+            bgm.UseKeyboard = false;
+            bgm.FocusedMode = FocusBehavior.None;
             Children.Add(bgm);
 
             controls = new(29, 18)
@@ -95,33 +100,39 @@ namespace VEngine.Scenes.Combat
                 Position = new(1, 53),
                 UseKeyboard = false
             };
+            controls.FocusedMode = FocusBehavior.None;
             Children.Add(controls);
 
             hud = new(29, 18)
             {
                 Position = new(1, 33),
             };
+            hud.FocusedMode = FocusBehavior.None;
             Children.Add(hud);
 
             party = new(29, 30)
             {
                 Position = new(1, 1)
             };
+            party.FocusedMode = FocusBehavior.None;
             Children.Add(party);
 
             focus = new(13, 30)
             {
                 Position = new(114, 1)
             };
+            focus.FocusedMode = FocusBehavior.None;
             Children.Add(focus);
 
             fightFeed = new(29, 38);
+            fightFeed.FocusedMode = FocusBehavior.None;
             Children.Add(fightFeed);
 
             turnOrder = new(14, 30)
             {
                 Position = new(98, 1)
             };
+            turnOrder.FocusedMode = FocusBehavior.None;
             Children.Add(turnOrder);
         }
     }

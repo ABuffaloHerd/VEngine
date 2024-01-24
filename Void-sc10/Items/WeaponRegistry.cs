@@ -25,7 +25,7 @@ namespace VEngine.Items
                 int finalDamage = weapon.Damage;
                 foreach (GameObject obj in targets)
                 {
-                    obj.TakeDamage(finalDamage, DamageType.PHYSICAL);
+                    obj.TakeDamage(wielder, weapon, finalDamage, DamageType.PHYSICAL);
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
@@ -44,12 +44,12 @@ namespace VEngine.Items
             "A wooden stick that barely meets the criteria of being a weapon",
             3,
             new Pattern().Mark(1, 0),
-            (weapon, targets, wielder, arena) =>
+            (weapon, targets, wielder, arena) =>    
             {
                 int finalDamage = weapon.Damage;
                 foreach(GameObject obj in targets)
                 {
-                    obj.TakeDamage(finalDamage, DamageType.PHYSICAL);
+                    obj.TakeDamage(wielder, weapon, finalDamage, DamageType.PHYSICAL);
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
@@ -81,7 +81,7 @@ namespace VEngine.Items
 
                     if (Algorithms.CheckLineOfSight(target.Position, wielder.Position, target, wielder, arena))
                     {
-                        finalDamage = target.TakeDamage(weapon.Damage, DamageType.PHYSICAL);
+                        finalDamage = target.TakeDamage(wielder, weapon, weapon.Damage, DamageType.PHYSICAL);
                         list.Add(target);
                     }
                     else
@@ -116,8 +116,8 @@ namespace VEngine.Items
                 if (target != null) 
                 {
                     int calcDamage = (wielder.DEF / 2).Current + weapon.Damage;
-                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
-                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(wielder, weapon, calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(wielder, weapon, calcDamage, DamageType.PHYSICAL);
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
@@ -144,8 +144,8 @@ namespace VEngine.Items
                 if (target != null)
                 {
                     int calcDamage = weapon.Damage;
-                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
-                    finalDamage += target.TakeDamage(calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(wielder, weapon, calcDamage, DamageType.PHYSICAL);
+                    finalDamage += target.TakeDamage(wielder, weapon, calcDamage, DamageType.PHYSICAL);
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
@@ -172,17 +172,41 @@ namespace VEngine.Items
                         enumerator.MoveNext();
                     }
 
-                    tally += enumerator.Current.TakeDamage((int)(weapon.Damage * 1.4f), DamageType.PHYSICAL);
+                    tally += enumerator.Current.TakeDamage(wielder, weapon, (int)(weapon.Damage * 1.4f), DamageType.PHYSICAL);
                     if(x == 10)
                     {
-                        tally += enumerator.Current.TakeDamage(weapon.Damage * 3, DamageType.PHYSICAL);
-                        tally += enumerator.Current.TakeDamage(weapon.Damage * 3, DamageType.MAGIC);
+                        tally += enumerator.Current.TakeDamage(wielder, weapon, weapon.Damage * 3, DamageType.PHYSICAL);
+                        tally += enumerator.Current.TakeDamage(wielder, weapon, weapon.Damage * 3, DamageType.MAGIC);
                     }
                 }
 
                 CombatEvent ev = new CombatEventBuilder()
                     .SetEventType(CombatEventType.ATTACK)
                     .AddField("amount", tally)
+                    .AddField("targets", targets)
+                    .AddField("source", wielder)
+                    .AddField("weapon", weapon)
+                    .Build();
+
+                return ev;
+            });
+
+        public static Weapon Wrench = new(
+            "Monkey Wrench",
+            "Fixes things and bludgeons",
+            5,
+            new Pattern().Mark(1, 0),
+            (weapon, targets, wielder, arena) =>
+            {
+                int finalDamage = weapon.Damage;
+                foreach (GameObject obj in targets)
+                {
+                    obj.TakeDamage(wielder, weapon, finalDamage, DamageType.PHYSICAL);
+                }
+
+                CombatEvent ev = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.ATTACK)
+                    .AddField("amount", finalDamage)
                     .AddField("targets", targets)
                     .AddField("source", wielder)
                     .AddField("weapon", weapon)

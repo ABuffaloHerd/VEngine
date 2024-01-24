@@ -76,7 +76,7 @@ namespace VEngine.Scenes.Combat
             EntityEffect effect = new("Test", "Take 1 true damage at start of turn", 1,
                 (obj) =>
                 {
-                    obj.TakeDamage(1, DamageType.TRUE);
+                    obj.TakeDamage(null, null, 1, DamageType.TRUE);
 
                     CombatEvent ce = new CombatEventBuilder()
                         .SetEventType(CombatEventType.INFO)
@@ -87,6 +87,18 @@ namespace VEngine.Scenes.Combat
                 }
             );
             //OnTurnStartEffects.Add(effect);
+
+            Focused += (s, a) =>
+            {
+                Logger.Report(this, "yeah focused");
+            };
+
+            FocusLost += (s, a) =>
+            {
+                Logger.Report(this, "focus lost");
+                Logger.Report(this, $"Game is focused on {Game.Instance.FocusedScreenObjects.ToString()}");
+                IsFocused = true;
+            };
         }
 
         public CombatScene(CombatScenario preset) : this()

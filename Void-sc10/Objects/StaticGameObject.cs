@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Data;
+using VEngine.Items;
 using VEngine.Scenes.Combat;
 
 namespace VEngine.Objects
@@ -48,7 +49,7 @@ namespace VEngine.Objects
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="type"></param>
-        public sealed override int TakeDamage(int damage, DamageType type)
+        public sealed override int TakeDamage(GameObject attacker, ICombatItem? weapon, int damage, DamageType type)
         {
             return 0;
         }
