@@ -29,10 +29,10 @@ namespace VEngine.AI
         /// Gets a sequence of incoming actions
         /// </summary>
         /// <returns></returns>
-        List<AIAction> GetAIActions();
+        IEnumerable<AIAction> GetAIActions();
     }
 
-    public enum AIAction
+    public enum AIActionType
     {
         NONE = 0,
         RELINQUISH,

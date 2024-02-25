@@ -20,6 +20,7 @@ using SadConsole.UI.Controls;
 using Effect = VEngine.Effects.Effect;
 using VEngine.Factory;
 using VEngine.Effects;
+using VEngine.Objects.Classes;
 
 namespace VEngine.Scenes.Combat
 {
@@ -133,6 +134,16 @@ namespace VEngine.Scenes.Combat
 
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
+            // check if this is a controllable to begin with
+            if(selectedGameObject is AIControlledGameObject)
+            {
+                Logger.Report(this, "AI controlled object in play");
+                // pass control to AI handler function.
+
+                HandleAI(selectedGameObject as AIControlledGameObject);
+                return false;
+            }    
+
             if(keyboard.HasKeysDown) 
             {
                 foreach(AsciiKey k in keyboard.KeysPressed) 

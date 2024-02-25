@@ -20,18 +20,6 @@ namespace VEngine.Scenes.Combat
 
             FontSize = ((int)(defaultSize / 1.5), defaultSize);
 
-            //float scaleFactorWidth = 29f / width;
-            //float scaleFactorHeight = 38f / height;
-
-            //float scaleFactor = Math.Min(scaleFactorWidth, scaleFactorHeight);
-            //int size = (int)Math.Floor(scaleFactor * defaultSize);
-            //FontSize = (size, size);
-
-            //int scaledX = defaultPosition.X * (int)(1 / scaleFactorWidth);
-            //int scaledY = defaultPosition.Y * (int)(1 / scaleFactorHeight);
-
-            //Position = (scaledX, scaledY);
-
             Resize((int)(width * 1.5f), height, true);
 
             Position = ((int)(defaultPosition.X * 1.5), defaultPosition.Y);

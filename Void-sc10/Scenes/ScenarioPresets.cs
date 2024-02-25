@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.AI;
 using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Objects;
@@ -23,7 +24,7 @@ namespace VEngine.Scenes
             AnimatedScreenObject animated = new("Targetdummy", 1, 1);
             animated.CreateFrame()[0].Glyph = 'T';
 
-            GameObject test = new(animated, 1);
+            AIControlledGameObject test = new(animated, 1, new TestAIBehavior());
             test.Name = "targetdummy";
             test.Position = (7, 4);
             test.HP = int.MaxValue;
@@ -83,7 +84,6 @@ namespace VEngine.Scenes
             vanguard.Name = "Mariah";
             vanguard.Speed = 190;
             vanguard.Position = (0, 6);
-
 
             CombatTest.Objects = new()
             {
