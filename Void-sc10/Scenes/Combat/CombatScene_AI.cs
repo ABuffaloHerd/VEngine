@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadConsole.Instructions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,22 +17,27 @@ namespace VEngine.Scenes.Combat
         {
             Logger.Report(this, "Handling AI");
             // get thing's action
-            AIAction action = thing.GetNextAction();
-
-            // figure out what action it is
-            switch(action.ActionType)
+            while(thing.AI.HasNextAction())
             {
-                // these two pass the turn to the next object without doing anything.
-                case AIActionType.NONE:
-                case AIActionType.RELINQUISH:
-                    OnNextTurn();
-                    break;
+                AIAction action = thing.GetNextAction();
 
-                case AIActionType.MOVE:
-                    // get data
-                    Data.Direction direction = (action.data as MoveActionData).Direction;
-                    Move(direction.ToVector());
-                    break;
+                // figure out what action it is
+                switch(action.ActionType)
+                {
+                    // these two pass the turn to the next object without doing anything.
+                    case AIActionType.NONE:
+                    case AIActionType.RELINQUISH:
+                        OnNextTurn();
+                        break;
+
+                    case AIActionType.MOVE:
+                        // get data
+                        Data.Direction direction = (action.data as MoveActionData).Direction;
+                        Move(direction.ToVector());
+                        break;
+                }
+
+                Logger.Report(this, "Action complete, waiting");
             }
 
             OnNextTurn();

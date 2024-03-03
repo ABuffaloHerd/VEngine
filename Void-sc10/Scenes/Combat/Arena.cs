@@ -3,6 +3,7 @@ using SadConsole.Effects;
 using SadConsole.Entities;
 using SadRogue.Primitives;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -180,6 +181,22 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue((x, y), out a);
 
             return a;
+        }
+
+        /// <summary>
+        /// Converts arena into bitboard so that AI knows where not to go.
+        /// </summary>
+        /// <returns></returns>
+        public BitArray ToBitBoard()
+        {
+            BitArray array = new(this.Width * this.Height);
+
+            foreach(var kvp in positions)
+            {
+                array.Set(kvp.Key.Y * Width + kvp.Key.X, true);
+            }
+
+            return array;
         }
 
         /// <summary>

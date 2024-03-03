@@ -26,6 +26,12 @@ namespace VEngine.AI
         AIAction GetNextAction();
 
         /// <summary>
+        /// Are there more?
+        /// </summary>
+        /// <returns>use your head</returns>
+        bool HasNextAction();
+
+        /// <summary>
         /// Gets a sequence of incoming actions
         /// </summary>
         /// <returns></returns>
