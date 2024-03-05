@@ -12,6 +12,7 @@ using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Logging;
 using VEngine.Objects;
+using VEngine.Rendering;
 
 namespace VEngine.Scenes.Combat
 {
@@ -19,7 +20,7 @@ namespace VEngine.Scenes.Combat
     /// This class handles everything to do with rendering entities and checking collision. It knows what's where
     /// Don't use this outside of combat scenes.
     /// </summary>
-    public partial class Arena : ScreenSurface
+    public partial class Arena : ShakingCellSurface
     {
         private const int defaultSize = 12;
         private readonly Point defaultPosition = new (32, 4); // todo: make this initializable from constructor or otherwise.

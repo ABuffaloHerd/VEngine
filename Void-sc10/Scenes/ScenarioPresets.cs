@@ -16,7 +16,7 @@ namespace VEngine.Scenes
         public static CombatScenario CombatTest;
         static ScenarioPresets()
         {
-            CombatTest = new("combat test", "testing classes", 24, 24);
+            CombatTest = new("combat_test", "testing classes", 24, 24);
 
             // define some objects
 
@@ -97,6 +97,8 @@ namespace VEngine.Scenes
                 guard,
                 vanguard
             };
+
+            CombatScenario.SerializeJSON(CombatTest);
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using VEngine.Logging;
 using VEngine.Objects;
 
 namespace VEngine.Scenes
@@ -16,7 +18,7 @@ namespace VEngine.Scenes
     /// </summary>
     public class CombatScenario
     {
-        public string Name {  get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public List<GameObject> Objects;
 
@@ -25,9 +27,27 @@ namespace VEngine.Scenes
 
         public CombatScenario(string name, string description, int arenaWidth, int arenaHeight)
         {
+            Name = name;
+            Description = description;
             Objects = new();
             ArenaWidth = arenaWidth;
             ArenaHeight = arenaHeight;
+        }
+
+        public static void SerializeJSON(CombatScenario scenario)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            string filePath = GameSettings.SCENARIO_FILEPATH_PREFIX + scenario.Name + ".json";
+            string json = JsonConvert.SerializeObject(scenario, settings);
+            string directoryPath = Path.GetDirectoryName(filePath);
+
+            File.WriteAllText(filePath, json);
+            Directory.CreateDirectory(directoryPath ?? throw new InvalidOperationException("Directory path is null."));
+            Logger.Report("CombatScenario", "Combat scenario saved as JSON");
         }
     }
 }
