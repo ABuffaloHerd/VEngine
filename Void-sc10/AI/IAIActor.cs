@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Objects;
 using VEngine.Scenes.Combat;
 
 namespace VEngine.AI
@@ -18,6 +19,12 @@ namespace VEngine.AI
         /// </summary>
         /// <param name="arena"></param>
         void UpdateAI(Arena arena);
+
+        /// <summary>
+        /// Allows the implementing class to access its parent
+        /// </summary>
+        /// <param name="parent"></param>
+        void SetParent(GameObject parent);
 
         /// <summary>
         /// Gets the next chosen action

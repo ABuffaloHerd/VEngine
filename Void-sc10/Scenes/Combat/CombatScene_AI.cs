@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VEngine.AI;
 using VEngine.Data;
 using VEngine.Logging;
-using VEngine.Objects.Classes;
+using VEngine.Objects;
 
 namespace VEngine.Scenes.Combat
 {
@@ -34,6 +34,10 @@ namespace VEngine.Scenes.Combat
                         // get data
                         Data.Direction direction = (action.data as MoveActionData).Direction;
                         Move(direction.ToVector());
+                        break;
+
+                    case AIActionType.ATTACK:
+                        ExecuteAttack(thing, thing.Range);
                         break;
                 }
 

@@ -109,6 +109,19 @@ namespace VEngine.Scenes.Combat
             UpdatePositions();
         }
 
+        public List<GameObject> GetEntities(Alignment alignment)
+        {
+            List<GameObject> entities = new();
+
+            foreach(GameObject obj in EntityManager)
+            {
+                if (obj.Alignment == alignment)
+                    entities.Add(obj);
+            }
+
+            return entities;
+        }
+
         public void AddMagicCircle(MagicCircle magicCircle)
         {
             EntityManager.Add(magicCircle);

@@ -20,7 +20,6 @@ using SadConsole.UI.Controls;
 using Effect = VEngine.Effects.Effect;
 using VEngine.Factory;
 using VEngine.Effects;
-using VEngine.Objects.Classes;
 
 namespace VEngine.Scenes.Combat
 {

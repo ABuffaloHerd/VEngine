@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Logging;
+using VEngine.Objects;
 using VEngine.Scenes.Combat;
 
 namespace VEngine.AI
 {
     public class TestAIBehavior : IAIActor
     {
-        private readonly List<AIAction> aiActions = new();
+        private readonly List<AIAction> aiActions = new(); // TODO: switch to queue
         private int test = 0;
 
         public IEnumerable<AIAction> GetAIActions()
@@ -50,6 +51,11 @@ namespace VEngine.AI
                 test = 0;
                 return false; 
             }
+        }
+
+        public void SetParent(GameObject parent)
+        {
+            
         }
     }
 }
