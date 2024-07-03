@@ -41,6 +41,7 @@ namespace VEngine.Scenes.Combat
                         break;
 
                     case AIActionType.ATTACK:
+                        selectedGameObject.Facing = (action.data as AttackActionData).Direction;
                         ExecuteAttack(thing, thing.Range);
                         break;
 

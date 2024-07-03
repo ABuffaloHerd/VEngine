@@ -44,8 +44,8 @@ namespace VEngine.AI
             {
                 (-1, 0),  // Left
                 (1, 0),   // Right
-                (0, -1),  // Up
-                (0, 1)    // Down
+                (0, 1),  // Up
+                (0, -1)    // Down
             };
 
             // get closest enemy
@@ -60,13 +60,20 @@ namespace VEngine.AI
             // check if closest is right next to me
             foreach(var direction in directions)
             {
-                Point pos = (parent.Position + direction);
+                Point pos = (parent.Position - direction);
                 GameObject? target = arena.At(pos.X, pos.Y);
 
                 if (target != null && target.Alignment == Alignment.FRIEND)
                 {
-                    // what a mess
-                    AttackActionData data = new(new Point(direction.X, direction.Y).FromVector());
+                    // calculate the direction to face
+                    Point directionVector = new Point(
+                        closest.Position.X - parent.Position.X,
+                        closest.Position.Y - parent.Position.Y
+                    );
+
+                    // Use the FromVector extension to determine the facing direction
+                    Data.Direction facing = directionVector.FromVector();
+                    AttackActionData data = new(facing);
                     AIAction attack = new(AIActionType.ATTACK, data);
 
                     actions.Enqueue(attack);

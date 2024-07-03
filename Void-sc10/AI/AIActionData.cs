@@ -30,10 +30,10 @@ namespace VEngine.AI
 
     public class AttackActionData : IAIActionData
     {
-        public Data.Direction direction;
+        public Data.Direction Direction;
         public AttackActionData(Data.Direction facing)
         {
-            direction = facing;
+            Direction = facing;
         }
     }
 }
