@@ -39,6 +39,15 @@ namespace VEngine.AI
         public void UpdateAI(Arena arena)
         {
             Logger.Report(this, "zombie ai update");
+
+            var directions = new (int X, int Y)[]
+            {
+                (-1, 0),  // Left
+                (1, 0),   // Right
+                (0, -1),  // Up
+                (0, 1)    // Down
+            };
+
             // get closest enemy
             GameObject? closest = Algorithms.Closest(arena.GetEntities(Alignment.FRIEND), parent.Position);
             if (closest == null) 
@@ -48,16 +57,26 @@ namespace VEngine.AI
                 return;
             }
 
+            // check if closest is right next to me
+            foreach(var direction in directions)
+            {
+                Point pos = (parent.Position + direction);
+                GameObject? target = arena.At(pos.X, pos.Y);
+
+                if (target != null && target.Alignment == Alignment.FRIEND)
+                {
+                    // what a mess
+                    AttackActionData data = new(new Point(direction.X, direction.Y).FromVector());
+                    AIAction attack = new(AIActionType.ATTACK, data);
+
+                    actions.Enqueue(attack);
+                    return; // you're done. good job.
+                }
+            }
+
             // check the closest point found by the algorithm
             Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.Speed, closest.Position);
 
-            var directions = new (int X, int Y)[]
-            {
-                (-1, 0),  // Left
-                (1, 0),   // Right
-                (0, -1),  // Up
-                (0, 1)    // Down
-            };
 
             if (!arena.IsTileFree(dest))
             {

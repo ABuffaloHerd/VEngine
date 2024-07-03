@@ -27,4 +27,13 @@ namespace VEngine.AI
             Destination = dest;
         }
     }
+
+    public class AttackActionData : IAIActionData
+    {
+        public Data.Direction direction;
+        public AttackActionData(Data.Direction facing)
+        {
+            direction = facing;
+        }
+    }
 }

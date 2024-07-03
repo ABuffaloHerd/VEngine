@@ -70,6 +70,7 @@ namespace VEngine.Objects
         }
         protected Data.Direction facing = Data.Direction.RIGHT;
 
+        // change this to a component later
         public virtual Pattern Range => null;
 
         protected List<Effect> effects = new();

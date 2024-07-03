@@ -45,5 +45,17 @@ namespace VEngine.Data
             };
         }
 
+        public static Direction FromVector(this Point p) // extends the point class
+        {
+            return p switch
+            {
+                { X: 0, Y: -1 } => Direction.UP,
+                { X: 0, Y: 1 } => Direction.DOWN,
+                { X: -1, Y: 0 } => Direction.LEFT,
+                { X: 1, Y: 0 } => Direction.RIGHT,
+                _ => throw new ArgumentOutOfRangeException(nameof(p), $"Not expected point value: {p}")
+            };
+        }
+
     }
 }
