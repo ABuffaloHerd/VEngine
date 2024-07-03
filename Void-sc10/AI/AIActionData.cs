@@ -18,4 +18,13 @@ namespace VEngine.AI
             Direction = direction;
         }
     }
+
+    public class TeleportActionData : IAIActionData
+    {
+        public Point Destination { get; private set; }
+        public TeleportActionData(Point dest)
+        {
+            Destination = dest;
+        }
+    }
 }

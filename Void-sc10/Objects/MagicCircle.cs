@@ -21,7 +21,7 @@ namespace VEngine.Objects
 
         public MagicCircle(Color color, Alignment alignment, GameObject owner) : base(prepareAppearance(color), -1)
         {
-            Type = Type.CIRCLE;
+            Type = EntityType.CIRCLE;
             Alignment = alignment;
             this.owner = owner;
         }

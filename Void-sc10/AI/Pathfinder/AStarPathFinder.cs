@@ -16,7 +16,7 @@ namespace VEngine.AI.Pathfinder
             this.arena = arena;
         }
 
-        public List<Point> FindPath(Point start, Point end)
+        public Point? FindEndpoint(Point start, Point end, int maxSteps)
         {
             var openList = new List<Point>();
             var closedList = new HashSet<Point>();
@@ -29,8 +29,10 @@ namespace VEngine.AI.Pathfinder
             while (openList.Count > 0)
             {
                 var current = GetLowestFScore(openList, fScore);
-                if (current == end)
-                    return ReconstructPath(cameFrom, current);
+                int currentSteps = gScore[current];
+
+                if (current == end || currentSteps >= maxSteps)
+                    return current; // Return the current point when steps limit is reached or the end is found
 
                 openList.Remove(current);
                 closedList.Add(current);
@@ -53,7 +55,7 @@ namespace VEngine.AI.Pathfinder
                 }
             }
 
-            return new List<Point>(); // No path found
+            return null; // No path found within the steps limit
         }
 
         private int Heuristic(Point a, Point b)
@@ -78,17 +80,6 @@ namespace VEngine.AI.Pathfinder
                 if (fScore[point] < fScore[lowest])
                     lowest = point;
             return lowest;
-        }
-
-        private List<Point> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current)
-        {
-            List<Point> totalPath = new List<Point> { current };
-            while (cameFrom.ContainsKey(current))
-            {
-                current = cameFrom[current];
-                totalPath.Insert(0, current);
-            }
-            return totalPath;
         }
     }
 }

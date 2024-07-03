@@ -113,6 +113,11 @@ namespace VEngine.Data
             return new(stat.Current * value, stat.Max);
         }
 
+        public static implicit operator int(Stat stat)
+        {
+            return stat.Current;
+        }
+
         /// <summary>
         /// Warning! Uses integer division.
         /// </summary>

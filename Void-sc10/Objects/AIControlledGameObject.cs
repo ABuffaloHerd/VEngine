@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.AI;
+using VEngine.Components;
 using VEngine.Scenes.Combat;
 
 namespace VEngine.Objects
@@ -21,6 +22,8 @@ namespace VEngine.Objects
             ai.SetParent(this);
 
             Alignment = Alignment.ENEMY; // default for all AI controleld things
+
+            AddComponent(new CollisionComponent());
         }
 
         /// <summary>

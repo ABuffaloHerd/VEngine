@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.AI.Pathfinder;
 using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Logging;
@@ -39,6 +40,8 @@ namespace VEngine.Scenes.Combat
         private Dictionary<Point, GameObject> positions;
         private Dictionary<Point, MagicCircle> magicCircles;
         private Pattern? currentPattern; // cache the current pattern
+
+        private AStarPathFinder pathFinder;
 
         /// <summary>
         /// Creates a new arena with specified width and height. Automatically scales and positions itself.<br></br>
@@ -85,6 +88,7 @@ namespace VEngine.Scenes.Combat
             SadComponents.Add(EntityManager);
             magicCircles = new();
             positions = new();
+            pathFinder = new(this);
 
             // Set the animation presets global fontsize to this font size so glyphs are the same size
             AnimationPresets.FontSize = this.FontSize;
@@ -176,6 +180,7 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue(eventArgs.OldValue, out GameObject obj);
             positions.Remove(eventArgs.OldValue);
             positions.Add(eventArgs.NewValue, obj);
+
         }
 
         /// <summary>

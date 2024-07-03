@@ -36,12 +36,22 @@ namespace VEngine.Objects
         /// <summary>
         /// Can i walk into this?
         /// </summary>
-        public bool HasCollision { get; set; } = true;
+        public bool HasCollision 
+        { 
+            get
+            {
+                return HasComponent<CollisionComponent>();
+            }
+            set
+            {
+                AddComponent(new CollisionComponent());
+            }
+        }
 
         /// <summary>
         /// Take a guess. Is this potato a bomb?
         /// </summary>
-        public Type Type { get; set; } = Type.ENTITY; 
+        public EntityType Type { get; set; } = EntityType.ENTITY; 
 
         /// <summary>
         /// Get your head out of your six.
@@ -66,7 +76,7 @@ namespace VEngine.Objects
 
         protected EffectsManager effectsManager;
 
-        protected Dictionary<System.Type, object> components = new();
+        protected Dictionary<Type, object> components = new();
 
         public event EventHandler<GameEvent>? OnAttack;
         public event EventHandler<GameEvent>? OnSpellCast;

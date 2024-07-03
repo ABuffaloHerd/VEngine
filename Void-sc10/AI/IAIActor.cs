@@ -54,6 +54,7 @@ namespace VEngine.AI
         BUFF,
         DEFEND,
         PARRY,
-        MOVE
+        MOVE,
+        TELEPORT
     }
 }

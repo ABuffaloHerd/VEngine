@@ -11,4 +11,9 @@ namespace VEngine.Components
     {
         public GameObject parent;
     }
+
+    public class CollisionComponent : Component
+    {
+        public int Weight = 1;
+    }
 }

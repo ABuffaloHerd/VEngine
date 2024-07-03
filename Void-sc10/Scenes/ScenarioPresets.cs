@@ -24,7 +24,7 @@ namespace VEngine.Scenes
             AnimatedScreenObject animated = new("Targetdummy", 1, 1);
             animated.CreateFrame()[0].Glyph = 'T';
 
-            AIControlledGameObject test = new(animated, 1, new TestAIBehavior());
+            AIControlledGameObject test = new(animated, 1, new ZombieAI());
             test.Name = "targetdummy";
             test.Position = (7, 4);
             test.HP = int.MaxValue;

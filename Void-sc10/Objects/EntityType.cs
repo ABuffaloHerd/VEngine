@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VEngine.Objects
 {
-    public enum Type
+    public enum EntityType
     {
         /// <summary>
         /// Meat puppets or walking robots
