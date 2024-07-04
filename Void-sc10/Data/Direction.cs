@@ -45,7 +45,7 @@ namespace VEngine.Data
             };
         }
 
-        public static Direction FromVector(this Point p) // extends the point class
+        public static Direction ToDirection(this Point p) // extends the point class
         {
             return p switch
             {

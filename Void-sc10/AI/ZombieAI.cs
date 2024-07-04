@@ -72,7 +72,7 @@ namespace VEngine.AI
                     );
 
                     // Use the FromVector extension to determine the facing direction
-                    Data.Direction facing = directionVector.FromVector();
+                    Data.Direction facing = directionVector.ToDirection();
                     AttackActionData data = new(facing);
                     AIAction attack = new(AIActionType.ATTACK, data);
 
