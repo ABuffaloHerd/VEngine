@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.Objects;
@@ -56,5 +57,41 @@ namespace VEngine.AI
         PARRY,
         MOVE,
         TELEPORT
+    }
+
+    public static class AIActorExtensions
+    {
+        public static Point CheckAndBounce(this IAIActor actor, Arena arena, Point dest)
+        {
+            var directions = new (int X, int Y)[]
+            {
+                (-1, 0),    // Left
+                (1, 0),     // Right
+                (0, 1),     // Up
+                (0, -1)     // Down
+            };
+
+            if (!arena.IsTileFree(dest))
+            {
+                foreach (var direction in directions)
+                {
+                    var newDest = (dest.X + direction.X, dest.Y + direction.Y);
+                    if (arena.IsTileFree(newDest))
+                    {
+                        return newDest;
+                    }
+                }
+            }
+
+            return dest; // return original if it failed
+        }
+
+        public static List<Point> LimitMovement(List<Point> path, int maxSteps)
+        {
+            if (path.Count <= maxSteps)
+                return path;
+
+            return path.GetRange(0, maxSteps);
+        }
     }
 }

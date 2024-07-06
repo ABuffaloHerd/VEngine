@@ -42,10 +42,10 @@ namespace VEngine.AI
 
             var directions = new (int X, int Y)[]
             {
-                (-1, 0),  // Left
-                (1, 0),   // Right
-                (0, 1),  // Up
-                (0, -1)    // Down
+                (-1, 0),    // Left
+                (1, 0),     // Right
+                (0, 1),     // Up
+                (0, -1)     // Down
             };
 
             // get closest enemy
@@ -66,7 +66,7 @@ namespace VEngine.AI
                 if (target != null && target.Alignment == Alignment.FRIEND)
                 {
                     // calculate the direction to face
-                    Point directionVector = new Point(
+                    Point directionVector = new(
                         closest.Position.X - parent.Position.X,
                         closest.Position.Y - parent.Position.Y
                     );
@@ -82,7 +82,7 @@ namespace VEngine.AI
             }
 
             // check the closest point found by the algorithm
-            Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.Speed, closest.Position);
+            Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.MoveDist, closest.Position);
 
 
             if (!arena.IsTileFree(dest))

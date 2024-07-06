@@ -41,8 +41,6 @@ namespace VEngine.Scenes.Combat
         private Dictionary<Point, MagicCircle> magicCircles;
         private Pattern? currentPattern; // cache the current pattern
 
-        private AStarPathFinder pathFinder;
-
         /// <summary>
         /// Creates a new arena with specified width and height. Automatically scales and positions itself.<br></br>
         /// Sizes work best with multiples of 4 larger than 24, but the min is 16 before it totally breaks down.
@@ -88,7 +86,6 @@ namespace VEngine.Scenes.Combat
             SadComponents.Add(EntityManager);
             magicCircles = new();
             positions = new();
-            pathFinder = new(this);
 
             // Set the animation presets global fontsize to this font size so glyphs are the same size
             AnimationPresets.FontSize = this.FontSize;
@@ -155,7 +152,16 @@ namespace VEngine.Scenes.Combat
                 if (magicCircles.ContainsKey(pos)) return false;
             }
 
+            //Logger.Report(this, $"THE TILE {pos} CONTAINS {At(pos)}");
             return !positions.ContainsKey(pos);
+        }
+
+        public bool IsWithinBounds(Point pos)
+        {
+            if (pos.X > Width - 1 || pos.Y > Height - 1) return false;
+            if (pos.X < 0 || pos.Y < 0) return false;
+
+            return true;
         }
 
         public void UpdatePositions()
@@ -200,6 +206,11 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue((x, y), out a);
 
             return a;
+        }
+
+        public GameObject? At(Point p)
+        {
+            return At(p.X, p.Y);
         }
 
         /// <summary>

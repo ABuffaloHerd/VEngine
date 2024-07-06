@@ -24,12 +24,13 @@ namespace VEngine.Scenes
 
             ListBox lb = new(50, 60);
             lb.Items.Add("CombatTest");
+            lb.Items.Add("AITest");
 
             Button b = new("Send it");
             b.Position = (0, 59);
             b.Click += (s, e) =>
             {
-                SceneChangeEvent sceneChangeEvent = new("combattest");
+                SceneChangeEvent sceneChangeEvent = new("aitest");
                 GameManager.Instance.SendGameEvent(this, sceneChangeEvent);
             };
 

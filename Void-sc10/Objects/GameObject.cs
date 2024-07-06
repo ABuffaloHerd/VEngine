@@ -295,5 +295,10 @@ namespace VEngine.Objects
                 control.UseKeyboard = false;
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

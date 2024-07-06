@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.AI.Pathfinder;
+using VEngine.Data;
 using VEngine.Logging;
 using VEngine.Objects;
 using VEngine.Scenes.Combat;
@@ -12,12 +14,31 @@ using Algorithms = VEngine.Data.Algorithms;
 
 namespace VEngine.AI
 {
-    public class KnightAI : ZombieAI
+    public class KnightAI : IAIActor
     {
         private GameObject parent;
         private Queue<AIAction> actions = new();
+        public IEnumerable<AIAction> GetAIActions()
+        {
+            return actions.ToList();
+        }
 
-        new public void UpdateAI(Arena arena)
+        public AIAction GetNextAction()
+        {
+            return actions.Dequeue();
+        }
+
+        public bool HasNextAction()
+        {
+            return actions.Count > 0;
+        }
+
+        public void SetParent(GameObject parent)
+        {
+            this.parent = parent;
+        }
+
+        public void UpdateAI(Arena arena)
         {
             Logger.Report(this, "Knight AI update");
 
@@ -31,10 +52,19 @@ namespace VEngine.AI
             }
 
             // check the closest point found by the algorithm
-            Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.Speed, closest.Position);
+            Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.MoveDist, closest.Position);
 
-            // pathfind to this location using the arena's pathfinder.
+            // pathfind to this location using the pathfinder.
+            Graph arenaGraph = arena.ToGraph();
+            List<Point> path = DijkstraPathFinder.FindPath(arenaGraph, parent.Position, dest);
 
+            var ltdpath = AIActorExtensions.LimitMovement(path, parent.MoveDist);
+
+            foreach(var p in ltdpath) 
+            {
+                AIAction act = new(AIActionType.TELEPORT, new TeleportActionData(p));
+                actions.Enqueue(act);
+            }
         }
     }
 }
