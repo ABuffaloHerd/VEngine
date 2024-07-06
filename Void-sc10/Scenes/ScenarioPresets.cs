@@ -105,7 +105,7 @@ namespace VEngine.Scenes
                 vanguard
             };
 
-            CombatScenario.SerializeJSON(CombatTest);
+            //CombatScenario.SerializeJSON(CombatTest);
         }
 
         private static void createAITest()

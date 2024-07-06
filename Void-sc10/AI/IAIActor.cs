@@ -10,13 +10,13 @@ using VEngine.Scenes.Combat;
 namespace VEngine.AI
 {
     /// <summary>
-    /// Arena state -> UpdateAI -> GetNextAction()
+    /// Arena state -> UpdateAI -> GetNextAction -> Scene executes
     /// Scene is responsible for executing AI's actions
     /// </summary>
     public interface IAIActor
     {
         /// <summary>
-        /// Updates internal ai state based on arena state.
+        /// Updates internal ai state based on arena state. Responsible for creating new actions that the object will take during the execution step.
         /// </summary>
         /// <param name="arena"></param>
         void UpdateAI(Arena arena);

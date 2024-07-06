@@ -30,7 +30,17 @@ namespace VEngine.Scenes
             b.Position = (0, 59);
             b.Click += (s, e) =>
             {
-                SceneChangeEvent sceneChangeEvent = new("aitest");
+                // get selected listbox item
+                int index = lb.SelectedIndex;
+                if (index < 0) return;
+
+                var map = new (int index, string key)[]
+                {
+                    (0, "combattest"),
+                    (1, "aitest")
+                };
+
+                SceneChangeEvent sceneChangeEvent = new(map[index].key);
                 GameManager.Instance.SendGameEvent(this, sceneChangeEvent);
             };
 

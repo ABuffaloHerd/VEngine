@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadRogue.Primitives;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
@@ -51,6 +52,39 @@ namespace VEngine.AI
                 return;
             }
 
+            // check if closest is right next to me
+            var directions = new (int X, int Y)[]
+            {
+                (-1, 0),    // Left
+                (1, 0),     // Right
+                (0, 1),     // Up
+                (0, -1)     // Down
+            };
+
+            foreach (var direction in directions)
+            {
+                Point pos = (parent.Position - direction);
+                GameObject? target = arena.At(pos.X, pos.Y);
+
+                if (target != null && target.Alignment == Alignment.FRIEND && target is not StaticGameObject)
+                {
+                    // calculate the direction to face
+                    Point directionVector = new(
+                        parent.Position.X - closest.Position.X,
+                        parent.Position.Y - closest.Position.Y
+                    );
+
+                    // Use the FromVector extension to determine the facing direction
+                    Data.Direction facing = directionVector.ToDirection();
+                    AttackActionData data = new(facing);
+                    AIAction attack = new(AIActionType.ATTACK, data);
+
+                    Logger.Report(this, $"attacking {facing}");
+                    actions.Enqueue(attack);
+                    return; // no need to move
+                }
+            }
+
             // check the closest point found by the algorithm
             Point dest = ClosestPointFinder.FindClosestPoint(parent.Position, parent.MoveDist, closest.Position);
 
@@ -65,6 +99,7 @@ namespace VEngine.AI
                 AIAction act = new(AIActionType.TELEPORT, new TeleportActionData(p));
                 actions.Enqueue(act);
             }
+
         }
     }
 }
