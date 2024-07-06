@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEngine.AI;
+using VEngine.Components;
+using VEngine.Data;
+using VEngine.Items;
 using VEngine.Scenes.Combat;
 
-namespace VEngine.Objects.Classes
+namespace VEngine.Objects
 {
     /// <summary>
     /// base class for all AI controlled game objects.
@@ -14,10 +17,23 @@ namespace VEngine.Objects.Classes
     public class AIControlledGameObject : GameObject
     {
         public IAIActor AI { get; protected set; }
-        public AIControlledGameObject(AnimatedScreenObject appearance, int zIndex, IAIActor ai) 
+        public override Pattern Range
+        {
+            get
+            {
+                return GetComponent<WeaponComponent>().Range;
+            }
+        }
+        public AIControlledGameObject(AnimatedScreenObject appearance, int zIndex, IAIActor ai)
             : base(appearance, zIndex)
         {
             AI = ai;
+            ai.SetParent(this);
+
+            Alignment = Alignment.ENEMY; // default for all AI controleld things
+
+            AddComponent(new CollisionComponent());
+            AddComponent(new WeaponComponent());
         }
 
         /// <summary>

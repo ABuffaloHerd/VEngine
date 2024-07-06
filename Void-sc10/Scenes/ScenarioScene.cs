@@ -24,12 +24,23 @@ namespace VEngine.Scenes
 
             ListBox lb = new(50, 60);
             lb.Items.Add("CombatTest");
+            lb.Items.Add("AITest");
 
             Button b = new("Send it");
             b.Position = (0, 59);
             b.Click += (s, e) =>
             {
-                SceneChangeEvent sceneChangeEvent = new("combattest");
+                // get selected listbox item
+                int index = lb.SelectedIndex;
+                if (index < 0) return;
+
+                var map = new (int index, string key)[]
+                {
+                    (0, "combattest"),
+                    (1, "aitest")
+                };
+
+                SceneChangeEvent sceneChangeEvent = new(map[index].key);
                 GameManager.Instance.SendGameEvent(this, sceneChangeEvent);
             };
 

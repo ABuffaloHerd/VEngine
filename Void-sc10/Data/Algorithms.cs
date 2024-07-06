@@ -24,6 +24,7 @@ namespace VEngine.Data
 
             foreach (var obj in objects)
             {
+                if (obj is StaticGameObject) continue;
                 double mag = Point.EuclideanDistanceMagnitude(obj.Position, origin);
 
                 if (mag < dist)

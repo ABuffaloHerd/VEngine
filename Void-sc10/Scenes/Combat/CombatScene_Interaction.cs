@@ -26,6 +26,7 @@ namespace VEngine.Scenes.Combat
         {
             // From the given range, give possible targets in a collection to the attacker
             List<GameObject> targets = arena.GetInPattern(range, selectedGameObject.Position, selectedGameObject.Facing);
+            Logger.Report(this, $"attacker is facing {selectedGameObject.Facing}");
 
             // remove the current object from hurting itself
             targets.Remove(selectedGameObject);

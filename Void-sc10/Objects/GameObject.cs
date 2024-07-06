@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using VEngine.Components;
 using VEngine.Data;
 using VEngine.Effects;
 using VEngine.Events;
@@ -36,12 +36,22 @@ namespace VEngine.Objects
         /// <summary>
         /// Can i walk into this?
         /// </summary>
-        public bool HasCollision { get; set; } = true;
+        public bool HasCollision 
+        { 
+            get
+            {
+                return HasComponent<CollisionComponent>();
+            }
+            set
+            {
+                AddComponent(new CollisionComponent());
+            }
+        }
 
         /// <summary>
         /// Take a guess. Is this potato a bomb?
         /// </summary>
-        public Type Type { get; set; } = Type.ENTITY; 
+        public EntityType Type { get; set; } = EntityType.ENTITY; 
 
         /// <summary>
         /// Get your head out of your six.
@@ -60,11 +70,14 @@ namespace VEngine.Objects
         }
         protected Data.Direction facing = Data.Direction.RIGHT;
 
+        // change this to a component later
         public virtual Pattern Range => null;
 
-        protected List<Effect> effects;
+        protected List<Effect> effects = new();
 
         protected EffectsManager effectsManager;
+
+        protected Dictionary<Type, object> components = new();
 
         public event EventHandler<GameEvent>? OnAttack;
         public event EventHandler<GameEvent>? OnSpellCast;
@@ -89,7 +102,6 @@ namespace VEngine.Objects
         /// <param name="zIndex"></param>
         public GameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
-            effects = new();
             Speed = (Stat)100;
             MoveDist = (Stat)10;
             HP = 10; // default debug
@@ -242,6 +254,21 @@ namespace VEngine.Objects
             AppearanceSurface.Animation.Start();
         }
 
+        public void AddComponent<T>(T component) where T : Component
+        {
+            components[typeof(T)] = component;
+        }
+
+        public T GetComponent<T>() where T : Component
+        {
+            return (T)components[typeof(T)];
+        }
+
+        public bool HasComponent<T>() where T : Component
+        {
+            return components.ContainsKey(typeof(T));
+        }
+
         /// <summary>
         /// Required for deriving classes to invoke the OnAttack event
         /// </summary>
@@ -267,6 +294,11 @@ namespace VEngine.Objects
             {
                 control.UseKeyboard = false;
             }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

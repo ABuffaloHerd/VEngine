@@ -14,9 +14,16 @@ namespace VEngine.Scenes
     internal static class ScenarioPresets
     {
         public static CombatScenario CombatTest;
+        public static CombatScenario AITest;
         static ScenarioPresets()
         {
-            CombatTest = new("combat test", "testing classes", 24, 24);
+            createCombatTest();
+            createAITest();
+        }
+
+        private static void createCombatTest()
+        {
+            CombatTest = new("combat_test", "testing classes", 24, 24);
 
             // define some objects
 
@@ -24,7 +31,7 @@ namespace VEngine.Scenes
             AnimatedScreenObject animated = new("Targetdummy", 1, 1);
             animated.CreateFrame()[0].Glyph = 'T';
 
-            AIControlledGameObject test = new(animated, 1, new TestAIBehavior());
+            AIControlledGameObject test = new(animated, 1, new ZombieAI());
             test.Name = "targetdummy";
             test.Position = (7, 4);
             test.HP = int.MaxValue;
@@ -97,6 +104,57 @@ namespace VEngine.Scenes
                 guard,
                 vanguard
             };
+
+            //CombatScenario.SerializeJSON(CombatTest);
+        }
+
+        private static void createAITest()
+        {
+            AITest = new("ai_test", "testing ai", 32, 32);
+
+
+            // define some objects
+
+            /* ===== Test code ===== */
+            AnimatedScreenObject animated = new("Knight", 1, 1);
+            animated.CreateFrame()[0].Glyph = 'K';
+
+            AIControlledGameObject test = new(animated, 1, new KnightAI());
+            test.Name = "Knight";
+            test.Position = (16, 16);
+            test.HP = 100;
+            test.Speed = 5;
+            test.MoveDist = 8;
+
+            AnimatedScreenObject aso5 = AnimationPresets.BlinkingEffect("Guard", 'H', Color.Red, Color.Black, (1, 1));
+            Guard guard = new(aso5, 1);
+            guard.Name = "Hirina";
+            guard.Speed = 100;
+            guard.HP = 150;
+            guard.MP = 50;
+            guard.SP = 10;
+            guard.Position = (2, 18);
+
+            AITest.Objects = new()
+            {
+                test,
+                guard
+            };
+
+            AnimatedScreenObject wallobj = new("wall", 1, 1);
+            wallobj.CreateFrame()[0].Glyph = (char)219;
+
+            StaticGameObject wall = new(wallobj, 1);
+            wall.Position = (3, 14);
+            wall.Name = "wall";
+
+            for (int x = 15; x < 27; x++)
+            {
+                var wal = new StaticGameObject(wallobj, 1);
+                wal.Position = (3, x);
+                wal.Name = "wall";
+                AITest.Objects.Add(wal);
+            }
         }
     }
 }

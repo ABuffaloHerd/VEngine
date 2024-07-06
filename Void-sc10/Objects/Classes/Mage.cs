@@ -125,41 +125,6 @@ namespace VEngine.Objects.Classes
                 castButton,
                 showRange
             };
-            //int y = 2;
-            //foreach(Spell spell in spellBook)
-            //{
-            //    Button b2 = new(spell.Name);
-            //    b2.Position = (0, ++y);
-            //    b2.Click += (s, e) =>
-            //    {
-            //        CombatEvent ce = new CombatEventBuilder()
-            //            .SetEventType(CombatEventType.CAST)
-            //            .AddField("spell", spell)
-            //            .Build();
-
-            //        GameManager.Instance.SendGameEvent(this, ce);
-            //    };
-
-            //    Button b3 = new("range")
-            //    {
-            //        // 20 looks like a magic number because it is. 27 is the size of the controls console
-            //        // minus (5, length of "range" + 2 for button padding)
-            //        Position = (20, y)
-            //    };
-            //    b3.Click += (s, e) =>
-            //    {
-            //        CombatEvent ce = new CombatEventBuilder()
-            //            .SetEventType(CombatEventType.ACTION)
-            //            .AddField("action", "show_range")
-            //            .AddField("pattern", spell.Range)
-            //            .Build();
-
-            //        GameManager.Instance.SendGameEvent(this, ce);
-            //    };
-
-            //    controls.Add(b2);
-            //    controls.Add(b3);
-            //}
 
             PlugMemoryLeaks(controls);
             return controls;

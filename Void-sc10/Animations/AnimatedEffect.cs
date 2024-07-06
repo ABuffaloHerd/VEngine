@@ -11,7 +11,7 @@ namespace VEngine.Animations
 {
     public class AnimatedEffect : AnimatedScreenObject, ICloneable
     {
-        private Components.Timer timer;
+        private SadConsole.Components.Timer timer;
         private Point direction;
         private TimeSpan interval;
         private TimeSpan elapsed = TimeSpan.Zero;

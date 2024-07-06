@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Components;
 using VEngine.Data;
 using VEngine.Events;
 using VEngine.Factory;
@@ -46,6 +47,9 @@ namespace VEngine.Objects
 
             // set attributes for MP bar
             MP.IsOverloadable = true;
+
+            AddComponent(new CollisionComponent());
+            //hudElements = GetHudElements();
         }
 
         public Pattern GetRange()
@@ -53,6 +57,7 @@ namespace VEngine.Objects
             return weapon.Range;
         }
 
+        // todo: maybe change this so that controls aren't instatiated every fucking time?
         public virtual ICollection<ControlBase> GetControls()
         {
             return new List<ControlBase>();

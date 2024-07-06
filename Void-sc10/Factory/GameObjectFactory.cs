@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VEngine.AI;
 using VEngine.Animations;
 using VEngine.Objects;
-using VEngine.Objects.Classes;
 
 namespace VEngine.Factory
 {

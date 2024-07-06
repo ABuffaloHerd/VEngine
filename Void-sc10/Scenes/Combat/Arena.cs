@@ -8,10 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.AI.Pathfinder;
 using VEngine.Animations;
 using VEngine.Data;
 using VEngine.Logging;
 using VEngine.Objects;
+using VEngine.Rendering;
 
 namespace VEngine.Scenes.Combat
 {
@@ -19,7 +21,7 @@ namespace VEngine.Scenes.Combat
     /// This class handles everything to do with rendering entities and checking collision. It knows what's where
     /// Don't use this outside of combat scenes.
     /// </summary>
-    public partial class Arena : ScreenSurface
+    public partial class Arena : ShakingCellSurface
     {
         private const int defaultSize = 12;
         private readonly Point defaultPosition = new (32, 4); // todo: make this initializable from constructor or otherwise.
@@ -108,6 +110,19 @@ namespace VEngine.Scenes.Combat
             UpdatePositions();
         }
 
+        public List<GameObject> GetEntities(Alignment alignment)
+        {
+            List<GameObject> entities = new();
+
+            foreach(GameObject obj in EntityManager)
+            {
+                if (obj.Alignment == alignment)
+                    entities.Add(obj);
+            }
+
+            return entities;
+        }
+
         public void AddMagicCircle(MagicCircle magicCircle)
         {
             EntityManager.Add(magicCircle);
@@ -137,7 +152,16 @@ namespace VEngine.Scenes.Combat
                 if (magicCircles.ContainsKey(pos)) return false;
             }
 
+            //Logger.Report(this, $"THE TILE {pos} CONTAINS {At(pos)}");
             return !positions.ContainsKey(pos);
+        }
+
+        public bool IsWithinBounds(Point pos)
+        {
+            if (pos.X > Width - 1 || pos.Y > Height - 1) return false;
+            if (pos.X < 0 || pos.Y < 0) return false;
+
+            return true;
         }
 
         public void UpdatePositions()
@@ -162,6 +186,7 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue(eventArgs.OldValue, out GameObject obj);
             positions.Remove(eventArgs.OldValue);
             positions.Add(eventArgs.NewValue, obj);
+
         }
 
         /// <summary>
@@ -181,6 +206,11 @@ namespace VEngine.Scenes.Combat
             positions.TryGetValue((x, y), out a);
 
             return a;
+        }
+
+        public GameObject? At(Point p)
+        {
+            return At(p.X, p.Y);
         }
 
         /// <summary>

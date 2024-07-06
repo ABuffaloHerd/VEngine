@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VEngine.AI;
 using VEngine.Data;
 using VEngine.Logging;
-using VEngine.Objects.Classes;
+using VEngine.Objects;
 
 namespace VEngine.Scenes.Combat
 {
@@ -16,9 +16,13 @@ namespace VEngine.Scenes.Combat
         public void HandleAI(AIControlledGameObject thing)
         {
             Logger.Report(this, "Handling AI");
+            // Update AI state
+            thing.UpdateAI(arena);
+
             // get thing's action
             while(thing.AI.HasNextAction())
             {
+                Logger.Report(this, "AI has next action");
                 AIAction action = thing.GetNextAction();
 
                 // figure out what action it is
@@ -35,6 +39,18 @@ namespace VEngine.Scenes.Combat
                         Data.Direction direction = (action.data as MoveActionData).Direction;
                         Move(direction.ToVector());
                         break;
+
+                    case AIActionType.ATTACK:
+                        selectedGameObject.Facing = (action.data as AttackActionData).Direction;
+                        ExecuteAttack(thing, thing.Range);
+                        break;
+
+                    case AIActionType.TELEPORT:
+                        // guard against putting the same object in the same place.
+                        if (!arena.IsTileFree((action.data as TeleportActionData).Destination)) break;
+                        selectedGameObject.Position = (action.data as TeleportActionData).Destination;
+                        break;
+
                 }
 
                 Logger.Report(this, "Action complete, waiting");
