@@ -19,6 +19,12 @@ namespace VEngine.Items
         public int Damage { get; set; }
 
         public Pattern Range { get; private set; }
+
+        /// <summary>
+        /// Holds unique weapon data
+        /// </summary>
+        private Dictionary<string, object> data = new();
+
         /// <summary>
         /// In order, this, targets, wielder, arena, output game event
         /// </summary>

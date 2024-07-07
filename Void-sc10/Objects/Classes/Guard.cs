@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEngine.Components;
 using VEngine.Items;
 
 namespace VEngine.Objects.Classes
@@ -14,6 +15,8 @@ namespace VEngine.Objects.Classes
         {
             // Test code
             Weapon = (Weapon)WeaponRegistry.CombatSword.Clone();
+
+            AddComponent(new OverdriveComponent());
         }
     }
 }

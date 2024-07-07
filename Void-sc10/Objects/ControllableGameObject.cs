@@ -101,6 +101,26 @@ namespace VEngine.Objects
             list.Add(spBar);
             list.Add(spLabel);
 
+            if(HasComponent<OverdriveComponent>())
+            {
+                OverdriveComponent odComponent = GetComponent<OverdriveComponent>();
+                ProgressBar odBar = new(20, 1, HorizontalAlignment.Left)
+                {
+                    Progress = odComponent.Stat.Current / (float)100,
+                    Position = (5, 8),
+                    DisplayText = $"{odComponent.Stat.Current} / 100",
+                    DisplayTextColor = Color.Black,
+                    BarColor = Color.DarkOrange,
+                    BackgroundGlyph = 178,
+                };
+                Label odLabel = new("OD: ")
+                {
+                    Position = (0, 8)
+                };
+                list.Add(odLabel);
+                list.Add(odBar);
+            }
+
 
             PlugMemoryLeaks(list);
             return list;
@@ -122,6 +142,18 @@ namespace VEngine.Objects
             MP -= spell.Cost;
             var ev = spell.ApplyEffect(targets, this, arena);
             RaiseOnAttack(ev);
+        }
+
+        public override int TakeDamage(GameObject? attacker, ICombatItem? item, int damage, DamageType type)
+        {
+            int incoming = base.TakeDamage(attacker, item, damage, type);
+            // on top of this, turn 20% of the damage taken into OD charge, if the class supports it.
+            if (HasComponent<OverdriveComponent>())
+            {
+                int charge = (int)Math.Ceiling(0.2 * incoming);
+                GetComponent<OverdriveComponent>().Stat += charge;
+            }
+            return incoming;
         }
     }
 }
