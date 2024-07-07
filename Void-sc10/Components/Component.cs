@@ -30,6 +30,7 @@ namespace VEngine.Components
         public Stat Stat { get; set; } = new(0, 100);
         public OverdriveComponent() 
         {
+            Stat.IsOverloadable = false;
         }
     }
 }

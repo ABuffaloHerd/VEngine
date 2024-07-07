@@ -1,5 +1,6 @@
 ﻿using VEngine.AI;
 using VEngine.Animations;
+using VEngine.Components;
 using VEngine.Objects;
 using VEngine.Objects.Classes;
 
@@ -130,6 +131,7 @@ namespace VEngine.Scenes
             guard.MP = 50;
             guard.SP = 10;
             guard.Position = (2, 18);
+            guard.GetComponent<OverdriveComponent>().Stat.Current = 100;
 
             AITest.Objects = new()
             {

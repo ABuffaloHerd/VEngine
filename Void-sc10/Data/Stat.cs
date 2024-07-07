@@ -51,6 +51,8 @@ namespace VEngine.Data
         {
             _current = current;
             _max = max;
+
+            if (!IsOverloadable) Current = Max;
         }
 
         public Stat(int max)

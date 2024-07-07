@@ -51,8 +51,8 @@ namespace VEngine.Data
             {
                 { X: 0, Y: 1 } => Direction.UP,
                 { X: 0, Y: -1 } => Direction.DOWN,
-                { X: -1, Y: 0 } => Direction.LEFT,
-                { X: 1, Y: 0 } => Direction.RIGHT,
+                { X: 1, Y: 0 } => Direction.LEFT, // swapped for some reason
+                { X: -1, Y: 0 } => Direction.RIGHT,
                 _ => throw new ArgumentOutOfRangeException(nameof(p), $"Not expected point value: {p}")
             };
         }

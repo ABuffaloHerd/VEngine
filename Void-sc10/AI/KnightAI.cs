@@ -79,7 +79,7 @@ namespace VEngine.AI
                     AttackActionData data = new(facing);
                     AIAction attack = new(AIActionType.ATTACK, data);
 
-                    Logger.Report(this, $"attacking {facing}");
+                    Logger.Report(this, $"attacking {facing}, direction vector is {directionVector}");
                     actions.Enqueue(attack);
                     return; // no need to move
                 }
