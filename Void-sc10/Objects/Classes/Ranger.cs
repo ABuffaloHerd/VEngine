@@ -19,7 +19,7 @@ namespace VEngine.Objects.Classes
         public Stat Ammo { get; set; } = 2;
         public Ranger(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
-            weapon = WeaponRegistry.Rifle.Clone() as Weapon;
+            Weapon = WeaponRegistry.Rifle.Clone() as Weapon;
         }
 
         public override ICollection<ControlBase> GetHudElements()

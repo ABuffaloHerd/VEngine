@@ -13,7 +13,7 @@ namespace VEngine.Objects.Classes
         public Vanguard(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
             MoveDist = 20;
-            weapon = (Weapon)WeaponRegistry.CombatSword.Clone();
+            Weapon = (Weapon)WeaponRegistry.CombatSword.Clone();
         }
     }
 }

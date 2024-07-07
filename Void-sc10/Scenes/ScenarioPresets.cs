@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VEngine.AI;
+﻿using VEngine.AI;
 using VEngine.Animations;
-using VEngine.Data;
 using VEngine.Objects;
 using VEngine.Objects.Classes;
 
@@ -15,10 +9,12 @@ namespace VEngine.Scenes
     {
         public static CombatScenario CombatTest;
         public static CombatScenario AITest;
+        public static CombatScenario GuardTest;
         static ScenarioPresets()
         {
             createCombatTest();
             createAITest();
+            createGuardTest();
         }
 
         private static void createCombatTest()
@@ -155,6 +151,20 @@ namespace VEngine.Scenes
                 wal.Name = "wall";
                 AITest.Objects.Add(wal);
             }
+        }
+
+        private static void createGuardTest()
+        {
+            GuardTest = new("paradox_hirina", "Paradox Simulation: Hirina", 24, 24);
+
+            AnimatedScreenObject aso5 = AnimationPresets.BlinkingEffect("Guard", 'H', Color.Red, Color.Black, (1, 1));
+            Guard guard = new(aso5, 1);
+            guard.Name = "Hirina";
+            guard.Speed = 120;
+            guard.HP = 150;
+            guard.MP = 50;
+            guard.SP = 10;
+            guard.Position = (2, 18);
         }
     }
 }

@@ -17,7 +17,17 @@ namespace VEngine.Objects
 {
     public class ControllableGameObject : GameObject, IControllable
     {
-        protected Weapon weapon;
+        protected Weapon Weapon
+        {
+            get
+            {
+                return GetComponent<WeaponComponent>().Weapon;
+            }
+            set
+            {
+                GetComponent<WeaponComponent>().Weapon = value;
+            }
+        }
 
         public Stat MP { get; set; }
         public Stat SP { get; set; }
@@ -26,19 +36,12 @@ namespace VEngine.Objects
         {
             get
             {
-                return weapon.Range;
+                return Weapon.Range;
             }
         }
 
         public ControllableGameObject(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
-            weapon = WeaponRegistry.WoodenSword.Clone() as Weapon;
-
-            if(weapon == null)
-            {
-                throw new Exception("Major fuck up in controllable game object constructor");
-            }
-
             // default for all controllables
             Alignment = Alignment.FRIEND;
 
@@ -49,12 +52,13 @@ namespace VEngine.Objects
             MP.IsOverloadable = true;
 
             AddComponent(new CollisionComponent());
+            AddComponent(new WeaponComponent());
             //hudElements = GetHudElements();
         }
 
         public Pattern GetRange()
         {
-            return weapon.Range;
+            return GetComponent<WeaponComponent>().Range;
         }
 
         // todo: maybe change this so that controls aren't instatiated every fucking time?
@@ -105,7 +109,7 @@ namespace VEngine.Objects
         public override void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
             // instead of doing fuck all like the base class, use the weapon object's attack function
-            var ev = weapon.ApplyEffect(targets, this, arena);
+            var ev = Weapon.ApplyEffect(targets, this, arena);
 
             // always trigger OnAttack
             RaiseOnAttack(ev);

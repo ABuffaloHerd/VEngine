@@ -13,7 +13,7 @@ namespace VEngine.Objects.Classes
         public Guard(AnimatedScreenObject appearance, int zIndex) : base(appearance, zIndex)
         {
             // Test code
-            weapon = (Weapon)WeaponRegistry.CombatSword.Clone();
+            Weapon = (Weapon)WeaponRegistry.CombatSword.Clone();
         }
     }
 }
