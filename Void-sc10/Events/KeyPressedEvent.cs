@@ -1,9 +1,5 @@
 ﻿using SadConsole.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VEngine.Events
 {
@@ -34,20 +30,28 @@ namespace VEngine.Events
         public IGameEvent AddData(string key, object value)
         {
             this.Key = key[0];
-
             return this;
         }
 
         public bool Contains(string key)
         {
-            if (key[0] == this.Key) return true;
-            else return false;
+            return key[0] == this.Key;
         }
 
         public T GetData<T>(string key)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("KeyPressedEvent does not support generic data access");
         }
 
+        public T GetData<T>(string key, T defaultValue)
+        {
+            return defaultValue;
+        }
+
+        public bool TryGetData<T>(string key, out T value)
+        {
+            value = default(T)!;
+            return false;
+        }
     }
 }

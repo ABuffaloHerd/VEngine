@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Events;
 using VEngine.Logging;
 using VEngine.Objects;
@@ -27,12 +23,24 @@ namespace VEngine
         public event EventHandler<IGameEvent> Event;
 
         private Scene currentScene;
+        
+        // Efficient event routing using delegates
+        private readonly Dictionary<EventTarget, Action<IGameEvent>> eventHandlers;
 
         private GameManager()
         {
             // Singleton pattern
             if (Instance != null)
                 throw new Exception("Only one GameManager instance allowed");
+
+            // Initialize event handlers
+            eventHandlers = new Dictionary<EventTarget, Action<IGameEvent>>
+            {
+                { EventTarget.SCENE_MANAGER, HandleSceneManagerEvent },
+                { EventTarget.CURRENT_SCENE, HandleCurrentSceneEvent },
+                { EventTarget.CHARA_MANAGER, HandleCharacterManagerEvent },
+                { EventTarget.GLOBAL, HandleGlobalEvent }
+            };
 
             // Subscribe to the scene manager's scene change event
             SceneManager.Instance.OnSceneChanged += HandleSceneChange;
@@ -47,7 +55,6 @@ namespace VEngine
         public void HandleSceneChange(Scene newScene)
         {
             // Unsubscribe from the old scene's event
-            Scene currentScene = Game.Instance.Screen as Scene;
             if (currentScene != null)
             {
                 currentScene.RaiseEvent -= ProcessEvent;
@@ -59,7 +66,7 @@ namespace VEngine
             Logger.Report(this, "Subscribed to new scene's event");
 
             // Set currentscene to this current scene
-            this.currentScene = newScene;
+            currentScene = newScene;
         }
 
         /// <summary>
@@ -88,28 +95,51 @@ namespace VEngine
             if (e is KeyPressedEvent)
                 Logger.Report(this, $"Received keyboard press {((KeyPressedEvent)e).Key}");
 
-            // Choose which manager to forward events to
-            switch(e.Target)
+            // Use efficient delegate-based routing instead of switch statement
+            if (eventHandlers.TryGetValue(e.Target, out var handler))
             {
-                case EventTarget.SCENE_MANAGER:
-                    // send to scene manager
-                    Logger.Report(this, "Forwarded event to Scene Manager!");
-                    SceneManager.Instance.HandleEvent(e);
-                    break;
-
-                case EventTarget.CURRENT_SCENE:
-                    Logger.Report(this, "Forwarded event to current scene!");
-                    Event.Invoke(this, e);
-                    break;
-
-                case EventTarget.CHARA_MANAGER:
-                    // send to character manager
-                    break;
-
-                default:
-                    // it belongs here. break for further processing
-                    break;
+                handler(e);
             }
+        }
+
+        private void HandleSceneManagerEvent(IGameEvent e)
+        {
+            Logger.Report(this, "Forwarded event to Scene Manager!");
+            SceneManager.Instance.HandleEvent(e);
+        }
+
+        private void HandleCurrentSceneEvent(IGameEvent e)
+        {
+            Logger.Report(this, "Forwarded event to current scene!");
+            Event?.Invoke(this, e);
+        }
+
+        private void HandleCharacterManagerEvent(IGameEvent e)
+        {
+            // TODO: Implement character manager event handling
+            // CharacterManager.Instance.HandleEvent(e);
+        }
+
+        private void HandleGlobalEvent(IGameEvent e)
+        {
+            // Send to all handlers
+            HandleSceneManagerEvent(e);
+            HandleCurrentSceneEvent(e);
+            HandleCharacterManagerEvent(e);
+        }
+
+        /// <summary>
+        /// Cleanup method to prevent memory leaks
+        /// </summary>
+        public void Dispose()
+        {
+            if (currentScene != null)
+            {
+                currentScene.RaiseEvent -= ProcessEvent;
+                currentScene = null;
+            }
+            
+            SceneManager.Instance.OnSceneChanged -= HandleSceneChange;
         }
     }
 

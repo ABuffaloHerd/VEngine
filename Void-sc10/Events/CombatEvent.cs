@@ -86,7 +86,7 @@ namespace VEngine.Events
             "spell"
         };
 
-        private CombatEvent()
+        internal CombatEvent()
         {
             data = new();
             EventType = CombatEventType.INFO; // default type is info
@@ -103,6 +103,15 @@ namespace VEngine.Events
             CombatEvent returnme = new(type, data);
             returnme.Validate();
             return returnme;
+        }
+
+        /// <summary>
+        /// Clear the event data for reuse
+        /// </summary>
+        public new void Clear()
+        {
+            base.Clear();
+            EventType = CombatEventType.INFO; // Reset to default type
         }
 
         /// <summary>

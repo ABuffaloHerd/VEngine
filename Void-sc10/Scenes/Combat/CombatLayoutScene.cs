@@ -165,15 +165,13 @@ namespace VEngine.Scenes.Combat
 
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
-            if (e is KeyPressedEvent)
+            if (e is KeyPressedEvent keyEvent)
             {
-                KeyPressedEvent kp = e as KeyPressedEvent;
-
-                if(kp.Key == 'q')
+                if(keyEvent.Key == 'q')
                 {
-                    SceneChangeEvent sc = new("title");
-
-                    RaiseGameEvent(sc);
+                    var sceneChangeEvent = EventPool.GetSceneChangeEvent("title");
+                    RaiseGameEvent(sceneChangeEvent);
+                    EventPool.Return(sceneChangeEvent);
                 }
             }
         }

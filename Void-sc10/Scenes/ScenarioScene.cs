@@ -1,10 +1,6 @@
 ﻿using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Events;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
@@ -40,8 +36,9 @@ namespace VEngine.Scenes
                     (1, "aitest")
                 };
 
-                SceneChangeEvent sceneChangeEvent = new(map[index].key);
+                var sceneChangeEvent = EventPool.GetSceneChangeEvent(map[index].key);
                 GameManager.Instance.SendGameEvent(this, sceneChangeEvent);
+                EventPool.Return(sceneChangeEvent);
             };
 
             controls.Controls.Add(lb);

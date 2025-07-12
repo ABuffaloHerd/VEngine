@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VEngine.Events
 {
@@ -24,5 +20,15 @@ namespace VEngine.Events
         IGameEvent AddData(string key, object value);
         bool Contains(string key);
         T GetData<T>(string key);
+        
+        /// <summary>
+        /// Type-safe data access with default value
+        /// </summary>
+        T GetData<T>(string key, T defaultValue);
+        
+        /// <summary>
+        /// Try to get data with type safety
+        /// </summary>
+        bool TryGetData<T>(string key, out T value);
     }
 }

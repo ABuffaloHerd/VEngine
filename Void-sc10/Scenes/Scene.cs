@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using SadConsole;
 using SadConsole.Input;
 using VEngine.Events;
@@ -19,7 +14,7 @@ namespace VEngine.Scenes
         // Local copy of reference to game manager. 
         // The scene will subscribe to the game manager's event in the constructor.
         // This is so that data can be passed between multiple scenes or objects.
-        protected GameManager gmInstance = GameManager.Instance;
+        protected readonly GameManager gmInstance = GameManager.Instance;
 
         // Event to be sent to the game manager. The game manager will subscribe to this event for processing.
         public event EventHandler<IGameEvent> RaiseEvent;
@@ -83,19 +78,14 @@ namespace VEngine.Scenes
             Logger.Report(this, "disposing.");
             base.Dispose(true);
 
-            if(!disposed)
+            if(!disposed && disposing)
             {
-                if(disposing)
-                {
-                    // Tell game manager to unsubscribe from this scene's event
-                    // This fixes a memory leak
-                    gmInstance.Event -= ProcessGameEvent;
-                    Logger.Report(this, "Unsubscribed from GM event");
-                }
-
+                // Tell game manager to unsubscribe from this scene's event
+                // This fixes a memory leak
+                gmInstance.Event -= ProcessGameEvent;
+                Logger.Report(this, "Unsubscribed from GM event");
                 disposed = true;
             }
-
         }
 
         ~Scene()

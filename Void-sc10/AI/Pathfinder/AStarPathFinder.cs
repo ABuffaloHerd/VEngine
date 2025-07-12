@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Logging;
 using VEngine.Scenes.Combat;
 
@@ -10,26 +7,42 @@ namespace VEngine.AI.Pathfinder
 {
     public static class AStarPathFinder
     {
+        private const int MOVEMENT_COST = 1;
+
         public static Point? FindEndpoint(Arena arena, Point start, Point end, int maxSteps)
         {
-            var openList = new List<Point>();
+            // Parameter validation
+            if (arena == null)
+                throw new ArgumentNullException(nameof(arena));
+            
+            if (maxSteps <= 0)
+                throw new ArgumentException("maxSteps must be positive", nameof(maxSteps));
+
+            if (!arena.IsWithinBounds(start) || !arena.IsWithinBounds(end))
+                return null;
+
+            if (!arena.IsTileFree(start) || !arena.IsTileFree(end))
+                return null;
+
+            // Use PriorityQueue for better performance
+            var openList = new PriorityQueue<Point, int>();
             var closedList = new HashSet<Point>();
             var cameFrom = new Dictionary<Point, Point>();
             var gScore = new Dictionary<Point, int> { [start] = 0 };
             var fScore = new Dictionary<Point, int> { [start] = Heuristic(start, end) };
 
-            openList.Add(start);
+            openList.Enqueue(start, fScore[start]);
 
             Point? closestPoint = null;
             int closestDistance = int.MaxValue;
 
             while (openList.Count > 0)
             {
-                var current = GetLowestFScore(openList, fScore);
+                var current = openList.Dequeue();
+                
                 if (current == end)
                     return current; // Return the end point if found
 
-                openList.Remove(current);
                 closedList.Add(current);
 
                 if (gScore[current] >= maxSteps)
@@ -44,28 +57,24 @@ namespace VEngine.AI.Pathfinder
 
                 foreach (var neighbor in GetNeighbors(current, arena))
                 {
-                    if (closedList.Contains(neighbor) || !arena.IsTileFree(neighbor))
+                    if (closedList.Contains(neighbor))
                         continue;
 
-                    int tentativeGScore = gScore[current] + 1; // Assuming uniform cost for simplicity
+                    int tentativeGScore = gScore[current] + MOVEMENT_COST;
 
-                    if (!openList.Contains(neighbor))
-                        openList.Add(neighbor);
-                    else if (tentativeGScore >= gScore.GetValueOrDefault(neighbor, int.MaxValue))
-                        continue;
-
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, end);
+                    if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
+                    {
+                        cameFrom[neighbor] = current;
+                        gScore[neighbor] = tentativeGScore;
+                        int newFScore = gScore[neighbor] + Heuristic(neighbor, end);
+                        fScore[neighbor] = newFScore;
+                        
+                        // Re-add to priority queue with new priority
+                        openList.Enqueue(neighbor, newFScore);
+                    }
                 }
-
-                // Debugging logs
-                Logger.Report(current, $"Current: {current} | gScore: {gScore[current]} | fScore: {fScore[current]}");
-                Logger.Report(openList.Count, $"Open List Size: {openList.Count}");
-                Logger.Report(closedList.Count, $"Closed List Size: {closedList.Count}");
             }
 
-            Logger.Report(closestPoint, $"Closest point found: start:{start} end:{end}");
             return closestPoint; // Return the closest point found within the steps limit
         }
 
@@ -76,12 +85,12 @@ namespace VEngine.AI.Pathfinder
 
         private static List<Point> GetNeighbors(Point p, Arena arena)
         {
-            var neighbors = new List<Point>();
-            var potentialNeighbors = new List<Point>
-        {
-            new Point(p.X + 1, p.Y), new Point(p.X - 1, p.Y),
-            new Point(p.X, p.Y + 1), new Point(p.X, p.Y - 1)
-        };
+            var neighbors = new List<Point>(4); // Pre-allocate capacity for 4 neighbors
+            var potentialNeighbors = new[]
+            {
+                new Point(p.X + 1, p.Y), new Point(p.X - 1, p.Y),
+                new Point(p.X, p.Y + 1), new Point(p.X, p.Y - 1)
+            };
 
             foreach (var neighbor in potentialNeighbors)
             {
@@ -93,16 +102,6 @@ namespace VEngine.AI.Pathfinder
 
             return neighbors;
         }
-
-        private static Point GetLowestFScore(List<Point> openList, Dictionary<Point, int> fScore)
-        {
-            Point lowest = openList[0];
-            foreach (var point in openList)
-                if (fScore[point] < fScore[lowest])
-                    lowest = point;
-            return lowest;
-        }
     }
-
 }
 

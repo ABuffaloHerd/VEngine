@@ -1,10 +1,6 @@
 ﻿using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Events;
 
 namespace VEngine.Scenes
@@ -20,9 +16,10 @@ namespace VEngine.Scenes
             };
             b.Click += (s, e) =>
             {
-                GameEvent @event = new();
-                @event.AddData("test", "Event testing to send event from scene to gamemanager");
-                RaiseGameEvent(@event);
+                var gameEvent = EventPool.GetGameEvent();
+                gameEvent.AddData("test", "Event testing to send event from scene to gamemanager");
+                RaiseGameEvent(gameEvent);
+                EventPool.Return(gameEvent);
             };
 
             Button b2 = new(20)
@@ -32,8 +29,9 @@ namespace VEngine.Scenes
             };
             b2.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new("test_scene");
-                RaiseGameEvent(@event);
+                var sceneChangeEvent = EventPool.GetSceneChangeEvent("test_scene");
+                RaiseGameEvent(sceneChangeEvent);
+                EventPool.Return(sceneChangeEvent);
             };
 
             Button b3 = new(20)
@@ -43,8 +41,9 @@ namespace VEngine.Scenes
             };
             b3.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new("scenario_select");
-                RaiseGameEvent(@event);
+                var sceneChangeEvent = EventPool.GetSceneChangeEvent("scenario_select");
+                RaiseGameEvent(sceneChangeEvent);
+                EventPool.Return(sceneChangeEvent);
             };
 
             Button b4 = new(20)
@@ -54,8 +53,9 @@ namespace VEngine.Scenes
             };
             b4.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new("arena_layout");
-                RaiseGameEvent(@event);
+                var sceneChangeEvent = EventPool.GetSceneChangeEvent("arena_layout");
+                RaiseGameEvent(sceneChangeEvent);
+                EventPool.Return(sceneChangeEvent);
             };
 
             Console title = new(8, 2)

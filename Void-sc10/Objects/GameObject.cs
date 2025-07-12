@@ -154,13 +154,14 @@ namespace VEngine.Objects
             // Trigger the on attack event for subscribers to react
 
             // === Sample event === //
-            GameEvent attacked = new();
+            var attacked = EventPool.GetGameEvent();
             attacked.AddData("targets", targets);
             attacked.AddData("damage", 1);
             attacked.AddData("total_damage", 1);
 
             // This is always called
             OnAttack?.Invoke(this, attacked);
+            EventPool.Return(attacked);
         }
 
         public virtual void Cast(IEnumerable<GameObject> targets, Arena arena, Spell spell)

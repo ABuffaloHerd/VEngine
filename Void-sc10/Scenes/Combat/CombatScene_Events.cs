@@ -104,82 +104,107 @@ namespace VEngine.Scenes.Combat
             switch (e.EventType)
             {
                 case CombatEventType.DAMAGED:
-                    int damage = e.GetData<int>("amount");
-                    string thing = e.GetData<GameObject>("me").Name;
-
-                    fightFeed.Print($"{thing} took {damage} damage");
+                    if (e.TryGetData<int>("amount", out var damage) && e.TryGetData<GameObject>("me", out var damagedObject))
+                    {
+                        fightFeed.Print($"{damagedObject.Name} took {damage} damage");
+                    }
                     break;
 
                 case CombatEventType.ACTION:
                     // figure out which action to do etc
-                    string what = e.GetData<string>("action");
-                    switch (what)
+                    if (e.TryGetData<string>("action", out var what))
                     {
-                        case "show_range":
-                            // get range and tell arena to display it
-                            Pattern p = e.GetData<Pattern>("pattern");
-                            arena.RenderPattern(p, selectedGameObject.Position, selectedGameObject.Facing);
-                            break;
+                        switch (what)
+                        {
+                            case "show_range":
+                                // get range and tell arena to display it
+                                if (e.TryGetData<Pattern>("pattern", out var pattern))
+                                {
+                                    arena.RenderPattern(pattern, selectedGameObject.Position, selectedGameObject.Facing);
+                                }
+                                break;
 
-                        case "attack":
-                            // run attack logic
-                            ExecuteAttack(selectedGameObject, selectedGameObject.Range);
-                            break;
+                            case "attack":
+                                // run attack logic
+                                ExecuteAttack(selectedGameObject, selectedGameObject.Range);
+                                break;
+                        }
                     }
-
                     break;
 
                 case CombatEventType.INFO:
                     // print to fight feed
-                    string data = e.GetData<string>("content");
-
-                    fightFeed.Print(data);
+                    if (e.TryGetData<string>("content", out var data))
+                    {
+                        fightFeed.Print(data);
+                    }
                     break;
 
                 case CombatEventType.SUMMON:
                     // figure out what to summon
-                    switch (e.GetData<string>("summon"))
+                    if (e.TryGetData<string>("summon", out var summonType))
                     {
-                        case "magic_circle":
-                            // check 4 adjacent tiles to see if they're free
-                            List<Point> l = new()
-                            {
-                                (1, 0),
-                                (0, 1),
-                                (-1, 0),
-                                (0, -1)
-                            };
-
-                            foreach (Point p in l)
-                            {
-                                if (arena.IsTileFree(selectedGameObject.Position + p, true))
+                        switch (summonType)
+                        {
+                            case "magic_circle":
+                                // Check if we have position and owner data
+                                if (e.TryGetData<Point>("position", out var position) && 
+                                    e.TryGetData<Mage>("owner", out var owner))
                                 {
-                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND, selectedGameObject)
+                                    // Create magic circle at specified position
+                                    MagicCircle mc = new(Color.Magenta, Alignment.FRIEND, owner)
                                     {
-                                        Position = selectedGameObject.Position + p
+                                        Position = position
                                     };
 
                                     SummonGameObject(mc);
-
-                                    fightFeed.Print("Summoned magic circle!");
-
-                                    // Since only mages can summon magic circles, it is safe to assume that if we made it this far, the selected game object is a mage.
-                                    (selectedGameObject as Mage).MagicCircles = arena.CountMagicCircle();
-
-                                    break;
+                                    fightFeed.Print($"{owner.Name} summoned a magic circle!");
                                 }
-                            }
+                                else
+                                {
+                                    // Fallback to old behavior for compatibility
+                                    // check 4 adjacent tiles to see if they're free
+                                    List<Point> l = new()
+                                    {
+                                        (1, 0),
+                                        (0, 1),
+                                        (-1, 0),
+                                        (0, -1)
+                                    };
 
-                            break;
+                                    foreach (Point p in l)
+                                    {
+                                        if (arena.IsTileFree(selectedGameObject.Position + p, true))
+                                        {
+                                            MagicCircle mc = new(Color.Magenta, Alignment.FRIEND, selectedGameObject)
+                                            {
+                                                Position = selectedGameObject.Position + p
+                                            };
+
+                                            SummonGameObject(mc);
+                                            fightFeed.Print("Summoned magic circle!");
+
+                                            // Update the mage's circle count if it's a mage
+                                            if (selectedGameObject is Mage mage)
+                                            {
+                                                mage.MagicCircles = arena.CountMagicCircle();
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
                     }
-
                     break;
 
                 case CombatEventType.CAST:
                     // Get the spell and send it
-                    Spell castme = e.GetData<Spell>("spell");
-                    CastSpell(selectedGameObject, castme.Range, castme);
-
+                    if (e.TryGetData<Spell>("spell", out var spell))
+                    {
+                        CastSpell(selectedGameObject, spell.Range, spell);
+                    }
                     break;
             }
         }
@@ -191,14 +216,14 @@ namespace VEngine.Scenes.Combat
         /// <param name="e">The event</param>
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
-            if (e is KeyPressedEvent)
+            if (e is KeyPressedEvent keyEvent)
             {
-                ProcessKeyEvent(e as KeyPressedEvent);
+                ProcessKeyEvent(keyEvent);
             }
 
-            if (e is CombatEvent)
+            if (e is CombatEvent combatEvent)
             {
-                ProcessCombatEvent(e as CombatEvent);
+                ProcessCombatEvent(combatEvent);
             }
 
             UpdateHud();

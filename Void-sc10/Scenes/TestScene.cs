@@ -1,10 +1,6 @@
 ﻿using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Events;
 
 namespace VEngine.Scenes
@@ -30,8 +26,9 @@ namespace VEngine.Scenes
             };
             b.Click += (s, e) =>
             {
-                SceneChangeEvent @event = new("title");
-                RaiseGameEvent(@event);
+                var sceneChangeEvent = EventPool.GetSceneChangeEvent("title");
+                RaiseGameEvent(sceneChangeEvent);
+                EventPool.Return(sceneChangeEvent);
             };
 
             con.Controls.Add(b);
@@ -41,15 +38,14 @@ namespace VEngine.Scenes
 
         protected override void ProcessGameEvent(object sender, IGameEvent e)
         {
-            if(e is KeyPressedEvent)
+            if(e is KeyPressedEvent keyEvent)
             {
-                KeyPressedEvent kp = e as KeyPressedEvent;
-
-                switch(kp.Key)
+                switch(keyEvent.Key)
                 {
                     case 'q':
-                        SceneChangeEvent ev = new("title");
-                        RaiseGameEvent(ev);
+                        var sceneChangeEvent = EventPool.GetSceneChangeEvent("title");
+                        RaiseGameEvent(sceneChangeEvent);
+                        EventPool.Return(sceneChangeEvent);
                         break;
                 }
             }

@@ -402,13 +402,14 @@ namespace VEngine.Scenes.Combat
         private void OnAttack(object? sender, GameEvent args)
         {
             // Get the targets out of the game event
-            IEnumerable<GameObject> targets = args.GetData<IEnumerable<GameObject>>("targets");
-
-            foreach (GameObject target in targets)
+            if (args.TryGetData<IEnumerable<GameObject>>("targets", out var targets))
             {
-                Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
+                foreach (GameObject target in targets)
+                {
+                    Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
 
-                CheckIfDead(target);
+                    CheckIfDead(target);
+                }
             }
         }
 
