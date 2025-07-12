@@ -34,7 +34,7 @@ namespace VEngine.Data
         public int Current
         {
             get => _current;
-            set => _current = IsOverloadable ? _current = value : Math.Min(value, _max);
+            set => _current = IsOverloadable ? value : Math.Min(value, _max);
         }
 
         public int Max
@@ -102,17 +102,20 @@ namespace VEngine.Data
 
         public static Stat operator +(Stat stat, int value)
         {
-            return new Stat(stat.Current + value, stat.Max);
+            stat.Current += value;
+            return stat;
         }
 
         public static Stat operator -(Stat stat, int value)
         {
-            return new Stat(stat.Current - value, stat.Max);
+            stat.Current -= value;
+            return stat;
         }
 
         public static Stat operator *(Stat stat, int value)
         {
-            return new(stat.Current * value, stat.Max);
+            stat.Current *= value;
+            return stat;
         }
 
         public static implicit operator int(Stat stat)
@@ -128,7 +131,8 @@ namespace VEngine.Data
         /// <returns></returns>
         public static Stat operator /(Stat stat, int value) 
         {
-            return new(stat.Current / value, stat.Max);
+            stat.Current /= value;
+            return stat;
         }
 
 

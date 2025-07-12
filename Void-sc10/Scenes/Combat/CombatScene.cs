@@ -48,6 +48,18 @@ namespace VEngine.Scenes.Combat
         private HashSet<EntityEffect> OnAttackEffects;
         private HashSet<EntityEffect> OnTurnStartEffects;
 
+        /// <summary>
+        /// Get the arena for game objects that need arena access
+        /// </summary>
+        public Arena Arena => arena;
+
+        /// <summary>
+        /// Get the current combat scene instance
+        /// </summary>
+        public static CombatScene? Current => GameManager.Instance.GetType()
+            .GetField("currentScene", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?.GetValue(GameManager.Instance) as CombatScene;
+
         private static int instanceCount = 0;
         private CombatScene() : base()
         {
@@ -288,6 +300,9 @@ namespace VEngine.Scenes.Combat
             selectedGameObject.PositionChanged += OnMove;
             selectedGameObject.DirectionChanged += OnDirectionChanged;
 
+            // Reset the current object's move value FIRST
+            selectedGameObject.MoveDist.ResetCurrent = true;
+
             // === This section handles console setup === //
             UpdateHud();
             UpdateTurnConsole();
@@ -310,9 +325,6 @@ namespace VEngine.Scenes.Combat
                 controls.IsEnabled = false;
             }
 
-            // Reset the current object's move value
-            selectedGameObject.MoveDist.ResetCurrent = true;
-
             // Alert the fight feed
             fightFeed.Print($"It is now {selectedGameObject.Name}'s turn.");
 
@@ -324,6 +336,9 @@ namespace VEngine.Scenes.Combat
             {
                 effect.ApplyEffect(selectedGameObject);
             }
+
+            // Update HUD again after OnStartTurn to reflect any stat changes
+            UpdateHud();
 
             CheckAllIfDead();
         }
@@ -340,6 +355,9 @@ namespace VEngine.Scenes.Combat
                     fightFeed.Print($"Effect {effect.Name} has expired.");
                 }
             }
+
+            // Update HUD to reflect any stat changes from cycle effects
+            UpdateHud();
 
             CheckAllIfDead();
         }
@@ -390,6 +408,8 @@ namespace VEngine.Scenes.Combat
             if (arena.IsRenderingPattern)
                 arena.RenderCachedPattern(args.NewValue, selectedGameObject.Facing);
 
+            // Update HUD to reflect movement counter changes
+            UpdateHud();
         }
 
         /// <summary>
@@ -411,6 +431,9 @@ namespace VEngine.Scenes.Combat
                     CheckIfDead(target);
                 }
             }
+            
+            // Update HUD to reflect any stat changes from the attack
+            UpdateHud();
         }
 
         /// <summary>

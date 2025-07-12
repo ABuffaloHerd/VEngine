@@ -226,7 +226,11 @@ namespace VEngine.Scenes.Combat
                 ProcessCombatEvent(combatEvent);
             }
 
-            UpdateHud();
+            // Only update HUD for events that actually change game state
+            if (e is KeyPressedEvent || e is CombatEvent)
+            {
+                UpdateHud();
+            }
         }
     }
 }

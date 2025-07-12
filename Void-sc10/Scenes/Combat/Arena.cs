@@ -142,6 +142,30 @@ namespace VEngine.Scenes.Combat
             return magicCircles.Count;
         }
 
+        /// <summary>
+        /// Count magic circles owned by a specific mage
+        /// </summary>
+        public int CountMagicCirclesOwnedBy(GameObject mage)
+        {
+            return MagicCircle.CountCirclesOwnedBy(mage, this);
+        }
+
+        /// <summary>
+        /// Get all magic circles owned by a specific mage
+        /// </summary>
+        public List<MagicCircle> GetMagicCirclesOwnedBy(GameObject mage)
+        {
+            var ownedCircles = new List<MagicCircle>();
+            foreach (var circle in magicCircles.Values)
+            {
+                if (circle.IsOwnedBy(mage))
+                {
+                    ownedCircles.Add(circle);
+                }
+            }
+            return ownedCircles;
+        }
+
         public bool IsTileFree(Point pos, bool mCircles = false)
         {
             if (pos.X > Width - 1 || pos.Y > Height - 1) return false;

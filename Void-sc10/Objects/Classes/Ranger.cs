@@ -1,9 +1,6 @@
 ﻿using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Events;
 using VEngine.Factory;
@@ -60,6 +57,21 @@ namespace VEngine.Objects.Classes
             base.Attack(targets, arena);
 
             Ammo--;
+        }
+
+        /// <summary>
+        /// Attack method using arena context
+        /// </summary>
+        public void Attack(IEnumerable<GameObject> targets)
+        {
+            if (HasArena)
+            {
+                Attack(targets, Arena!);
+            }
+            else
+            {
+                Logger.Report(this, "No arena available for attack");
+            }
         }
     }
 }

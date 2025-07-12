@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.AI;
 using VEngine.Components;
 using VEngine.Data;
@@ -43,6 +40,17 @@ namespace VEngine.Objects
         public virtual void UpdateAI(Arena a)
         {
             AI.UpdateAI(a);
+        }
+
+        /// <summary>
+        /// Updates the AI state using arena context
+        /// </summary>
+        public virtual void UpdateAI()
+        {
+            if (HasArena)
+            {
+                UpdateAI(Arena!);
+            }
         }
 
         public virtual AIAction GetNextAction()

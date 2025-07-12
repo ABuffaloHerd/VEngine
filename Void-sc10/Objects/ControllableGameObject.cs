@@ -1,10 +1,6 @@
 ﻿using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Components;
 using VEngine.Data;
 using VEngine.Events;
@@ -135,13 +131,55 @@ namespace VEngine.Objects
             RaiseOnAttack(ev);
         }
 
+        /// <summary>
+        /// Attack method using arena context
+        /// </summary>
+        public void Attack(IEnumerable<GameObject> targets)
+        {
+            if (HasArena)
+            {
+                Attack(targets, Arena!);
+            }
+            else
+            {
+                Logger.Report(this, "No arena available for attack");
+            }
+        }
+
         public override void Cast(IEnumerable<GameObject> targets, Arena arena, Spell spell)
         {
-            if (MP - spell.Cost < 0) return; // check for mp
+            if (MP.Current - spell.Cost < 0)
+            {
+                // Send failure event to fight feed
+                var failureEvent = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.INFO)
+                    .AddField("content", $"{Name} doesn't have enough MP to cast {spell.Name}!")
+                    .Build();
+                GameManager.Instance.SendGameEvent(this, failureEvent);
+                return;
+            }
 
             MP -= spell.Cost;
+            Logger.Report(this, $"{Name} cast {spell.Name} for {spell.Cost} MP");
+            Logger.Report(this, $"{Name} has {MP.Current} MP remaining");
+
             var ev = spell.ApplyEffect(targets, this, arena);
             RaiseOnAttack(ev);
+        }
+
+        /// <summary>
+        /// Cast method using arena context
+        /// </summary>
+        public void Cast(IEnumerable<GameObject> targets, Spell spell)
+        {
+            if (HasArena)
+            {
+                Cast(targets, Arena!, spell);
+            }
+            else
+            {
+                Logger.Report(this, "No arena available for casting");
+            }
         }
 
         public override int TakeDamage(GameObject? attacker, ICombatItem? item, int damage, DamageType type)

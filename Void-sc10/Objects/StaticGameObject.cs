@@ -1,10 +1,6 @@
 ﻿using SadConsole.UI.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using VEngine.Data;
 using VEngine.Items;
 using VEngine.Scenes.Combat;

@@ -18,7 +18,7 @@ using VEngine.Scenes.Combat;
 
 namespace VEngine.Objects
 {
-    public class GameObject : Entity
+    public class GameObject : Entity, IArenaContext
     {
         public Stat HP { get; set; }
         public Stat Speed { get; set; }
@@ -91,6 +91,16 @@ namespace VEngine.Objects
         {
             get => HP.Current <= 0;
         }
+
+        /// <summary>
+        /// Get the arena this game object is currently in
+        /// </summary>
+        public Arena? Arena => CombatScene.Current?.Arena;
+        
+        /// <summary>
+        /// Check if this object has access to an arena
+        /// </summary>
+        public bool HasArena => Arena != null;
 
         /// <summary>
         /// Creates a game object to be used in combat scenarios

@@ -8,6 +8,7 @@ using VEngine.Events;
 using VEngine.Factory;
 using VEngine.Items;
 using VEngine.Scenes.Combat;
+using VEngine.Logging;
 
 namespace VEngine.Objects.Classes
 {
@@ -24,7 +25,7 @@ namespace VEngine.Objects.Classes
         
         // Summoning configuration
         private const int SUMMON_COST = 10;
-        private const int MAX_CIRCLES = 5; // Prevent infinite summoning
+        private const int MAX_CIRCLES = 100; // Prevent infinite summoning
         private const int MP_PER_CIRCLE = 10;
         private const int MP_REGEN_PER_CIRCLE = 5;
         
@@ -110,13 +111,21 @@ namespace VEngine.Objects.Classes
             // Check prerequisites
             if (MP.Current < SUMMON_COST)
             {
-                Logger.Report(this, "Not enough MP to summon magic circle");
+                var failureEvent = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.INFO)
+                    .AddField("content", $"{Name} doesn't have enough MP to summon a magic circle!")
+                    .Build();
+                GameManager.Instance.SendGameEvent(this, failureEvent);
                 return false;
             }
 
             if (MagicCircles >= MAX_CIRCLES)
             {
-                Logger.Report(this, "Maximum number of magic circles reached");
+                var failureEvent = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.INFO)
+                    .AddField("content", $"{Name} has reached the maximum number of magic circles!")
+                    .Build();
+                GameManager.Instance.SendGameEvent(this, failureEvent);
                 return false;
             }
 
@@ -124,7 +133,11 @@ namespace VEngine.Objects.Classes
             var summonPosition = FindBestSummonPosition(arena);
             if (summonPosition == null)
             {
-                Logger.Report(this, "No valid position to summon magic circle");
+                var failureEvent = new CombatEventBuilder()
+                    .SetEventType(CombatEventType.INFO)
+                    .AddField("content", $"{Name} can't find a valid position to summon a magic circle!")
+                    .Build();
+                GameManager.Instance.SendGameEvent(this, failureEvent);
                 return false;
             }
 
@@ -174,19 +187,19 @@ namespace VEngine.Objects.Classes
             };
             summonButton.Click += (s, e) =>
             {
-                // Get arena reference (this is a bit hacky, but works for now)
-                var combatScene = GameManager.Instance.GetType().GetField("currentScene", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(GameManager.Instance) as CombatScene;
-                
-                if (combatScene != null)
+                // Get arena through IArenaContext interface
+                if (HasArena)
                 {
-                    var arena = combatScene.GetType().GetField("arena", 
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(combatScene) as Arena;
-                    
-                    if (arena != null)
-                    {
-                        TrySummonMagicCircle(arena);
-                    }
+                    TrySummonMagicCircle(Arena!);
+                }
+                else
+                {
+                    // Let's be real. If this error crops up, we're fucked and something catastrophic has occurred.
+                    var failureEvent = new CombatEventBuilder()
+                        .SetEventType(CombatEventType.INFO)
+                        .AddField("content", $"{Name} can't summon - no arena available!") // like how can this even happen
+                        .Build();
+                    GameManager.Instance.SendGameEvent(this, failureEvent);
                 }
             };
 
@@ -219,11 +232,12 @@ namespace VEngine.Objects.Classes
             castButton.Click += (s, e) =>
             {
                 if (selectedSpell == null) return;
+                
+                // Let ControllableGameObject.Cast() handle MP deduction and validation
                 CombatEvent ce = new CombatEventBuilder()
                     .SetEventType(CombatEventType.CAST)
                     .AddField("spell", selectedSpell)
                     .Build();
-
                 GameManager.Instance.SendGameEvent(this, ce);
             };
 
