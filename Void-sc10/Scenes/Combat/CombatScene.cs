@@ -426,7 +426,7 @@ namespace VEngine.Scenes.Combat
             {
                 foreach (GameObject target in targets)
                 {
-                    Logger.Report(sender, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
+                    Logger.Report(this, $"Attacked {target}. {target}'s HP: {target.HP.Current} / {target.HP.Max}");
 
                     CheckIfDead(target);
                 }

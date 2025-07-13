@@ -42,7 +42,7 @@ namespace VEngine.Objects.Classes
 
         public override void Attack(IEnumerable<GameObject> targets, Arena arena)
         {
-            if (Ammo - 1 < 0)
+            if (Ammo.Current - 1 < 0)
             {
                 Logger.Report(this, "out of ammo!");
                 CombatEvent ev = new CombatEventBuilder()
@@ -54,9 +54,12 @@ namespace VEngine.Objects.Classes
 
                 return;
             }
-            base.Attack(targets, arena);
-
+            
+            // Decrement ammo BEFORE triggering the attack event
+            // This ensures the HUD shows the correct ammo count when updated
             Ammo--;
+            
+            base.Attack(targets, arena);
         }
 
         /// <summary>
