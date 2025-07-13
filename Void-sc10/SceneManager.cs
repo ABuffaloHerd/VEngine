@@ -28,8 +28,8 @@ namespace VEngine
             { "scenario_select", () => new ScenarioScene() },
             { "title", () => new TitleScene() },
             { "arena_layout", () => new CombatLayoutScene() },
-            { "combattest", () => new CombatScene(ScenarioPresets.CombatTest) },
-            { "aitest", () => new CombatScene(ScenarioPresets.AITest) }
+            { "combattest", () => new CombatScene(ScenarioPresetsRefactored.CombatTest) },
+            { "aitest", () => new CombatScene(ScenarioPresetsRefactored.AITest) }
         };
 
         /// <summary>
